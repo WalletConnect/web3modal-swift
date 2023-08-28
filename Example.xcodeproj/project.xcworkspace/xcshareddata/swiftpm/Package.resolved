@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "walletconnectswiftv2",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/WalletConnect/WalletConnectSwiftV2",
+      "state" : {
+        "branch" : "remove-wcm",
+        "revision" : "0085250fd993f40a638f8d3e300f4af8cbf9e7a8"
+      }
+    }
+  ],
+  "version" : 2
+}

@@ -1,0 +1,62 @@
+name: ci
+
+on:
+  pull_request_target:
+    branches:
+      - develop
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request_target' && github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request_target' }}
+
+jobs:
+  authorize:
+    environment:
+      ${{ (github.event_name == 'pull_request_target' &&
+      github.event.pull_request.head.repo.full_name != github.repository) &&
+      'external' || 'internal' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ✓
+
+  test:
+    needs: authorize
+    runs-on: 
+      group: apple-silicon
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        type: [unit-tests]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    # Package Unit tests
+    - name: Run tests
+      if: matrix.type == 'unit-tests'
+      shell: bash
+      run: make unit_tests
+
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v3
+      if: success() || failure()
+      with:
+          check_name: ${{ matrix.type }} junit report
+          report_paths: 'test_results/report.junit'
+
+    - name: Zip test artifacts
+      if: always()
+      shell: bash
+      run: test -d "test_results" && zip artifacts.zip -r ./test_results || echo "Nothing to zip"
+
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.type }} test_results
+        path: ./artifacts.zip
+        if-no-files-found: warn

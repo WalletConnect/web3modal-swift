@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "1DF91665-A0F7-489C-845F-75EBD9CC92A7",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Web3Modal",
+        "identifier" : "Web3ModalTests",
+        "name" : "Web3ModalTests"
+      }
+    }
+  ],
+  "version" : 1
+}
