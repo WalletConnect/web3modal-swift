@@ -1,5 +1,6 @@
 #!/bin/bash
 set -eE
+trap 'xcrun simctl delete "$DEVICE_ID"' ERR
 
 # Parse named arguments
 while [[ $# -gt 0 ]]; do
@@ -15,6 +16,10 @@ if [ -z "$SCHEME" ]; then
     echo "No scheme provided"
     exit 1
 fi
+
+# Create ephemeral simulator
+DEVICE_ID=$(xcrun simctl create "EphemeralSim$SCHEME" "iPhone 14")
+echo "Created ephemeral simulator with id: $DEVICE_ID"
 
 # Set XCBuild defaults
 defaults write com.apple.dt.XCBuild IgnoreFileSystemDeviceInodeChanges -bool YES
@@ -43,7 +48,7 @@ if [ -z "$XCTESTRUN" ]; then
         ${PROJECT:+-project "$PROJECT"} \
         ${TESTPLAN:+-testPlan "$TESTPLAN"} \
         -scheme "$SCHEME" \
-        -destination 'platform=OS X,arch=arm64' \
+        -destination "platform=iOS Simulator,id=$DEVICE_ID" \
         -derivedDataPath DerivedDataCache \
         -clonedSourcePackagesDirPath ../SourcePackagesCache \
         -resultBundlePath "test_results/$SCHEME.xcresult" \
@@ -63,7 +68,7 @@ else
     set -o pipefail && env NSUnbufferedIO=YES \
         xcodebuild \
         -xctestrun "$XCTESTRUN" \
-        -destination 'platform=OS X,arch=arm64' \
+        -destination "platform=iOS Simulator,id=$DEVICE_ID" \
         -derivedDataPath DerivedDataCache \
         -clonedSourcePackagesDirPath ../SourcePackagesCache \
         -resultBundlePath "test_results/$SCHEME.xcresult" \
@@ -73,8 +78,10 @@ else
     )
 fi  
 
-echo "Done"
+echo "Removing ephemeral simulator"
+xcrun simctl delete "$DEVICE_ID"
 
+echo "Done"
 
 # Function to update xctestrun file
 update_xctestrun() {
