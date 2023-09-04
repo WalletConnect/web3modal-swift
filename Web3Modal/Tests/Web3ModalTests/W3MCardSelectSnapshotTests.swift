@@ -3,10 +3,10 @@ import SwiftUI
 @testable import Web3Modal
 import XCTest
 
-final class W3MButtonSnapshotTests: XCTestCase {
+final class W3MCardSelectSnapshotTests: XCTestCase {
     
     func test_snapshots() throws {
-        let view = W3MButtonStylePreviewView()
+        let view = W3MCardSelectStylePreviewView()
         let vc = UIHostingController(rootView: view)
         vc.view.frame = UIScreen.main.bounds
 
