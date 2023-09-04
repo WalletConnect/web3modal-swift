@@ -9,8 +9,9 @@ struct W3MCardSelectStyle: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
 
     let variant: Variant
-    let imageUrl: URL
-
+    var imageUrl: URL?
+    var image: Image?
+    
     var isPressedOverride: Bool?
     var isLoadingOverride: Bool?
 
@@ -19,6 +20,11 @@ struct W3MCardSelectStyle: ButtonStyle {
     init(variant: Variant, imageUrl: URL) {
         self.variant = variant
         self.imageUrl = imageUrl
+    }
+    
+    init(variant: Variant, image: Image) {
+        self.variant = variant
+        self.image = image
     }
 
     #if DEBUG
@@ -156,7 +162,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
+                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
                     ))
 
                     Button(action: {}, label: {
@@ -164,7 +170,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
+                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
                     ))
                     .disabled(true)
 
@@ -173,7 +179,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
+                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
                         isPressedOverride: true,
                         isLoadingOverride: false
                     ))
@@ -183,7 +189,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
+                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
                         isPressedOverride: false,
                         isLoadingOverride: true
                     ))
@@ -195,14 +201,14 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
+                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
                     ))
                     Button(action: {}, label: {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
+                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
                     ))
                     .disabled(true)
 
@@ -211,7 +217,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
+                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
                         isPressedOverride: true,
                         isLoadingOverride: false
                     ))
@@ -221,7 +227,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/w3m/v1/getWalletImage/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
+                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
                         isPressedOverride: false,
                         isLoadingOverride: true
                     ))
