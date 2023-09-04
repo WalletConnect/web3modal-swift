@@ -11,17 +11,17 @@ struct W3MCardSelectStyle: ButtonStyle {
     let variant: Variant
     var imageUrl: URL?
     var image: Image?
-    
+
     var isPressedOverride: Bool?
     var isLoadingOverride: Bool?
 
-    @State var isLoading = false
+    @State var isLoading = true
 
     init(variant: Variant, imageUrl: URL) {
         self.variant = variant
         self.imageUrl = imageUrl
     }
-    
+
     init(variant: Variant, image: Image) {
         self.variant = variant
         self.image = image
@@ -30,12 +30,14 @@ struct W3MCardSelectStyle: ButtonStyle {
     #if DEBUG
         init(
             variant: Variant,
-            imageUrl: URL,
-            isPressedOverride: Bool,
-            isLoadingOverride: Bool
+            imageUrl: URL? = nil,
+            image: Image? = nil,
+            isPressedOverride: Bool? = nil,
+            isLoadingOverride: Bool? = nil
         ) {
             self.variant = variant
             self.imageUrl = imageUrl
+            self.image = image
             self.isPressedOverride = isPressedOverride
             self.isLoadingOverride = isLoadingOverride
         }
@@ -43,52 +45,8 @@ struct W3MCardSelectStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         VStack(spacing: Spacing.xs) {
-            AsyncImage(url: isLoadingOverride != true ? imageUrl : nil) { image in
-                image
-                    .resizable()
-                    .transform {
-                        switch variant {
-                        case .network:
-                            $0.clipShape(Hexagon())
-                        case .wallet:
-                            $0.clipShape(RoundedRectangle(cornerRadius: Radius.xs))
-                        }
-                    }
-                    .saturation(isEnabled ? 1 : 0)
-                    .opacity(isEnabled ? 1 : 0.5)
-                    .onAppear {
-                        isLoading = false
-                    }
-            } placeholder: {
-                Color.clear.frame(maxWidth: .infinity)
-                    .modifier(ShimmerBackground())
-                    .transform {
-                        switch variant {
-                        case .network:
-                            $0.clipShape(Hexagon())
-                        case .wallet:
-                            $0.clipShape(RectanglePath())
-                                .clipShape(RoundedRectangle(cornerRadius: Radius.xs))
-                        }
-                    }
-            }
-            .frame(width: 56, height: 56)
-            .overlay {
-                switch variant {
-                case .network:
-                    Hexagon()
-                        .stroke(.Overgray010, lineWidth: 1)
-                        .background(Hexagon().fill(.Overgray005).opacity(isLoading ? 1 : 0))
-                case .wallet:
-                    RoundedRectangle(cornerRadius: Radius.xs)
-                        .strokeBorder(.Overgray010, lineWidth: 1)
-                        .background(RoundedRectangle(cornerRadius: Radius.xs).fill(.Overgray005).opacity(isLoading ? 1 : 0))
-                }
-            }
-            .onAppear {
-                isLoading = true
-            }
-
+            imageComponent()
+                
             configuration.label
                 .font(.tiny500)
                 .foregroundColor((isPressedOverride ?? configuration.isPressed) ? .Blue100 : .Foreground100)
@@ -109,28 +67,55 @@ struct W3MCardSelectStyle: ButtonStyle {
         .cornerRadius(Radius.xs)
         .frame(minWidth: 76, maxWidth: 76, minHeight: 96, maxHeight: 96)
     }
-}
 
-private struct Hexagon: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-
-        let sideLength = min(rect.width, rect.height)
-        let centerX = rect.midX
-        let centerY = rect.midY
-
-        path.move(to: CGPoint(x: centerX + sideLength / 2, y: centerY))
-
-        for i in 1 ... 6 {
-            let angle = CGFloat(i) * CGFloat.pi / 3
-            let x = centerX + sideLength / 2 * CGFloat(cos(angle))
-            let y = centerY + sideLength / 2 * CGFloat(sin(angle))
-            path.addLine(to: CGPoint(x: x, y: y))
+    @ViewBuilder
+    func imageComponent() -> some View {
+        VStack {
+            if let image {
+                image
+                    .resizable()
+                    .onAppear {
+                        isLoading = isLoadingOverride ?? false
+                    }
+            } else {
+                AsyncImage(url: isLoadingOverride != true ? imageUrl : nil) { image in
+                    image
+                        .resizable()
+                } placeholder: {
+                    Color.clear.frame(maxWidth: .infinity)
+                        .modifier(ShimmerBackground())
+                }
+            }
         }
-
-        path.closeSubpath()
-
-        return path
+        .frame(width: 56, height: 56)
+        .saturation(isEnabled ? 1 : 0)
+        .opacity(isEnabled ? 1 : 0.5)
+        .onAppear {
+            isLoading = isLoadingOverride ?? true
+        }
+        .transform {
+            switch variant {
+            case .network:
+                $0
+                    .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
+            case .wallet:
+                $0
+                    .clipShape(RectanglePath())
+                    .clipShape(RoundedRectangle(cornerRadius: Radius.xs))
+            }
+        }
+        .overlay {
+            switch variant {
+            case .network:
+                Polygon(count: 6, relativeCornerRadius: 0.25)
+                    .stroke(.Overgray010, lineWidth: 1)
+                    .background(Polygon(count: 6, relativeCornerRadius: 0.25).fill(.Overgray005).opacity(isLoading ? 1 : 0))
+            case .wallet:
+                RoundedRectangle(cornerRadius: Radius.xs)
+                    .strokeBorder(.Overgray010, lineWidth: 1)
+                    .background(RoundedRectangle(cornerRadius: Radius.xs).fill(.Overgray005).opacity(isLoading ? 1 : 0))
+            }
+        }
     }
 }
 
@@ -150,7 +135,6 @@ private struct RectanglePath: Shape {
 }
 
 #if DEBUG
-
     public struct W3MCardSelectStylePreviewView: View {
         public init() {}
 
@@ -162,7 +146,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
+                        image: Image("MockWalletImage", bundle: .module)
                     ))
 
                     Button(action: {}, label: {
@@ -170,7 +154,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
+                        image: Image("MockWalletImage", bundle: .module)
                     ))
                     .disabled(true)
 
@@ -179,7 +163,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
+                        image: Image("MockWalletImage", bundle: .module),
                         isPressedOverride: true,
                         isLoadingOverride: false
                     ))
@@ -189,7 +173,6 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
                         isPressedOverride: false,
                         isLoadingOverride: true
                     ))
@@ -197,37 +180,36 @@ private struct RectanglePath: Shape {
 
                 HStack {
                     Button(action: {}, label: {
-                        Text("Rainbow")
+                        Text("Polygon")
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
+                        image: Image("MockChainImage", bundle: .module)
                     ))
                     Button(action: {}, label: {
-                        Text("Rainbow")
+                        Text("Polygon")
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!
+                        image: Image("MockChainImage", bundle: .module)
                     ))
                     .disabled(true)
 
                     Button(action: {}, label: {
-                        Text("Rainbow")
+                        Text("Polygon")
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
+                        image: Image("MockChainImage", bundle: .module),
                         isPressedOverride: true,
                         isLoadingOverride: false
                     ))
 
                     Button(action: {}, label: {
-                        Text("Rainbow")
+                        Text("Polygon")
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageUrl: URL(string: "https://explorer-api.walletconnect.com/v3/logo/md/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500?projectId=c1781fc385454899a2b1385a2b83df3b")!,
                         isPressedOverride: false,
                         isLoadingOverride: true
                     ))
@@ -241,6 +223,7 @@ private struct RectanglePath: Shape {
     struct W3MCardSelect_Preview: PreviewProvider {
         static var previews: some View {
             W3MCardSelectStylePreviewView()
+                .previewLayout(.sizeThatFits)
         }
     }
 

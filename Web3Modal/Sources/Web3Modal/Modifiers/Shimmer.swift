@@ -26,8 +26,8 @@ struct ShimmerBackground: ViewModifier {
                         .frame(width: geometry.size.width * 3, height: geometry.size.height * 3)
                         .position(.init(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY))
                         .offset(
-                            x: isAnimating ? -geometry.size.width : geometry.size.width,
-                            y: isAnimating ? -geometry.size.height : geometry.size.height
+                            x: isAnimating ? geometry.size.width : -geometry.size.width,
+                            y: isAnimating ? geometry.size.height : -geometry.size.height
                         )
 
                         .allowsHitTesting(false)
