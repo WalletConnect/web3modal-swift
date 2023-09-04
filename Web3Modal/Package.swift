@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 5.8
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -19,6 +19,10 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/WalletConnect/WalletConnectSwiftV2", branch: "remove-wcm"
+        ),
+        .package(
+            url: "https://github.com/pointfreeco/swift-snapshot-testing",
+            from: "1.10.0"
         )
     ],
     targets: [
@@ -36,7 +40,10 @@ let package = Package(
 
         .testTarget(
             name: "Web3ModalTests",
-            dependencies: ["Web3Modal"]
+            dependencies: [
+                "Web3Modal",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            ]
         )
     ]
 )
