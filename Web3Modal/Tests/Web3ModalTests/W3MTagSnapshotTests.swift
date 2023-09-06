@@ -3,11 +3,11 @@ import SwiftUI
 @testable import Web3Modal
 import XCTest
 
-final class W3MButtonSnapshotTests: XCTestCase {
+final class W3MTagSnapshotTests: XCTestCase {
     
     func test_snapshots() throws {
-        let view = W3MButtonStylePreviewView()
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone13), traits: .init(userInterfaceStyle: .dark)))
-        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone13), traits: .init(userInterfaceStyle: .light)))
+        let view = W3MTagPreviewView()
+        assertSnapshot(matching: view, as: .image(layout: .fixed(width: 100, height: 250), traits: .init(userInterfaceStyle: .dark)))
+        assertSnapshot(matching: view, as: .image(layout: .fixed(width: 100, height: 250), traits: .init(userInterfaceStyle: .light)))
     }
 }

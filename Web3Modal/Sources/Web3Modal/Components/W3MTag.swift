@@ -13,38 +13,38 @@ struct W3MTag: View {
         var backgroundColor: Color {
             switch self {
             case .main:
-                .Overblue015
+                return Color.Overblue015
             case .info:
-                .Overgray010
+                return Color.Overgray010
             case .success:
-                .Success100.opacity(0.15)
+                return Color.Success100.opacity(0.15)
             case .error:
-                .Error100.opacity(0.15)
+                return Color.Error100.opacity(0.15)
             case .inProgress:
-                Color(red: 0.84, green: 0.85, blue: 0.09).opacity(0.15)
+                return Color(red: 0.84, green: 0.85, blue: 0.09).opacity(0.15)
             case .warning:
-                .Orange100.opacity(0.15)
+                return Color.Orange100.opacity(0.15)
             case .disabled:
-                .Overgray015.opacity(0.15)
+                return Color.Overgray015.opacity(0.15)
             }
         }
         
         var textColor: Color {
             switch self {
             case .main:
-                .Blue100
+                return Color.Blue100
             case .info:
-                .Foreground150
+                return Color.Foreground150
             case .success:
-                .Success100
+                return Color.Success100
             case .error:
-                .Error100
+                return Color.Error100
             case .inProgress:
-                Color(red: 0.84, green: 0.85, blue: 0.09)
+                return Color(red: 0.84, green: 0.85, blue: 0.09)
             case .warning:
-                .Orange100
+                return Color.Orange100
             case .disabled:
-                .Overgray015
+                return Color.Overgray015
             }
         }
         
