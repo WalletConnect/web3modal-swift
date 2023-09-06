@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct W3MTag: View {
-    enum Variant: CaseIterable, Identifiable {
+    enum Variant: String, CaseIterable, Identifiable {
         case main
         case info
         case success
@@ -52,13 +52,15 @@ struct W3MTag: View {
             return self
         }
     }
+
+    let title: String
+    let variant: Variant
     
     @ScaledMetric var scale: CGFloat = 1
 
-    let variant: Variant
-
     var body: some View {
-        Text("TAG TAG")
+        Text(title)
+            .textCase(.uppercase)
             .font(.micro700)
             .foregroundColor(variant.textColor)
             .padding(Spacing.xxxs * scale)
@@ -74,7 +76,7 @@ struct W3MTag: View {
         public var body: some View {
             VStack {
                 ForEach(W3MTag.Variant.allCases) {
-                    W3MTag(variant: $0)
+                    W3MTag(title: $0.rawValue, variant: $0)
                 }
             }
             .padding()
