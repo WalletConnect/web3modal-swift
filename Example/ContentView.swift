@@ -21,6 +21,9 @@ struct ContentView: View {
             NavigationLink(destination: W3MTagPreviewView()) {
                 Text("W3MTag")
             }
+            NavigationLink(destination: W3MListSelectStylePreviewView()) {
+                Text("W3MListSelect")
+            }
         }
         .listStyle(.plain)
         #endif

@@ -1,60 +1,52 @@
 import SwiftUI
 
 struct W3MAllWalletsImage: View {
-    enum Size: String {
-        case small = "sm"
-        case medium = "md"
-        case large = "lg"
-    }
-
+ 
+    @ScaledMetric var scale: CGFloat = 1
+    
     var images: [WalletImage]
-    var size: Size = .medium
 
     var body: some View {
-        VStack(spacing: 2) {
-            HStack(spacing: 2) {
+        VStack(spacing: 2 * scale) {
+            HStack(spacing: 2 * scale) {
                 walletImage(images[safe: 0])
                 walletImage(images[safe: 1])
             }
-            .padding(.horizontal, 3.5)
+            .padding(.horizontal, 3.5 * scale)
 
-            HStack(spacing: 2) {
+            HStack(spacing: 2 * scale) {
                 walletImage(images[safe: 2])
                 walletImage(images[safe: 3])
             }
-            .padding(.horizontal, 3.5)
+            .padding(.horizontal, 3.5 * scale)
         }
-        .padding(.vertical, 3.5)
-        .frame(width: 40, height: 40)
+        .padding(.vertical, 3.5 * scale)
+        .frame(width: 40 * scale, height: 40 * scale)
+        .cornerRadius(Radius.xxxs * scale)
         .overlay {
             RoundedRectangle(cornerRadius: Radius.xxxs)
-                .strokeBorder(.Overgray010, lineWidth: 0.5)
+                .strokeBorder(.Overgray010, lineWidth: 0.5 * scale)
                 .background(RoundedRectangle(cornerRadius: Radius.xxxs).fill(.Overgray005))
         }
     }
 
     @ViewBuilder
     func walletImage(_ image: WalletImage?) -> some View {
-        if let image = image {
-            AsyncImage(url: URL(string: image.url)!) { image in
-                image
-                    .resizable()
-                    .scaledToFit()
-            } placeholder: {
-                Image.Wallet
-                    .resizable()
-                    .scaledToFit()
-                    .padding(3)
-            }
-//            .frame(width: 15, height: 15)
-            .cornerRadius(Radius.xxxxxs)
-            .overlay {
-                RoundedRectangle(cornerRadius: Radius.xxxxxs)
-                    .strokeBorder(.Overgray010, lineWidth: 0.2)
-//                    .background(RoundedRectangle(cornerRadius: Radius.xxxxxs))
-            }
-        } else {
-            EmptyView()
+        AsyncImage(url: image == nil ? .none : URL(string: image!.url)) { image in
+            image
+                .resizable()
+                .scaledToFit()
+        } placeholder: {
+            Image.Wallet
+                .resizable()
+                .scaledToFit()
+                .padding(3 * scale)
+        }
+        .frame(width: 15 * scale, height: 15 * scale)
+        .cornerRadius(Radius.xxxxxs)
+        .overlay {
+            RoundedRectangle(cornerRadius: Radius.xxxxxs)
+                .strokeBorder(.Overgray010, lineWidth: 0.2)
         }
     }
 }
