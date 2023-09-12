@@ -150,10 +150,10 @@ struct W3MListSelectStyle: ButtonStyle {
                     })
                     .buttonStyle(W3MListSelectStyle(
                         allWalletsImage: W3MAllWalletsImage(images: [
-                            .init(url: "https://api.web3modal.com/getWalletImage/5195e9db-94d8-4579-6f11-ef553be95100", walletName: "Metamask"),
-                            .init(url: "https://api.web3modal.com/getWalletImage/0528ee7e-16d1-4089-21e3-bbfb41933100", walletName: "Trust"),
-                            .init(url: "https://api.web3modal.com/getWalletImage/3913df81-63c2-4413-d60b-8ff83cbed500", walletName: "Safe"),
-                            .init(url: "https://api.web3modal.com/getWalletImage/7a33d7f1-3d12-4b5c-f3ee-5cd83cb1b500", walletName: "Rainbow"),
+                            .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
+                            .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
+                            .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
+                            .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
                         ])
                     ))
                     
@@ -181,40 +181,3 @@ struct W3MListSelectStyle: ButtonStyle {
 
 #endif
 
-struct AdaptiveStack<Content: View>: View {
-    let horizontalAlignment: HorizontalAlignment
-    let verticalAlignment: VerticalAlignment
-    let spacing: CGFloat?
-    let content: () -> Content
-    let condition: () -> Bool
-
-    init(
-        condition: @autoclosure @escaping () -> Bool,
-        horizontalAlignment: HorizontalAlignment = .center,
-        verticalAlignment: VerticalAlignment = .center,
-        spacing: CGFloat? = nil,
-        @ViewBuilder content: @escaping () -> Content
-    ) {
-        self.condition = condition
-        self.horizontalAlignment = horizontalAlignment
-        self.verticalAlignment = verticalAlignment
-        self.spacing = spacing
-        self.content = content
-    }
-
-    var body: some View {
-        if condition() {
-            VStack(
-                alignment: horizontalAlignment,
-                spacing: spacing,
-                content: content
-            )
-        } else {
-            HStack(
-                alignment: verticalAlignment,
-                spacing: spacing,
-                content: content
-            )
-        }
-    }
-}
