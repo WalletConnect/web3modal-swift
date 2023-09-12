@@ -5,7 +5,6 @@ struct AsyncImage<Content>: View where Content: View {
     
     final class Loader: ObservableObject {
         @Published var data: Data? = nil
-        @Environment(\.projectId) var projectId: String
 
         private var cancellables = Set<AnyCancellable>()
 
