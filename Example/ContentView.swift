@@ -1,13 +1,25 @@
-import Web3Modal
 import SwiftUI
+import Web3Modal
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
+        NavigationView {
+            listView
+                .navigationTitle("Components")
         }
-        .padding()
+    }
+    
+    var listView: some View {
+        #if DEBUG
+        List {
+            NavigationLink(destination: W3MButtonStylePreviewView()) {
+                Text("W3MButton")
+            }
+            NavigationLink(destination: W3MCardSelectStylePreviewView()) {
+                Text("W3MCardSelect")
+            }
+        }
+        .listStyle(.plain)
+        #endif
     }
 }

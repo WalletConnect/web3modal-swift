@@ -6,11 +6,8 @@ import XCTest
 final class W3MButtonSnapshotTests: XCTestCase {
     
     func test_snapshots() throws {
-        let view = W3MButtonStyle.PreviewView()
-        let vc = UIHostingController(rootView: view)
-        vc.view.frame = UIScreen.main.bounds
-
-        assertSnapshot(matching: vc, as: .image(traits: .init(userInterfaceStyle: .dark)))
-        assertSnapshot(matching: vc, as: .image(traits: .init(userInterfaceStyle: .light)))
+        let view = W3MButtonStylePreviewView()
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone13), traits: .init(userInterfaceStyle: .dark)))
+        assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone13), traits: .init(userInterfaceStyle: .light)))
     }
 }

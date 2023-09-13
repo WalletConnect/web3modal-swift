@@ -17,6 +17,8 @@ struct W3MButtonStyle: ButtonStyle {
     var leftIcon: Image?
     var rightIcon: Image?
     
+    var isPressedOverride: Bool?
+    
     init(
         size: Size = .m,
         variant: Variant = .main,
@@ -29,14 +31,29 @@ struct W3MButtonStyle: ButtonStyle {
         self.rightIcon = rightIcon
     }
     
+    #if DEBUG
+    init(
+        size: Size = .m,
+        variant: Variant = .main,
+        leftIcon: Image? = nil,
+        rightIcon: Image? = nil,
+        isPressedOverride: Bool?
+    ) {
+        self.size = size
+        self.variant = variant
+        self.leftIcon = leftIcon
+        self.rightIcon = rightIcon
+        self.isPressedOverride = isPressedOverride
+    }
+    #endif
+    
     func makeBody(configuration: Configuration) -> some View {
-        
         var textColor: Color = variant == .accent ? .Blue100 : .Inverse100
         textColor = isEnabled ? textColor : .Overgray015
         
         var backgroundColor: Color = variant == .accent ? .clear : .Blue100
         let pressedColor: Color = variant == .accent ? .Overgray010 : .Blue080
-        backgroundColor = configuration.isPressed ? pressedColor : backgroundColor
+        backgroundColor = (isPressedOverride ?? configuration.isPressed) ? pressedColor : backgroundColor
         backgroundColor = isEnabled ? backgroundColor : .Overgray010
         
         let verticalPadding = size == .m ? Spacing.xxs : Spacing.xxxs
@@ -74,9 +91,11 @@ struct W3MButtonStyle: ButtonStyle {
     }
 }
 
-extension W3MButtonStyle {
-    public struct PreviewView: View {
-        var body: some View {
+#if DEBUG
+    public struct W3MButtonStylePreviewView: View {
+        public init() {}
+        
+        public var body: some View {
             VStack(alignment: .leading) {
                 Text("S")
                     .font(.title700)
@@ -99,8 +118,7 @@ extension W3MButtonStyle {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, rightIcon: .Phone))
-                        
+                        .buttonStyle(W3MButtonStyle(size: .s, rightIcon: .Phone, isPressedOverride: true))
                     }
                     
                     HStack {
@@ -141,8 +159,7 @@ extension W3MButtonStyle {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, rightIcon: .Phone))
-                        
+                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, rightIcon: .Phone, isPressedOverride: true))
                     }
                     
                     HStack {
@@ -186,8 +203,7 @@ extension W3MButtonStyle {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(rightIcon: .Phone))
-                        
+                        .buttonStyle(W3MButtonStyle(rightIcon: .Phone, isPressedOverride: true))
                     }
                     
                     HStack {
@@ -228,8 +244,7 @@ extension W3MButtonStyle {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(variant: .accent, rightIcon: .Phone))
-                        
+                        .buttonStyle(W3MButtonStyle(variant: .accent, rightIcon: .Phone, isPressedOverride: true))
                     }
                     
                     HStack {
@@ -252,13 +267,15 @@ extension W3MButtonStyle {
                     }
                 }
             }
+            .padding()
+            .background(.Overgray002)
         }
     }
-}
 
-struct W3MButtonStyle_Preview: PreviewProvider {
-    
-    static var previews: some View {
-        W3MButtonStyle.PreviewView()
+    struct W3MButtonStyle_Preview: PreviewProvider {
+        static var previews: some View {
+            W3MButtonStylePreviewView()
+        }
     }
-}
+
+#endif
