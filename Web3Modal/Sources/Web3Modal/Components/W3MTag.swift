@@ -62,6 +62,7 @@ struct W3MTag: View {
         Text(title)
             .textCase(.uppercase)
             .font(.micro700)
+            .lineLimit(1)
             .foregroundColor(variant.textColor)
             .padding(Spacing.xxxs * scale)
             .background(variant.backgroundColor)
