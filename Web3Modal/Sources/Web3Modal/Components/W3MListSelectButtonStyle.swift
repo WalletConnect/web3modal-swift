@@ -135,7 +135,7 @@ struct W3MListSelectStyle: ButtonStyle {
                     })
                     .buttonStyle(W3MListSelectStyle(
                         tag: W3MTag(title: "Installed", variant: .success),
-                        isPressedOverride: true
+                        isPressedOverride: false
                     ))
                     
                     Button(action: {}, label: {
@@ -167,7 +167,7 @@ struct W3MListSelectStyle: ButtonStyle {
                     .disabled(true)
                 }
                 .padding()
-                .background(.Overgray002)
+//                .background(.Overgray002)
             }
         }
     }
