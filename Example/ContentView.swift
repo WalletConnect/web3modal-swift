@@ -18,6 +18,9 @@ struct ContentView: View {
             NavigationLink(destination: W3MCardSelectStylePreviewView()) {
                 Text("W3MCardSelect")
             }
+            NavigationLink(destination: W3MTagPreviewView()) {
+                Text("W3MTag")
+            }
         }
         .listStyle(.plain)
         #endif
