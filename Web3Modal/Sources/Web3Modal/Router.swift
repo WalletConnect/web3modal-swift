@@ -62,23 +62,3 @@ extension Router {
         return router
     }
 }
-
-@propertyWrapper
-class PublishedSubject<T> {
-    
-    var wrappedValue: T {
-        didSet {
-            subject.send(wrappedValue)
-        }
-    }
-    
-    var projectedValue: some Publisher<T, Never> {
-        subject
-    }
-    
-    private lazy var subject = CurrentValueSubject<T, Never>(wrappedValue)
-    
-    init(wrappedValue: T) {
-        self.wrappedValue = wrappedValue
-    }
-}

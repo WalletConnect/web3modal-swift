@@ -23,15 +23,51 @@ struct Web3ModalView: View {
                 EmptyView()
             }
         }
+        .background(Color.Background125)
+        .cornerRadius(30, corners: [.topLeft, .topRight])
     }
     
+    @State var searchTerm: String = ""
+    
+    @ViewBuilder
     private func allWallets() -> some View {
-        VStack {
-            Text("Foo")
+        VStack(spacing: 0) {
+            HStack {
+                TextField("Search wallet", text: $searchTerm)
+                    .padding(Spacing.xs)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 12).stroke(.GrayGlass005, lineWidth: 1.0)
+                    }
+                qrButton()
+            }
+            .padding(.horizontal)
+            .padding(.vertical, Spacing.xs)
+            
+            let collumns = [
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+            ]
+            
+            ScrollView {
+                LazyVGrid(columns: collumns) {
+                    ForEach(0 ..< 100) { _ in
+                        Button(action: {
+                            router.subpage = .walletDetail
+                        }, label: {
+                            Text("Wallet")
+                        })
+                        .buttonStyle(W3MCardSelectStyle(
+                            variant: .wallet, image: Image("MockWalletImage", bundle: .module)
+                        ))
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 30)
+            }
+            .frame(maxHeight: 400)
         }
-        .frame(height: 500)
-        .background(Color.red)
-        .navigationBarHidden(true)
     }
     
     private func modalHeader() -> some View {
@@ -48,10 +84,9 @@ struct Web3ModalView: View {
             closeButton()
         }
         .padding()
-        .frame(height: 48)
+        .frame(height: 64)
         .frame(maxWidth: .infinity)
         .foregroundColor(.Foreground100)
-        .background(Color.Background125)
         .overlay(
             RoundedCorner(radius: 30, corners: [.topLeft, .topRight])
                 .stroke(Color.GrayGlass005, lineWidth: 1)
@@ -60,39 +95,38 @@ struct Web3ModalView: View {
     }
     
     private func content() -> some View {
-        ScrollView {
-            VStack {
-                Button(action: {}, label: {
-                    Text("Rainbow")
-                })
-                .buttonStyle(W3MListSelectStyle(
-                    image: Image("MockWalletImage", bundle: .module),
-                    tag: W3MTag(title: "QR Code", variant: .main)
-                ))
+        VStack {
+            Button(action: {}, label: {
+                Text("Rainbow")
+            })
+            .buttonStyle(W3MListSelectStyle(
+                image: Image("MockWalletImage", bundle: .module),
+                tag: W3MTag(title: "QR Code", variant: .main)
+            ))
                 
-                Button(action: {}, label: {
-                    Text("Rainbow")
-                })
-                .buttonStyle(W3MListSelectStyle(
-                    image: Image("MockWalletImage", bundle: .module)
-                ))
+            Button(action: {}, label: {
+                Text("Rainbow")
+            })
+            .buttonStyle(W3MListSelectStyle(
+                image: Image("MockWalletImage", bundle: .module)
+            ))
                 
-                Button(action: {
-                    router.subpage = .allWallets
-                }, label: {
-                    Text("All wallets")
-                })
-                .buttonStyle(W3MListSelectStyle(
-                    allWalletsImage: W3MAllWalletsImage(images: [
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
-                    ])
-                ))
-            }
-            .padding()
+            Button(action: {
+                router.subpage = .allWallets
+            }, label: {
+                Text("All wallets")
+            })
+            .buttonStyle(W3MListSelectStyle(
+                allWalletsImage: W3MAllWalletsImage(images: [
+                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
+                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
+                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
+                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
+                ])
+            ))
         }
+        .padding(Spacing.s)
+        .padding(.bottom)
     }
     
     private func backButton() -> some View {
@@ -108,22 +142,29 @@ struct Web3ModalView: View {
             Image.LargeClose
         }
     }
+    
+    private func qrButton() -> some View {
+        Button {
+            router.subpage = .qr
+        } label: {
+            Image.Qrcode
+        }
+    }
 }
 
 extension Route.Subpage {
-    
     var title: String {
         switch self {
         case .connectWallet:
-            "Connect Wallet"
+            return "Connect Wallet"
         case .qr:
-            "Scan QR Code"
+            return "Scan QR Code"
         case .allWallets:
-            "All wallets"
+            return "All wallets"
         case .whatIsAWallet:
-            "foo"
+            return "foo"
         case .walletDetail:
-            "bar"
+            return "bar"
         }
     }
 }

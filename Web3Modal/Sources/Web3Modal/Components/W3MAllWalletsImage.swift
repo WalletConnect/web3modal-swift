@@ -26,7 +26,6 @@ struct W3MAllWalletsImage: View {
         .overlay {
             RoundedRectangle(cornerRadius: Radius.xxxs)
                 .strokeBorder(.Overgray010, lineWidth: 0.5 * scale)
-                .background(RoundedRectangle(cornerRadius: Radius.xxxs).fill(.Overgray005))
         }
     }
 
