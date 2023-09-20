@@ -1,42 +1,32 @@
 import SwiftUI
 
-struct W3MListSelectStyle: ButtonStyle {
+struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     @ScaledMetric var scale: CGFloat = 1
 
-    var imageUrl: URL?
-    var image: Image?
+    var imageContent: () -> ImageContent
     var tag: W3MTag?
     var allWalletsImage: W3MAllWalletsImage?
 
     var isPressedOverride: Bool?
 
-    init(allWalletsImage: W3MAllWalletsImage, tag: W3MTag? = nil) {
-        self.allWalletsImage = allWalletsImage
-        self.tag = tag
-    }
-
-    init(imageUrl: URL, tag: W3MTag? = nil) {
-        self.imageUrl = imageUrl
-        self.tag = tag
-    }
-
-    init(image: Image, tag: W3MTag? = nil) {
-        self.image = image
+    init(
+        @ViewBuilder imageContent: @escaping () -> ImageContent,
+        tag: W3MTag? = nil
+    ) {
+        self.imageContent = imageContent
         self.tag = tag
     }
 
     #if DEBUG
         init(
-            imageUrl: URL? = nil,
-            image: Image? = nil,
+            @ViewBuilder imageContent: @escaping () -> ImageContent,
             tag: W3MTag? = nil,
             isPressedOverride: Bool? = nil
         ) {
-            self.imageUrl = imageUrl
-            self.image = image
+            self.imageContent = imageContent
             self.tag = tag
             self.isPressedOverride = isPressedOverride
         }
@@ -87,31 +77,17 @@ struct W3MListSelectStyle: ButtonStyle {
 
     @ViewBuilder
     func imageComponent() -> some View {
-        VStack {
-            if let image {
-                image
-                    .resizable()
-            } else if let allWalletsImage {
-                allWalletsImage
-            } else {
-                AsyncImage(url: imageUrl) { image in
-                    image
-                        .resizable()
-                } placeholder: {
-                    Image.Wallet
-                }
+        imageContent()
+            .frame(maxWidth: 40 * scale, maxHeight: 40 * scale)
+            .aspectRatio(contentMode: .fit)
+            .saturation(isEnabled ? 1 : 0)
+            .opacity(isEnabled ? 1 : 0.5)
+            .background(.Overgray005)
+            .cornerRadius(Radius.xxxs * scale)
+            .overlay {
+                RoundedRectangle(cornerRadius: Radius.xxxs * scale)
+                    .strokeBorder(.Overgray010, lineWidth: 1 * scale)
             }
-        }
-        .frame(maxWidth: 40 * scale, maxHeight: 40 * scale)
-        .aspectRatio(contentMode: .fit)
-        .saturation(isEnabled ? 1 : 0)
-        .opacity(isEnabled ? 1 : 0.5)
-        .background(.Overgray005)
-        .cornerRadius(Radius.xxxs * scale)
-        .overlay {
-            RoundedRectangle(cornerRadius: Radius.xxxs * scale)
-                .strokeBorder(.Overgray010, lineWidth: 1 * scale)
-        }
     }
 }
 
@@ -126,7 +102,7 @@ struct W3MListSelectStyle: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        image: Image("MockWalletImage", bundle: .module),
+                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
                         tag: W3MTag(title: "QR Code", variant: .main)
                     ))
                     
@@ -134,6 +110,9 @@ struct W3MListSelectStyle: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
+                        imageContent: {
+                            Image.Wallet
+                        },
                         tag: W3MTag(title: "Installed", variant: .success),
                         isPressedOverride: true
                     ))
@@ -142,26 +121,28 @@ struct W3MListSelectStyle: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        image: Image("MockWalletImage", bundle: .module)
+                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() }
                     ))
                     
                     Button(action: {}, label: {
                         Text("All wallets")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        allWalletsImage: W3MAllWalletsImage(images: [
-                            .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
-                            .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
-                            .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
-                            .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
-                        ])
+                        imageContent: {
+                            W3MAllWalletsImage(images: [
+                                .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
+                                .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
+                                .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
+                                .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
+                            ])
+                        }
                     ))
                     
                     Button(action: {}, label: {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        image: Image("MockWalletImage", bundle: .module),
+                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
                         tag: W3MTag(title: "QR Code", variant: .main)
                     ))
                     .disabled(true)

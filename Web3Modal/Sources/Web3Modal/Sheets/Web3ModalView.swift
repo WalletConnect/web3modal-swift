@@ -103,6 +103,16 @@ struct Web3ModalView: View {
                 Text("WalletConnect")
             })
             .buttonStyle(W3MListSelectStyle(
+                imageContent: {
+                    ZStack {
+                        Color.Blue100
+                        
+                        Image.imageLogo
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .foregroundColor(.white)
+                    }
+                },
                 tag: W3MTag(title: "QR Code", variant: .main)
             ))
                 
@@ -110,7 +120,7 @@ struct Web3ModalView: View {
                 Text("Rainbow")
             })
             .buttonStyle(W3MListSelectStyle(
-                image: Image("MockWalletImage", bundle: .module)
+                imageContent: { Image("MockWalletImage", bundle: .module).resizable() }
             ))
                 
             Button(action: {
@@ -119,12 +129,14 @@ struct Web3ModalView: View {
                 Text("All wallets")
             })
             .buttonStyle(W3MListSelectStyle(
-                allWalletsImage: W3MAllWalletsImage(images: [
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
-                ])
+                imageContent: {
+                    W3MAllWalletsImage(images: [
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
+                    ])
+                }
             ))
         }
         .padding(Spacing.s)
