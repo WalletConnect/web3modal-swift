@@ -16,13 +16,14 @@ struct Web3ModalView: View {
             case .allWallets:
                 allWallets()
             case .qr:
-                EmptyView()
+                ConnectWithQRCode(uri: ConnectWithQRCode_Previews.stubUri)
             case .whatIsAWallet:
                 EmptyView()
             case .walletDetail:
                 EmptyView()
             }
         }
+        .environmentObject(router)
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
     }
@@ -96,11 +97,12 @@ struct Web3ModalView: View {
     
     private func content() -> some View {
         VStack {
-            Button(action: {}, label: {
-                Text("Rainbow")
+            Button(action: {
+                router.subpage = .qr
+            }, label: {
+                Text("WalletConnect")
             })
             .buttonStyle(W3MListSelectStyle(
-                image: Image("MockWalletImage", bundle: .module),
                 tag: W3MTag(title: "QR Code", variant: .main)
             ))
                 

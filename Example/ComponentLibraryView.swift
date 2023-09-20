@@ -22,6 +22,12 @@ struct ComponentLibraryView: View {
             NavigationLink(destination: W3MListSelectStylePreviewView()) {
                 Text("W3MListSelect")
             }
+            NavigationLink(destination: W3MActionEntryStylePreviewView()) {
+                Text("W3MActionEntry")
+            }
+            NavigationLink(destination: QRCodeViewPreviewView()) {
+                Text("QRCode")
+            }
         }
         .listStyle(.plain)
         #endif
