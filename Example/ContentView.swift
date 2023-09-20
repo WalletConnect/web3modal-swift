@@ -6,9 +6,17 @@ struct ContentView: View {
         NavigationView {
             
             VStack {
-                Button("Open W3M") {
+                Button("Connect Wallet") {
                     Web3Modal.present()
                 }
+                .buttonStyle(W3MButtonStyle())
+                
+                Button("Select Network") {
+                    Web3Modal.present()
+                }
+                .buttonStyle(W3MButtonStyle(variant: .accent, leftIcon: Image(systemName: "network")))
+                
+                Spacer()
                 
                 NavigationLink("UI Components", destination: ComponentLibraryView())
             }

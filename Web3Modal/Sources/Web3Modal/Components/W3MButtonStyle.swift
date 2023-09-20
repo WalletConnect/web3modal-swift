@@ -1,11 +1,11 @@
 import SwiftUI
 
-struct W3MButtonStyle: ButtonStyle {
-    enum Size {
+public struct W3MButtonStyle: ButtonStyle {
+    public enum Size {
         case s, m
     }
     
-    enum Variant {
+    public enum Variant {
         case accent
         case main
     }
@@ -19,7 +19,7 @@ struct W3MButtonStyle: ButtonStyle {
     
     var isPressedOverride: Bool?
     
-    init(
+    public init(
         size: Size = .m,
         variant: Variant = .main,
         leftIcon: Image? = nil,
@@ -31,8 +31,7 @@ struct W3MButtonStyle: ButtonStyle {
         self.rightIcon = rightIcon
     }
     
-    #if DEBUG
-    init(
+    fileprivate init(
         size: Size = .m,
         variant: Variant = .main,
         leftIcon: Image? = nil,
@@ -45,9 +44,8 @@ struct W3MButtonStyle: ButtonStyle {
         self.rightIcon = rightIcon
         self.isPressedOverride = isPressedOverride
     }
-    #endif
     
-    func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         var textColor: Color = variant == .accent ? .Blue100 : .Inverse100
         textColor = isEnabled ? textColor : .Overgray015
         
