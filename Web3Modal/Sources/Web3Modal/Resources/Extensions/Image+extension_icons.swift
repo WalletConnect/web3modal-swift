@@ -17,6 +17,7 @@ extension Image {
     static var ForwardChevron: Image { Image(#function, bundle: .module) }
     static var Help: Image { Image(#function, bundle: .module) }
     static var HelpSmall: Image { Image(#function, bundle: .module) }
+    static var QuestionMarkCircle: Image { Image(#function, bundle: .module) }
     static var History: Image { Image(#function, bundle: .module) }
     static var LargeBackward: Image { Image(#function, bundle: .module) }
     static var LargeClose: Image { Image(#function, bundle: .module) }

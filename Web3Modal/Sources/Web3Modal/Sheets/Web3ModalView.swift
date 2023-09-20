@@ -12,15 +12,18 @@ struct Web3ModalView: View {
             switch router.currentRoute.subpage {
             case .connectWallet:
                 content()
-                    .background(Color.Background125)
             case .allWallets:
                 allWallets()
             case .qr:
                 ConnectWithQRCode(uri: ConnectWithQRCode_Previews.stubUri)
             case .whatIsAWallet:
-                EmptyView()
+                WhatIsWalletView()
             case .walletDetail:
                 EmptyView()
+            case .getWallet:
+                GetAWalletView(
+                    wallets: Wallet.stubList
+                )
             }
         }
         .environmentObject(router)
@@ -55,7 +58,7 @@ struct Web3ModalView: View {
                 LazyVGrid(columns: collumns) {
                     ForEach(0 ..< 100) { _ in
                         Button(action: {
-                            router.subpage = .walletDetail
+                            router.subpage = .walletDetail(Wallet.stubList.first!)
                         }, label: {
                             Text("Wallet")
                         })
@@ -73,7 +76,12 @@ struct Web3ModalView: View {
     
     private func modalHeader() -> some View {
         HStack(spacing: 0) {
-            backButton()
+            switch router.subpage {
+            case .connectWallet:
+                helpButton()
+            default:
+                backButton()
+            }
             
             Spacer()
             
@@ -143,6 +151,14 @@ struct Web3ModalView: View {
         .padding(.bottom)
     }
     
+    private func helpButton() -> some View {
+        Button(action: {
+            router.subpage = .whatIsAWallet
+        }, label: {
+            Image.QuestionMarkCircle
+        })
+    }
+    
     private func backButton() -> some View {
         Button {
             router.resetRoute()
@@ -176,9 +192,11 @@ extension Route.Subpage {
         case .allWallets:
             return "All wallets"
         case .whatIsAWallet:
-            return "foo"
-        case .walletDetail:
-            return "bar"
+            return "What is a Wallet?"
+        case let .walletDetail(wallet):
+            return "\(wallet.name)"
+        case .getWallet:
+            return "Get wallet"
         }
     }
 }
