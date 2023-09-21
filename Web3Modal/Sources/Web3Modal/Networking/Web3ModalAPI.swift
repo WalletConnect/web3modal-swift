@@ -6,6 +6,7 @@ enum Web3ModalAPI: HTTPService {
     struct GetWalletParams {
         let page: Int
         let entries: Int
+        let search: String?
         let projectId: String
         let metadata: AppMetadata
         let recommendedIds: [String]
@@ -36,6 +37,7 @@ enum Web3ModalAPI: HTTPService {
             return [
                 "page": "\(params.page)",
                 "entries": "\(params.entries)",
+                "search": params.search ?? "",
                 "recommendedIds": params.recommendedIds.joined(separator: ","),
                 "excludedIds": params.excludedIds.joined(separator: ","),
             ]

@@ -1,12 +1,14 @@
 import Combine
 import Foundation
-import WalletConnectSign
 import UIKit
+import WalletConnectSign
 
 final class Web3ModalInteractor: ObservableObject {
+    @Published var isLoading: Bool = false
+    
     var store: Store
     var page: Int = 0
-    var totalPage: Int = 1
+    var totalPage: Int = .max
     var totalEntries: Int = 0
         
     init(store: Store) {
@@ -16,17 +18,26 @@ final class Web3ModalInteractor: ObservableObject {
     lazy var sessionSettlePublisher: AnyPublisher<Session, Never> = Web3Modal.instance.sessionSettlePublisher
     lazy var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never> = Web3Modal.instance.sessionRejectionPublisher
     
-    func getWallets() async throws {
-        page = min(page + 1, totalPage)
+    func getWallets(search: String = "") async throws {
+        DispatchQueue.main.async {
+            self.isLoading = true
+        }
+        
+        if search.isEmpty {
+            page = min(page + 1, totalPage)
+        }
         let entries = 40
         
-        let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
+        print(#function, search, page, totalPage)
+        
+        let httpClient = HTTPNetworkClient(host: "api.web3modal.com", session: URLSession(configuration: .ephemeral))
         let response = try await httpClient.request(
             GetWalletsResponse.self,
             at: Web3ModalAPI.getWallets(
                 params: .init(
-                    page: page,
-                    entries: entries,
+                    page: search.isEmpty ? page : 1,
+                    entries: search.isEmpty ? entries : 100,
+                    search: search,
                     projectId: Web3Modal.config.projectId,
                     metadata: Web3Modal.config.metadata,
                     recommendedIds: Web3Modal.config.recommendedWalletIds,
@@ -37,19 +48,30 @@ final class Web3ModalInteractor: ObservableObject {
     
         try await fetchWalletImages(for: response.data)
         
-        totalEntries = response.count
-        totalPage = Int(ceil(Double(response.count) / Double(entries)))
-        
         DispatchQueue.main.async {
-            self.store.wallets.append(contentsOf: response.data)
+            if !search.isEmpty {
+                self.store.searchedWallets = response.data
+            } else {
+                self.store.searchedWallets = []
+                self.store.wallets.append(contentsOf: response.data)
+                self.totalEntries = response.count
+                self.totalPage = Int(ceil(Double(response.count) / Double(entries)))
+            }
+            
+            self.isLoading = false
         }
     }
     
     func fetchWalletImages(for wallets: [Wallet]) async throws {
-        
         var walletImages: [String: UIImage] = [:]
         
-        await wallets.asyncForEach { wallet in
+        try await wallets.concurrentMap { wallet in
+            
+            guard !self.store.walletImages.contains(where: { key, _ in
+                key == wallet.imageId
+            }) else {
+                return ("", UIImage?.none)
+            }
             
             let url = URL(string: "https://api.web3modal.com/getWalletImage/\(wallet.imageId)")!
             var request = URLRequest(url: url)
@@ -59,15 +81,25 @@ final class Web3ModalInteractor: ObservableObject {
             request.setValue("ios-3.0.0-alpha.0", forHTTPHeaderField: "x-sdk-version")
             
             do {
-                let (data, _) = try await URLSession.shared.data(for: request)
-                walletImages[wallet.imageId] = UIImage(data: data)
+                let (data, _) = try await URLSession(configuration: .ephemeral).data(for: request)
+                return (wallet.imageId, UIImage(data: data))
             } catch {
                 print(error.localizedDescription)
             }
+            
+            return ("", UIImage?.none)
+        }
+        .forEach { key, value in
+            
+            if value == nil {
+                return
+            }
+            
+            walletImages[key] = value
         }
         
-        DispatchQueue.main.async {
-            self.store.walletImages.merge(walletImages) { current, new in
+        DispatchQueue.main.async { [walletImages] in
+            self.store.walletImages.merge(walletImages) { _, new in
                 new
             }
         }
@@ -99,6 +131,32 @@ extension Sequence {
     ) async rethrows {
         for element in self {
             try await operation(element)
+        }
+    }
+    
+    func asyncMap<T>(
+           _ transform: (Element) async throws -> T
+       ) async rethrows -> [T] {
+           var values = [T]()
+
+           for element in self {
+               try await values.append(transform(element))
+           }
+
+           return values
+       }
+    
+    func concurrentMap<T>(
+        _ transform: @escaping (Element) async throws -> T
+    ) async throws -> [T] {
+        let tasks = map { element in
+            Task {
+                try await transform(element)
+            }
+        }
+
+        return try await tasks.asyncMap { task in
+            try await task.value
         }
     }
 }
