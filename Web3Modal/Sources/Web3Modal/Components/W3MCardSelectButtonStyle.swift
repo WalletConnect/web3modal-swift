@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct W3MCardSelectStyle: ButtonStyle {
+struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
     enum Variant {
         case wallet
         case network
@@ -9,44 +9,40 @@ struct W3MCardSelectStyle: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
 
     let variant: Variant
-    var imageUrl: URL?
-    var image: Image?
 
+    var imageContent: () -> ImageContent
     var isPressedOverride: Bool?
-    var isLoadingOverride: Bool?
 
-    @State var isLoading = true
+    @Binding var isLoading: Bool
 
-    init(variant: Variant, imageUrl: URL) {
+    init(
+        variant: Variant,
+        @ViewBuilder imageContent: @escaping () -> ImageContent,
+        isLoading: Binding<Bool>
+    ) {
         self.variant = variant
-        self.imageUrl = imageUrl
-    }
-
-    init(variant: Variant, image: Image) {
-        self.variant = variant
-        self.image = image
+        self.imageContent = imageContent
+        self._isLoading = isLoading
     }
 
     #if DEBUG
         init(
             variant: Variant,
-            imageUrl: URL? = nil,
-            image: Image? = nil,
+            @ViewBuilder imageContent: @escaping () -> ImageContent,
             isPressedOverride: Bool? = nil,
-            isLoadingOverride: Bool? = nil
+            isLoading: Binding<Bool>
         ) {
             self.variant = variant
-            self.imageUrl = imageUrl
-            self.image = image
+            self.imageContent = imageContent
             self.isPressedOverride = isPressedOverride
-            self.isLoadingOverride = isLoadingOverride
+            self._isLoading = isLoading
         }
     #endif
 
     func makeBody(configuration: Configuration) -> some View {
         VStack(spacing: Spacing.xs) {
             imageComponent()
-                
+
             configuration.label
                 .font(.tiny500)
                 .foregroundColor((isPressedOverride ?? configuration.isPressed) ? .Blue100 : .Foreground100)
@@ -70,52 +66,33 @@ struct W3MCardSelectStyle: ButtonStyle {
 
     @ViewBuilder
     func imageComponent() -> some View {
-        VStack {
-            if let image {
-                image
-                    .resizable()
-                    .onAppear {
-                        isLoading = isLoadingOverride ?? false
-                    }
-            } else {
-                AsyncImage(url: isLoadingOverride != true ? imageUrl : nil) { image in
-                    image
-                        .resizable()
-                } placeholder: {
-                    Color.clear.frame(maxWidth: .infinity)
-                        .modifier(ShimmerBackground())
+        imageContent()
+            .frame(width: 56, height: 56)
+            .saturation(isEnabled ? 1 : 0)
+            .opacity(isEnabled ? 1 : 0.5)
+            .transform {
+                switch variant {
+                case .network:
+                    $0
+                        .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
+                case .wallet:
+                    $0
+                        .clipShape(RectanglePath())
+                        .clipShape(RoundedRectangle(cornerRadius: Radius.xs))
                 }
             }
-        }
-        .frame(width: 56, height: 56)
-        .saturation(isEnabled ? 1 : 0)
-        .opacity(isEnabled ? 1 : 0.5)
-        .onAppear {
-            isLoading = isLoadingOverride ?? true
-        }
-        .transform {
-            switch variant {
-            case .network:
-                $0
-                    .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
-            case .wallet:
-                $0
-                    .clipShape(RectanglePath())
-                    .clipShape(RoundedRectangle(cornerRadius: Radius.xs))
+            .overlay {
+                switch variant {
+                case .network:
+                    Polygon(count: 6, relativeCornerRadius: 0.25)
+                        .stroke(.Overgray010, lineWidth: 1)
+                        .background(Polygon(count: 6, relativeCornerRadius: 0.25).fill(.Overgray005).opacity(isLoading ? 1 : 0))
+                case .wallet:
+                    RoundedRectangle(cornerRadius: Radius.xs)
+                        .strokeBorder(.Overgray010, lineWidth: 1)
+                        .background(RoundedRectangle(cornerRadius: Radius.xs).fill(.Overgray005).opacity(isLoading ? 1 : 0))
+                }
             }
-        }
-        .overlay {
-            switch variant {
-            case .network:
-                Polygon(count: 6, relativeCornerRadius: 0.25)
-                    .stroke(.Overgray010, lineWidth: 1)
-                    .background(Polygon(count: 6, relativeCornerRadius: 0.25).fill(.Overgray005).opacity(isLoading ? 1 : 0))
-            case .wallet:
-                RoundedRectangle(cornerRadius: Radius.xs)
-                    .strokeBorder(.Overgray010, lineWidth: 1)
-                    .background(RoundedRectangle(cornerRadius: Radius.xs).fill(.Overgray005).opacity(isLoading ? 1 : 0))
-            }
-        }
     }
 }
 
@@ -146,7 +123,8 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        image: Image("MockWalletImage", bundle: .module)
+                        imageContent: { Image("MockWalletImage", bundle: .module) },
+                        isLoading: .constant(false)
                     ))
 
                     Button(action: {}, label: {
@@ -154,7 +132,8 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        image: Image("MockWalletImage", bundle: .module)
+                        imageContent: { Image("MockWalletImage", bundle: .module) },
+                        isLoading: .constant(false)
                     ))
                     .disabled(true)
 
@@ -163,9 +142,9 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        image: Image("MockWalletImage", bundle: .module),
+                        imageContent: { Image("MockWalletImage", bundle: .module) },
                         isPressedOverride: true,
-                        isLoadingOverride: false
+                        isLoading: .constant(false)
                     ))
 
                     Button(action: {}, label: {
@@ -173,8 +152,9 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
+                        imageContent: { Image("MockWalletImage", bundle: .module) },
                         isPressedOverride: false,
-                        isLoadingOverride: true
+                        isLoading: .constant(false)
                     ))
                 }
 
@@ -184,14 +164,16 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        image: Image("MockChainImage", bundle: .module)
+                        imageContent: { Image("MockChainImage", bundle: .module) },
+                        isLoading: .constant(false)
                     ))
                     Button(action: {}, label: {
                         Text("Polygon")
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        image: Image("MockChainImage", bundle: .module)
+                        imageContent: { Image("MockChainImage", bundle: .module) },
+                        isLoading: .constant(false)
                     ))
                     .disabled(true)
 
@@ -200,9 +182,9 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        image: Image("MockChainImage", bundle: .module),
+                        imageContent: { Image("MockChainImage", bundle: .module) },
                         isPressedOverride: true,
-                        isLoadingOverride: false
+                        isLoading: .constant(false)
                     ))
 
                     Button(action: {}, label: {
@@ -210,8 +192,9 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
+                        imageContent: { Image("MockChainImage", bundle: .module) },
                         isPressedOverride: false,
-                        isLoadingOverride: true
+                        isLoading: .constant(true)
                     ))
                 }
             }
