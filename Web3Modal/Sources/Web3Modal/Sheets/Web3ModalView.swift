@@ -3,14 +3,14 @@ import SwiftUI
 struct Web3ModalView: View {
     @StateObject var router: Router
     @StateObject var store: Store
-    @StateObject var interactor: Web3ModalInteractor
+    @StateObject var interactor: W3MAPIInteractor
     
     init() {
         let store = Store()
         _router = StateObject(wrappedValue: Router())
         _store = StateObject(wrappedValue: store)
         _interactor = StateObject(
-            wrappedValue: Web3ModalInteractor(store: store)
+            wrappedValue: W3MAPIInteractor(store: store)
         )
     }
     

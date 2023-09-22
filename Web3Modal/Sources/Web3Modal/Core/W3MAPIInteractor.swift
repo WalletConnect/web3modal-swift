@@ -1,9 +1,7 @@
-import Combine
-import Foundation
 import UIKit
-import WalletConnectSign
+import HTTPClient
 
-final class Web3ModalInteractor: ObservableObject {
+final class W3MAPIInteractor: ObservableObject {
     @Published var isLoading: Bool = false
     
     var store: Store
@@ -14,9 +12,6 @@ final class Web3ModalInteractor: ObservableObject {
     init(store: Store) {
         self.store = store
     }
-    
-    lazy var sessionSettlePublisher: AnyPublisher<Session, Never> = Web3Modal.instance.sessionSettlePublisher
-    lazy var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never> = Web3Modal.instance.sessionRejectionPublisher
     
     func getWallets(search: String = "") async throws {
         DispatchQueue.main.async {
@@ -90,7 +85,6 @@ final class Web3ModalInteractor: ObservableObject {
             return ("", UIImage?.none)
         }
         .forEach { key, value in
-            
             if value == nil {
                 return
             }
@@ -102,61 +96,6 @@ final class Web3ModalInteractor: ObservableObject {
             self.store.walletImages.merge(walletImages) { _, new in
                 new
             }
-        }
-    }
-    
-    func createPairingAndConnect() async throws -> WalletConnectURI? {
-        try await Web3Modal.instance.connect(topic: nil)
-    }
-}
-
-extension Sequence {
-    func concurrentForEach(
-        _ operation: @escaping (Element) async -> Void
-    ) async {
-        // A task group automatically waits for all of its
-        // sub-tasks to complete, while also performing those
-        // tasks in parallel:
-        await withTaskGroup(of: Void.self) { group in
-            for element in self {
-                group.addTask {
-                    await operation(element)
-                }
-            }
-        }
-    }
-    
-    func asyncForEach(
-        _ operation: (Element) async throws -> Void
-    ) async rethrows {
-        for element in self {
-            try await operation(element)
-        }
-    }
-    
-    func asyncMap<T>(
-           _ transform: (Element) async throws -> T
-       ) async rethrows -> [T] {
-           var values = [T]()
-
-           for element in self {
-               try await values.append(transform(element))
-           }
-
-           return values
-       }
-    
-    func concurrentMap<T>(
-        _ transform: @escaping (Element) async throws -> T
-    ) async throws -> [T] {
-        let tasks = map { element in
-            Task {
-                try await transform(element)
-            }
-        }
-
-        return try await tasks.asyncMap { task in
-            try await task.value
         }
     }
 }
