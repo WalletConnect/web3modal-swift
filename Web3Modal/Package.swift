@@ -20,6 +20,7 @@ let package = Package(
         .package(
             url: "https://github.com/WalletConnect/WalletConnectSwiftV2", branch: "remove-wcm"
         ),
+        .package(url: "https://github.com/WalletConnect/QRCode", from: "14.3.1"),
         .package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.10.0"
@@ -29,6 +30,7 @@ let package = Package(
         .target(
             name: "Web3Modal",
             dependencies: [
+                "QRCode",
                 .product(
                     name: "WalletConnect",
                     package: "WalletConnectSwiftV2"

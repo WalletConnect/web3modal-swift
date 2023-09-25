@@ -14,6 +14,7 @@ extension Image {
     static var imageNoun: Image { Image(#function, bundle: .module) }
     static var imageProfile: Image { Image(#function, bundle: .module) }
     static var imageSystem: Image { Image(#function, bundle: .module) }
+    static var imageLogo: Image { Image(#function, bundle: .module) }
     static var optionBrowser: Image { Image(#function, bundle: .module) }
     static var optionExtension: Image { Image(#function, bundle: .module) }
     static var optionQrCode: Image { Image(#function, bundle: .module) }

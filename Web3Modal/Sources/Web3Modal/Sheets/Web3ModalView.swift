@@ -16,13 +16,14 @@ struct Web3ModalView: View {
             case .allWallets:
                 allWallets()
             case .qr:
-                EmptyView()
+                ConnectWithQRCode(uri: ConnectWithQRCode_Previews.stubUri)
             case .whatIsAWallet:
                 EmptyView()
             case .walletDetail:
                 EmptyView()
             }
         }
+        .environmentObject(router)
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
     }
@@ -96,11 +97,22 @@ struct Web3ModalView: View {
     
     private func content() -> some View {
         VStack {
-            Button(action: {}, label: {
-                Text("Rainbow")
+            Button(action: {
+                router.subpage = .qr
+            }, label: {
+                Text("WalletConnect")
             })
             .buttonStyle(W3MListSelectStyle(
-                image: Image("MockWalletImage", bundle: .module),
+                imageContent: {
+                    ZStack {
+                        Color.Blue100
+                        
+                        Image.imageLogo
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .foregroundColor(.white)
+                    }
+                },
                 tag: W3MTag(title: "QR Code", variant: .main)
             ))
                 
@@ -108,7 +120,7 @@ struct Web3ModalView: View {
                 Text("Rainbow")
             })
             .buttonStyle(W3MListSelectStyle(
-                image: Image("MockWalletImage", bundle: .module)
+                imageContent: { Image("MockWalletImage", bundle: .module).resizable() }
             ))
                 
             Button(action: {
@@ -117,12 +129,14 @@ struct Web3ModalView: View {
                 Text("All wallets")
             })
             .buttonStyle(W3MListSelectStyle(
-                allWalletsImage: W3MAllWalletsImage(images: [
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
-                ])
+                imageContent: {
+                    W3MAllWalletsImage(images: [
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
+                    ])
+                }
             ))
         }
         .padding(Spacing.s)
