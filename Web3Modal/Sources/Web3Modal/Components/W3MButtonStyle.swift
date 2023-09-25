@@ -75,7 +75,6 @@ struct W3MButtonStyle: ButtonStyle {
             
             if let rightIcon {
                 rightIcon
-                    .imageScale(.small)
                     .foregroundColor(textColor)
             }
         }
