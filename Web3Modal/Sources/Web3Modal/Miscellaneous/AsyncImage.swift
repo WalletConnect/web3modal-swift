@@ -7,11 +7,24 @@ struct AsyncImage<Content>: View where Content: View {
         @Published var data: Data? = nil
 
         private var cancellables = Set<AnyCancellable>()
+        private var url: URL?
 
-        init(_ url: URL?) {
-            guard let url = url else { return }
-
-            let request = URLRequest(url: url)
+        init() {}
+        
+        func setUrl(_ url: URL?) {
+            guard
+                let url = url,
+                url != self.url
+            else { return }
+            
+            self.url = url
+            
+            var request = URLRequest(url: url)
+            
+            request.setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")
+            request.setValue("w3m", forHTTPHeaderField: "x-sdk-type")
+            request.setValue("ios-3.0.0-alpha.0", forHTTPHeaderField: "x-sdk-version")
+            
             URLSession.shared.dataTaskPublisher(for: request)
                 .map(\.data)
                 .map { $0 as Data? }
@@ -26,12 +39,12 @@ struct AsyncImage<Content>: View where Content: View {
         }
     }
 
-    @ObservedObject private var imageLoader: Loader
+    @ObservedObject private var imageLoader: Loader = Loader()
     private let conditionalContent: ((Image?) -> Content)?
 
     init(url: URL?) where Content == Image {
-        self.imageLoader = Loader(url)
         self.conditionalContent = nil
+        imageLoader.setUrl(url)
     }
 
     init<I, P>(
@@ -39,7 +52,6 @@ struct AsyncImage<Content>: View where Content: View {
         @ViewBuilder content: @escaping (Image) -> I,
         @ViewBuilder placeholder: @escaping () -> P
     ) where Content == _ConditionalContent<I, P>, I: View, P: View {
-        self.imageLoader = Loader(url)
         self.conditionalContent = { image in
             if let image = image {
                 return ViewBuilder.buildEither(first: content(image))
@@ -47,6 +59,7 @@ struct AsyncImage<Content>: View where Content: View {
                 return ViewBuilder.buildEither(second: placeholder())
             }
         }
+        imageLoader.setUrl(url)
     }
 
     private var image: Image? {

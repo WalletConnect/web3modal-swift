@@ -15,7 +15,13 @@ struct GetAWalletView: View {
                     Text(wallet.name)
                 })
                 .buttonStyle(W3MListSelectStyle(
-                    imageUrl: URL(string: "https://api.web3modal.com/getWalletImage/\(wallet.imageId)")
+                    imageContent: {
+                        AsyncImage(url: URL(string: "https://api.web3modal.com/getWalletImage/\(wallet.imageId)")) { image in 
+                            image.resizable()
+                        } placeholder: {
+                            Image.Wallet
+                        }
+                    }
                 ))
             }
                 
@@ -25,12 +31,14 @@ struct GetAWalletView: View {
                 Text("Explorer all")
             })
             .buttonStyle(W3MListSelectStyle(
-                allWalletsImage: W3MAllWalletsImage(images: [
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
-                    .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
-                ])
+                imageContent: {
+                    W3MAllWalletsImage(images: [
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
+                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
+                    ])
+                }
             ))
         }
         .padding(Spacing.s)
