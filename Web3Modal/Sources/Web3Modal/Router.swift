@@ -7,7 +7,11 @@ class Router: ObservableObject {
     
     @Published var currentRoute: Route = .init()
     
-    init() {
+    private let uiApplicationWrapper: UIApplicationWrapper
+    
+    init(uiApplicationWrapper: UIApplicationWrapper = .live) {
+        self.uiApplicationWrapper = uiApplicationWrapper
+        
         $currentRoute
             .receive(on: DispatchQueue.main)
             .removeDuplicates()
@@ -31,6 +35,10 @@ class Router: ObservableObject {
         }
     }
     
+    func navigateToExternalLink(_ url: URL) {
+        uiApplicationWrapper.openURL(url, nil)
+    }
+    
     func resetRoute() {
         withAnimation {
             currentRoute = Route()
@@ -43,12 +51,13 @@ class Router: ObservableObject {
 struct Route: Equatable {
 
     var subpage: Subpage = .connectWallet
-    enum Subpage: String, Equatable {
+    enum Subpage: Equatable {
         case connectWallet
         case qr
         case allWallets
         case whatIsAWallet
-        case walletDetail
+        case walletDetail(Wallet)
+        case getWallet
     }
 }
 
