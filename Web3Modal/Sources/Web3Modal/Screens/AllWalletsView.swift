@@ -16,11 +16,8 @@ struct AllWalletsView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                TextField("Search wallet", text: $searchTerm)
-                    .padding(Spacing.xs)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 12).stroke(.GrayGlass005, lineWidth: 1.0)
-                    }
+                W3MTextField("Search wallet", text: $searchTerm)
+                    
                 qrButton()
             }
             .padding(.horizontal)
