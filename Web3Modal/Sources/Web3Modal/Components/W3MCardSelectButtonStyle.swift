@@ -56,6 +56,13 @@ struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                 }
                 .padding(.horizontal, Spacing.xs)
         }
+        .transform {
+            if isLoading {
+                $0.modifier(ShimmerBackground())
+            } else {
+                $0
+            }
+        }
         .opacity(isEnabled ? 1 : 0.5)
         .padding(.top, Spacing.xs)
         .padding(.bottom, Spacing.xxs)
@@ -73,12 +80,9 @@ struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
             .transform {
                 switch variant {
                 case .network:
-                    $0
-                        .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
+                    $0.clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
                 case .wallet:
-                    $0
-                        .clipShape(RectanglePath())
-                        .clipShape(RoundedRectangle(cornerRadius: Radius.xs))
+                    $0.clipShape(RoundedRectangle(cornerRadius: Radius.xs))
                 }
             }
             .overlay {
@@ -93,21 +97,6 @@ struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                         .background(RoundedRectangle(cornerRadius: Radius.xs).fill(.Overgray005).opacity(isLoading ? 1 : 0))
                 }
             }
-    }
-}
-
-private struct RectanglePath: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-
-        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
-
-        path.closeSubpath()
-
-        return path
     }
 }
 

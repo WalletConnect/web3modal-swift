@@ -26,64 +26,14 @@ struct AllWalletsView: View {
             .padding(.horizontal)
             .padding(.vertical, Spacing.xs)
             
-            let collumns = [
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-            ]
             
-            if interactor.isLoading, isSearching {
-                ZStack(alignment: .center) {
-                    Spacer().frame(maxWidth: .infinity, maxHeight: .infinity)
-                        
-                    ProgressView()
-                }
-                .background(.red)
+            if isSearching {
+                searchGrid()
             } else {
-                ScrollView {
-                    LazyVGrid(columns: collumns) {
-                        ForEach(isSearching ? store.searchedWallets : store.wallets, id: \.self) { wallet in
-                            Button(action: {
-                                router.subpage = .walletDetail(wallet)
-                            }, label: {
-                                Text(wallet.name)
-                            })
-                            .buttonStyle(W3MCardSelectStyle(
-                                variant: .wallet,
-                                imageContent: {
-                                    Image(
-                                        uiImage: store.walletImages[wallet.imageId] ?? UIImage()
-                                    )
-                                    .resizable()
-                                },
-                                isLoading: .constant(false)
-                            ))
-                        }
-                        
-                        if interactor.isLoading || (interactor.page < interactor.totalPage && !isSearching) {
-                            ForEach(1 ... 4, id: \.self) { _ in
-                                Button(action: {}, label: { Text("Wallet") })
-                                    .buttonStyle(W3MCardSelectStyle(
-                                        variant: .wallet,
-                                        imageContent: {
-                                            //                                        Color.Overgray005
-                                            Color.clear.modifier(ShimmerBackground())
-                                        },
-                                        isLoading: .constant(true)
-                                    ))
-                            }
-                            .onAppear {
-                                if !interactor.isLoading, !isSearching { fetchWallets() }
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.bottom, 30)
-                    .animation(.default)
-                }
+                regularGrid()
             }
         }
+        .animation(.default, value: isSearching)
         .frame(maxHeight: 600)
         .onChange(of: searchTerm) { searchTerm in
             searchTermPublisher.send(searchTerm)
@@ -99,6 +49,84 @@ struct AllWalletsView: View {
             store.searchedWallets = []
             fetchWallets(search: debouncedSearchTerm)
         }
+    }
+    
+    @ViewBuilder
+    private func regularGrid() -> some View {
+        let collumns = Array(repeating: GridItem(.flexible()), count: 4)
+        
+        ScrollView {
+            LazyVGrid(columns: collumns) {
+                ForEach(store.wallets, id: \.self) { wallet in
+                    gridElement(for: wallet)
+                }
+                
+                if interactor.isLoading || interactor.page < interactor.totalPage {
+                    ForEach(1 ... 8, id: \.self) { _ in
+                        Button(action: {}, label: { Text("Wallet") })
+                            .buttonStyle(W3MCardSelectStyle(
+                                variant: .wallet,
+                                imageContent: {
+                                    Color.Overgray005.modifier(ShimmerBackground())
+                                },
+                                isLoading: $interactor.isLoading
+                            ))
+                    }
+                    .onAppear {
+                        if !interactor.isLoading { fetchWallets() }
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.bottom, 30)
+        }
+    }
+    
+    @ViewBuilder
+    private func searchGrid() -> some View {
+        Group {
+            
+                ZStack(alignment: .center) {
+                    Spacer().frame(maxWidth: .infinity, maxHeight: .infinity)
+                    
+                    ProgressView()
+                        .opacity(interactor.isLoading ? 1 : 0)
+                    
+                    let collumns = Array(repeating: GridItem(.flexible()), count: 4)
+                    
+                    ScrollView {
+                        LazyVGrid(columns: collumns) {
+                            ForEach(store.searchedWallets, id: \.self) { wallet in
+                                gridElement(for: wallet)
+                            }
+                        }
+                        .animation(nil, value: store.searchedWallets)
+                        .padding(.horizontal)
+                        .padding(.bottom, 30)
+                    }
+                    .opacity(interactor.isLoading ? 0 : 1)
+                }
+                
+        }
+        .animation(.default, value: interactor.isLoading)
+    }
+    
+    private func gridElement(for wallet: Wallet) -> some View {
+        Button(action: {
+            router.subpage = .walletDetail(wallet)
+        }, label: {
+            Text(wallet.name)
+        })
+        .buttonStyle(W3MCardSelectStyle(
+            variant: .wallet,
+            imageContent: {
+                Image(
+                    uiImage: store.walletImages[wallet.imageId] ?? UIImage()
+                )
+                .resizable()
+            },
+            isLoading: .constant(false)
+        ))
     }
     
     private func fetchWallets(search: String = "") {

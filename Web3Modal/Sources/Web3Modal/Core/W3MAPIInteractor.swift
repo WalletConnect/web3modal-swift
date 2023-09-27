@@ -4,7 +4,9 @@ import HTTPClient
 final class W3MAPIInteractor: ObservableObject {
     @Published var isLoading: Bool = false
     
-    var store: Store
+    private let store: Store
+    private let entriesPerPage: Int = 40
+    
     var page: Int = 0
     var totalPage: Int = .max
     var totalEntries: Int = 0
@@ -21,9 +23,6 @@ final class W3MAPIInteractor: ObservableObject {
         if search.isEmpty {
             page = min(page + 1, totalPage)
         }
-        let entries = 40
-        
-        print(#function, search, page, totalPage)
         
         let httpClient = HTTPNetworkClient(host: "api.web3modal.com", session: URLSession(configuration: .ephemeral))
         let response = try await httpClient.request(
@@ -31,7 +30,7 @@ final class W3MAPIInteractor: ObservableObject {
             at: Web3ModalAPI.getWallets(
                 params: .init(
                     page: search.isEmpty ? page : 1,
-                    entries: search.isEmpty ? entries : 100,
+                    entries: search.isEmpty ? entriesPerPage : 100,
                     search: search,
                     projectId: Web3Modal.config.projectId,
                     metadata: Web3Modal.config.metadata,
@@ -43,14 +42,14 @@ final class W3MAPIInteractor: ObservableObject {
     
         try await fetchWalletImages(for: response.data)
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [self] in
             if !search.isEmpty {
                 self.store.searchedWallets = response.data
             } else {
                 self.store.searchedWallets = []
                 self.store.wallets.append(contentsOf: response.data)
                 self.totalEntries = response.count
-                self.totalPage = Int(ceil(Double(response.count) / Double(entries)))
+                self.totalPage = Int(ceil(Double(response.count) / Double(entriesPerPage)))
             }
             
             self.isLoading = false
