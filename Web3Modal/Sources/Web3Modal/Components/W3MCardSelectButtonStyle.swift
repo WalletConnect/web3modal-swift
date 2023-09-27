@@ -123,7 +123,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageContent: { Image("MockWalletImage", bundle: .module) },
+                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
                         isLoading: .constant(false)
                     ))
 
@@ -132,7 +132,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageContent: { Image("MockWalletImage", bundle: .module) },
+                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
                         isLoading: .constant(false)
                     ))
                     .disabled(true)
@@ -142,7 +142,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageContent: { Image("MockWalletImage", bundle: .module) },
+                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
                         isPressedOverride: true,
                         isLoading: .constant(false)
                     ))
@@ -152,9 +152,9 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageContent: { Image("MockWalletImage", bundle: .module) },
+                        imageContent: { Color.Overgray005 },
                         isPressedOverride: false,
-                        isLoading: .constant(false)
+                        isLoading: .constant(true)
                     ))
                 }
 
@@ -164,7 +164,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageContent: { Image("MockChainImage", bundle: .module) },
+                        imageContent: { Image("MockChainImage", bundle: .module).resizable() },
                         isLoading: .constant(false)
                     ))
                     Button(action: {}, label: {
@@ -172,7 +172,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageContent: { Image("MockChainImage", bundle: .module) },
+                        imageContent: { Image("MockChainImage", bundle: .module).resizable() },
                         isLoading: .constant(false)
                     ))
                     .disabled(true)
@@ -182,7 +182,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageContent: { Image("MockChainImage", bundle: .module) },
+                        imageContent: { Image("MockChainImage", bundle: .module).resizable() },
                         isPressedOverride: true,
                         isLoading: .constant(false)
                     ))
@@ -192,7 +192,7 @@ private struct RectanglePath: Shape {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .network,
-                        imageContent: { Image("MockChainImage", bundle: .module) },
+                        imageContent: { Color.Overgray005 },
                         isPressedOverride: false,
                         isLoading: .constant(true)
                     ))
