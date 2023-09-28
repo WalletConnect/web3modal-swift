@@ -144,7 +144,7 @@ public struct SessionParams {
     }
     
     public static let `default`: Self = {
-        let methods: Set<String> = ["eth_sendTransaction", "eth_sign"]
+        let methods: Set<String> = ["eth_sendTransaction", "eth_sign", "personal_sign", "eth_signTypedData"]
         let events: Set<String> = ["chainChanged", "accountsChanged"]
         let blockchains: Set<Blockchain> = [Blockchain("eip155:1")!]
         let namespaces: [String: ProposalNamespace] = [
@@ -156,8 +156,8 @@ public struct SessionParams {
         ]
        
         return SessionParams(
-            requiredNamespaces: namespaces,
-            optionalNamespaces: nil,
+            requiredNamespaces: [:],
+            optionalNamespaces: namespaces,
             sessionProperties: nil
         )
     }()

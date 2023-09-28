@@ -1,52 +1,47 @@
 import SwiftUI
 
 struct Web3ModalView: View {
-    @StateObject var router: Router
-    @StateObject var store: Store
-    @StateObject var interactor: W3MAPIInteractor
-    
-    init() {
-        let store = Store()
-        _router = StateObject(wrappedValue: Router())
-        _store = StateObject(wrappedValue: store)
-        _interactor = StateObject(
-            wrappedValue: W3MAPIInteractor(store: store)
-        )
-    }
-    
+    @ObservedObject var viewModel: Web3ModalViewModel
+
     var body: some View {
         VStack(spacing: 0) {
             modalHeader()
                 
             Divider()
                 
-            switch router.currentRoute.subpage {
-            case .connectWallet:
-                content()
-            case .allWallets:
-                AllWalletsView()
-            case .qr:
-                ConnectWithQRCode(uri: ConnectWithQRCode_Previews.stubUri)
-            case .whatIsAWallet:
-                WhatIsWalletView()
-            case .walletDetail:
-                EmptyView()
-            case .getWallet:
-                GetAWalletView(
-                    wallets: Wallet.stubList
-                )
-            }
+            routes()
         }
-        .environmentObject(router)
-        .environmentObject(store)
-        .environmentObject(interactor)
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
     }
     
+    @ViewBuilder
+    private func routes() -> some View {
+        switch viewModel.router.currentRoute as? Router.ConnectingSubpage {
+        case .none:
+            EmptyView()
+        case .connectWallet:
+            content()
+        case .allWallets:
+            AllWalletsView()
+        case .qr:
+            ConnectWithQRCode()
+        case .whatIsAWallet:
+            WhatIsWalletView()
+        case .walletDetail:
+            EmptyView()
+        case .getWallet:
+            GetAWalletView(
+                wallets: Wallet.stubList
+            )
+        }
+    }
+    
     private func modalHeader() -> some View {
         HStack(spacing: 0) {
-            switch router.subpage {
+            switch viewModel.router.currentRoute as? Router.ConnectingSubpage {
+            case .none:
+                EmptyView()
             case .connectWallet:
                 helpButton()
             default:
@@ -55,8 +50,10 @@ struct Web3ModalView: View {
             
             Spacer()
             
-            Text(router.subpage.title)
-                .font(.paragraph700)
+            (viewModel.router.currentRoute as? Router.ConnectingSubpage)?.title.map { title in
+                Text(title)
+                    .font(.paragraph700)
+            }
             
             Spacer()
             
@@ -76,7 +73,7 @@ struct Web3ModalView: View {
     private func content() -> some View {
         VStack {
             Button(action: {
-                router.subpage = .qr
+                viewModel.router.setRoute(Router.ConnectingSubpage.qr)
             }, label: {
                 Text("WalletConnect")
             })
@@ -102,7 +99,7 @@ struct Web3ModalView: View {
             ))
                 
             Button(action: {
-                router.subpage = .allWallets
+                viewModel.router.setRoute(Router.ConnectingSubpage.allWallets)
             }, label: {
                 Text("All wallets")
             })
@@ -123,7 +120,7 @@ struct Web3ModalView: View {
     
     private func helpButton() -> some View {
         Button(action: {
-            router.subpage = .whatIsAWallet
+            viewModel.router.setRoute(Router.ConnectingSubpage.whatIsAWallet)
         }, label: {
             Image.QuestionMarkCircle
         })
@@ -131,7 +128,7 @@ struct Web3ModalView: View {
     
     private func backButton() -> some View {
         Button {
-            router.resetRoute()
+            viewModel.router.goBack()
         } label: {
             Image.LargeBackward
         }
@@ -144,8 +141,8 @@ struct Web3ModalView: View {
     }
 }
 
-extension Route.Subpage {
-    var title: String {
+extension Router.ConnectingSubpage {
+    var title: String? {
         switch self {
         case .connectWallet:
             return "Connect Wallet"
@@ -165,7 +162,14 @@ extension Route.Subpage {
 
 struct Web3ModalView_Previews: PreviewProvider {
     static var previews: some View {
-        Web3ModalView()
+        Web3ModalView(
+            viewModel: .init(
+                router: Router(),
+                store: Store(),
+                w3mApiInteractor: W3MAPIInteractor(store: Store()),
+                signInteractor: SignInteractor(store: Store()),
+                isShown: .constant(true)
+            ))
             .previewLayout(.sizeThatFits)
     }
 }

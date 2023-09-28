@@ -40,7 +40,7 @@ struct WhatIsWalletView: View {
 
             HStack {
                 Button(action: {
-                    router.subpage = .getWallet
+                    router.setRoute(Router.ConnectingSubpage.getWallet)
                 }) {
                     HStack {
                         Image.Wallet

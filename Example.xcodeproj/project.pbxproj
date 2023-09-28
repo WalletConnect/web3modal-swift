@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BCCE42AB0886400A2866C /* ContentView.swift */; };
+		CF8F56102AC58D5600A69DA0 /* WCSocketFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF8F560F2AC58D5600A69DA0 /* WCSocketFactory.swift */; };
 		CFD720782A9CC60600636CAF /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720772A9CC60600636CAF /* ExampleApp.swift */; };
 		CFD7207A2A9CC60600636CAF /* ComponentLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */; };
 		CFD7207C2A9CC60700636CAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFD7207B2A9CC60700636CAF /* Assets.xcassets */; };
@@ -17,6 +18,7 @@
 
 /* Begin PBXFileReference section */
 		CF0BCCE42AB0886400A2866C /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		CF8F560F2AC58D5600A69DA0 /* WCSocketFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WCSocketFactory.swift; sourceTree = "<group>"; };
 		CFD720742A9CC60600636CAF /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFD720772A9CC60600636CAF /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
 		CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentLibraryView.swift; sourceTree = "<group>"; };
@@ -67,6 +69,7 @@
 				CFD7207B2A9CC60700636CAF /* Assets.xcassets */,
 				CFD7207D2A9CC60700636CAF /* Example.entitlements */,
 				CFD7207E2A9CC60700636CAF /* Preview Content */,
+				CF8F560F2AC58D5600A69DA0 /* WCSocketFactory.swift */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -162,6 +165,7 @@
 				CFD7207A2A9CC60600636CAF /* ComponentLibraryView.swift in Sources */,
 				CFD720782A9CC60600636CAF /* ExampleApp.swift in Sources */,
 				CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */,
+				CF8F56102AC58D5600A69DA0 /* WCSocketFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,16 +2,18 @@ import UIKit
 import HTTPClient
 
 final class W3MAPIInteractor: ObservableObject {
+    
     @Published var isLoading: Bool = false
     
     private let store: Store
+    
     private let entriesPerPage: Int = 40
     
     var page: Int = 0
     var totalPage: Int = .max
     var totalEntries: Int = 0
         
-    init(store: Store) {
+    init(store: Store = .shared) {
         self.store = store
     }
     

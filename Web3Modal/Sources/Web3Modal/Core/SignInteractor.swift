@@ -1,12 +1,23 @@
+import Foundation
 import Combine
 import WalletConnectSign
 
-final class SignInteractor: ObservableObject {
+class SignInteractor: ObservableObject {
+    
+    private let store: Store
     
     lazy var sessionSettlePublisher: AnyPublisher<Session, Never> = Web3Modal.instance.sessionSettlePublisher
     lazy var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never> = Web3Modal.instance.sessionRejectionPublisher
     
-    func createPairingAndConnect() async throws -> WalletConnectURI? {
-        try await Web3Modal.instance.connect(topic: nil)
+    init(store: Store = .shared) {
+        self.store = store
+    }
+    
+    func createPairingAndConnect() async throws {
+        let uri = try await Web3Modal.instance.connect(topic: nil)
+        
+        DispatchQueue.main.async {
+            self.store.uri = uri
+        }
     }
 }

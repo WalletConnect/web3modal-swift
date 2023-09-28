@@ -56,12 +56,8 @@ struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                 }
                 .padding(.horizontal, Spacing.xs)
         }
-        .transform {
-            if isLoading {
-                $0.modifier(ShimmerBackground())
-            } else {
-                $0
-            }
+        .if(isLoading) {
+            $0.modifier(ShimmerBackground())
         }
         .opacity(isEnabled ? 1 : 0.5)
         .padding(.top, Spacing.xs)

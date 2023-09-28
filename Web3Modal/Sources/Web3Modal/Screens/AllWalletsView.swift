@@ -110,7 +110,7 @@ struct AllWalletsView: View {
     
     private func gridElement(for wallet: Wallet) -> some View {
         Button(action: {
-            router.subpage = .walletDetail(wallet)
+            router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
         }, label: {
             Text(wallet.name)
         })
@@ -139,7 +139,7 @@ struct AllWalletsView: View {
     
     private func qrButton() -> some View {
         Button {
-            router.subpage = .qr
+            router.setRoute(Router.ConnectingSubpage.qr)
         } label: {
             Image.Qrcode
         }

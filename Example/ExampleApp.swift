@@ -11,6 +11,11 @@ struct ExampleApp: App {
             url: "wallet.connect",
             icons: ["https://avatars.githubusercontent.com/u/37784886"]
         )
+        
+        Networking.configure(
+            projectId: "9bfe94c9cbf74aaa0597094ef561f703",
+            socketFactory: WalletConnectSocketClientFactory()
+        )
 
         Web3Modal.configure(
             projectId: "9bfe94c9cbf74aaa0597094ef561f703",
