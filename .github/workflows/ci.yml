@@ -1,6 +1,9 @@
 name: ci
 
 on:
+  push:
+    branches:
+      - feat/account-screen
   pull_request_target:
     branches:
       - develop
