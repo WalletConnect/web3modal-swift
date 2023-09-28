@@ -1,7 +1,18 @@
 import SwiftUI
 
 struct Web3ModalView: View {
-    @StateObject var router = Router()
+    @StateObject var router: Router
+    @StateObject var store: Store
+    @StateObject var interactor: W3MAPIInteractor
+    
+    init() {
+        let store = Store()
+        _router = StateObject(wrappedValue: Router())
+        _store = StateObject(wrappedValue: store)
+        _interactor = StateObject(
+            wrappedValue: W3MAPIInteractor(store: store)
+        )
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -13,7 +24,7 @@ struct Web3ModalView: View {
             case .connectWallet:
                 content()
             case .allWallets:
-                allWallets()
+                AllWalletsView()
             case .qr:
                 ConnectWithQRCode(uri: ConnectWithQRCode_Previews.stubUri)
             case .whatIsAWallet:
@@ -27,51 +38,10 @@ struct Web3ModalView: View {
             }
         }
         .environmentObject(router)
+        .environmentObject(store)
+        .environmentObject(interactor)
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
-    }
-    
-    @State var searchTerm: String = ""
-    
-    @ViewBuilder
-    private func allWallets() -> some View {
-        VStack(spacing: 0) {
-            HStack {
-                TextField("Search wallet", text: $searchTerm)
-                    .padding(Spacing.xs)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 12).stroke(.GrayGlass005, lineWidth: 1.0)
-                    }
-                qrButton()
-            }
-            .padding(.horizontal)
-            .padding(.vertical, Spacing.xs)
-            
-            let collumns = [
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-            ]
-            
-            ScrollView {
-                LazyVGrid(columns: collumns) {
-                    ForEach(0 ..< 100) { _ in
-                        Button(action: {
-                            router.subpage = .walletDetail(Wallet.stubList.first!)
-                        }, label: {
-                            Text("Wallet")
-                        })
-                        .buttonStyle(W3MCardSelectStyle(
-                            variant: .wallet, image: Image("MockWalletImage", bundle: .module)
-                        ))
-                    }
-                }
-                .padding(.horizontal)
-                .padding(.bottom, 30)
-            }
-            .frame(maxHeight: 400)
-        }
     }
     
     private func modalHeader() -> some View {
@@ -170,14 +140,6 @@ struct Web3ModalView: View {
     private func closeButton() -> some View {
         Button {} label: {
             Image.LargeClose
-        }
-    }
-    
-    private func qrButton() -> some View {
-        Button {
-            router.subpage = .qr
-        } label: {
-            Image.Qrcode
         }
     }
 }
