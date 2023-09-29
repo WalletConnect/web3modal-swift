@@ -8,6 +8,7 @@ struct ModalContainerView: View {
     @StateObject var router: Router
     @StateObject var w3mApiInteractor: W3MAPIInteractor
     @StateObject var signInteractor: SignInteractor
+    @StateObject var blockchainApiInteractor: BlockchainAPIInteractor
     
     init() {
         let router = Router()
@@ -18,6 +19,9 @@ struct ModalContainerView: View {
         )
         _signInteractor = StateObject(
             wrappedValue: SignInteractor(store: Store.shared)
+        )
+        _blockchainApiInteractor = StateObject(
+            wrappedValue: BlockchainAPIInteractor(store: Store.shared)
         )
     }
     
@@ -30,8 +34,9 @@ struct ModalContainerView: View {
                     viewModel: .init(
                         router: router,
                         store: Store.shared,
-                        w3mApiInteractor: W3MAPIInteractor(),
-                        signInteractor: SignInteractor(),
+                        w3mApiInteractor: w3mApiInteractor,
+                        signInteractor: signInteractor,
+                        blockchainApiInteractor: blockchainApiInteractor,
                         isShown: $showModal
                     )
                 )
@@ -41,6 +46,7 @@ struct ModalContainerView: View {
                 .environmentObject(Store.shared)
                 .environmentObject(w3mApiInteractor)
                 .environmentObject(signInteractor)
+                .environmentObject(blockchainApiInteractor)
             }
         }
         .background(

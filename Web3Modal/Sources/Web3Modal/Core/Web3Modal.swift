@@ -29,14 +29,19 @@ public class Web3Modal {
         guard let config = Web3Modal.config else {
             fatalError("Error - you must call Web3Modal.configure(_:) before accessing the shared instance.")
         }
-        return Web3ModalClient(
+        let client = Web3ModalClient(
             signClient: Sign.instance,
             pairingClient: Pair.instance as! (PairingClientProtocol & PairingInteracting & PairingRegisterer)
         )
+        
+        Store.shared.session = client.getSessions().first
+        
+        return client
     }()
     
     struct Config {
         let projectId: String
+        var chainId: String
         var metadata: AppMetadata
         var sessionParams: SessionParams
         
@@ -54,6 +59,7 @@ public class Web3Modal {
     ///   - metadata: App metadata
     public static func configure(
         projectId: String,
+        chainId: String,
         metadata: AppMetadata,
         sessionParams: SessionParams = .default,
         recommendedWalletIds: [String] = [],
@@ -63,6 +69,7 @@ public class Web3Modal {
         Pair.configure(metadata: metadata)
         Web3Modal.config = Web3Modal.Config(
             projectId: projectId,
+            chainId: chainId,
             metadata: metadata,
             sessionParams: sessionParams,
             includeWebWallets: includeWebWallets,
@@ -85,6 +92,8 @@ extension Web3Modal {
             assertionFailure("No controller found for presenting modal")
             return
         }
+        
+        _ = Web3Modal.instance
         
         let modal = Web3ModalSheetController()
         vc.present(modal, animated: true)

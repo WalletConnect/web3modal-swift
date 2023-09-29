@@ -6,6 +6,7 @@ class Web3ModalViewModel: ObservableObject {
     @Published var store: Store
     @Published var w3mApiInteractor: W3MAPIInteractor
     @Published var signInteractor: SignInteractor
+    var blockchainApiInteractor: BlockchainAPIInteractor
 
     var isShown: Binding<Bool>
     
@@ -16,6 +17,7 @@ class Web3ModalViewModel: ObservableObject {
         store: Store,
         w3mApiInteractor: W3MAPIInteractor,
         signInteractor: SignInteractor,
+        blockchainApiInteractor: BlockchainAPIInteractor,
         isShown: Binding<Bool>
     ) {
         self.router = router
@@ -23,6 +25,7 @@ class Web3ModalViewModel: ObservableObject {
         self.store = store
         self.w3mApiInteractor = w3mApiInteractor
         self.signInteractor = signInteractor
+        self.blockchainApiInteractor = blockchainApiInteractor
         
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
@@ -33,6 +36,8 @@ class Web3ModalViewModel: ObservableObject {
                 }
                 router.setRoute(Router.AccountSubpage.profile)
                 store.session = session
+                
+                self.fetchIdentity()
             }
             .store(in: &disposeBag)
         
@@ -47,5 +52,15 @@ class Web3ModalViewModel: ObservableObject {
                 }
             }
             .store(in: &disposeBag)
+    }
+    
+    func fetchIdentity() {
+        Task {
+            do {
+                try await blockchainApiInteractor.getIdentity()
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
 }

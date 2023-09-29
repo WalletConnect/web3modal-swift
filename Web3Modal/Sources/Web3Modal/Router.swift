@@ -10,16 +10,7 @@ class Router: ObservableObject {
     
     init(uiApplicationWrapper: UIApplicationWrapper = .live) {
         self.uiApplicationWrapper = uiApplicationWrapper
-        
-//        $currentRoute
-//            .receive(on: DispatchQueue.main)
-//            .removeDuplicates()
-//            .sink { [weak self] _ in
-//                self?.objectWillChange.send()
-//            }
-//            .store(in: &subscriptions)
     }
-    
     
     func navigateToExternalLink(_ url: URL) {
         uiApplicationWrapper.openURL(url, nil)
@@ -46,8 +37,6 @@ class Router: ObservableObject {
             currentRoute = ConnectingSubpage.connectWallet
         }
     }
-    
-    private var subscriptions = Set<AnyCancellable>()
     
     enum AccountSubpage: SubPage {
         case transactions

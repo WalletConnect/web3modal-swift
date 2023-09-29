@@ -4,12 +4,28 @@ struct Web3ModalView: View {
     @ObservedObject var viewModel: Web3ModalViewModel
 
     var body: some View {
+        
+        
         VStack(spacing: 0) {
-            modalHeader()
+            
+            switch viewModel.router.currentRoute {
+            case _ where viewModel.router.currentRoute as? Router.AccountSubpage != nil:
+                modalHeader()
                 
-            Divider()
-                
-            routes()
+                AccountView()
+            case _ where viewModel.router.currentRoute as? Router.ConnectingSubpage != nil :
+                modalHeader()
+                    
+                Divider()
+                    
+                routes()
+            
+            case _ where viewModel.router.currentRoute as? Router.NetworkSwitchSubpage != nil :
+                Text("ChainSwitch")
+            default:
+                EmptyView()
+            }
+           
         }
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
@@ -168,6 +184,7 @@ struct Web3ModalView_Previews: PreviewProvider {
                 store: Store(),
                 w3mApiInteractor: W3MAPIInteractor(store: Store()),
                 signInteractor: SignInteractor(store: Store()),
+                blockchainApiInteractor: BlockchainAPIInteractor(store: Store()),
                 isShown: .constant(true)
             ))
             .previewLayout(.sizeThatFits)

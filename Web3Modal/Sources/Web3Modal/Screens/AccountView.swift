@@ -1,13 +1,70 @@
 import SwiftUI
 
 struct AccountView: View {
+    
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var blockchainApiInteractor: BlockchainAPIInteractor
+    @EnvironmentObject var store: Store
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            AvatarView()
+            
+            HStack {
+                store.identity?.name.map {
+                    Text($0)
+                        .font(.title600)
+                }
+                
+                Image.LargeCopy
+            }
+            
+            Text("0.527 ETH")
+            
+            Button {
+                router.navigateToExternalLink(URL(string: "www.chain.com/explorer")!)
+            } label: {
+                Text("Block Explorer")
+            }
+            .buttonStyle(W3MButtonStyle(
+                size: .s,
+                variant: .accent,
+                leftIcon: Image.imageBrowser,
+                rightIcon: Image.ExternalLink
+            ))
+
+        }
+        .onAppear {
+            
+            guard store.identity == nil else { return }
+            
+            Task {
+                do {
+                    try await blockchainApiInteractor.getIdentity()
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+        }
     }
 }
 
-struct SwiftUIView_Previews: PreviewProvider {
+struct AccountView_Previews: PreviewProvider {
     static var previews: some View {
         AccountView()
+    }
+}
+
+struct AvatarView: View {
+    var body: some View {
+        VStack {
+            Image.imageNft
+        }
+    }
+}
+
+struct AvatarViewView_Previews: PreviewProvider {
+    static var previews: some View {
+        AvatarView()
     }
 }

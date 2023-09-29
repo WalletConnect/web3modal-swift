@@ -12,7 +12,7 @@ enum BlockchainAPI: HTTPService {
 
     var path: String {
         switch self {
-        case let .getIdentity(params): return "/identity/\(params.address)"
+        case let .getIdentity(params): return "/v1/identity/\(params.address)"
         }
     }
 
