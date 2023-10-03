@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct W3MActionEntryStyle: ButtonStyle {
+public struct W3MActionEntryStyle: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
@@ -11,7 +11,7 @@ struct W3MActionEntryStyle: ButtonStyle {
     
     var isPressedOverride: Bool?
     
-    init(
+    public init(
         leftIcon: Image? = nil,
         rightIcon: Image? = nil
     ) {
@@ -31,7 +31,7 @@ struct W3MActionEntryStyle: ButtonStyle {
     }
     #endif
 
-    func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         HStack(spacing: Spacing.xs) {
             if let leftIcon {
                 leftIcon

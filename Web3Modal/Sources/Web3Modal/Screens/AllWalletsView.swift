@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import Web3ModalUI
 
 struct AllWalletsView: View {
     @EnvironmentObject var router: Router

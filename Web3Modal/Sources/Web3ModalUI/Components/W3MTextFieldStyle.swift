@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct W3MTextField: View {
+public struct W3MTextField: View {
     var titleKey: LocalizedStringKey
     @Binding var text: String
 
@@ -12,7 +12,7 @@ struct W3MTextField: View {
         self._text = text
     }
 
-    var body: some View {
+    public var body: some View {
         HStack(spacing: Spacing.xs) {
             Image.Search
                 .foregroundColor(.Overgray030)

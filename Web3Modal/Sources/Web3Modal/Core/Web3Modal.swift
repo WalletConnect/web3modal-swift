@@ -68,7 +68,7 @@ public class Web3Modal {
             includeWebWallets: includeWebWallets,
             recommendedWalletIds: recommendedWalletIds,
             excludedWalletIds: excludedWalletIds
-        )
+        )        
     }
     
     public static func set(sessionParams: SessionParams) {

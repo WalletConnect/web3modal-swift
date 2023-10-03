@@ -1,6 +1,6 @@
 import SnapshotTesting
 import SwiftUI
-@testable import Web3Modal
+@testable import Web3ModalUI
 import XCTest
 
 final class W3MListSelectSnapshotTests: XCTestCase {

@@ -1,12 +1,16 @@
 import SwiftUI
 
-struct W3MAllWalletsImage: View {
+public struct W3MAllWalletsImage: View {
  
     @ScaledMetric var scale: CGFloat = 1
     
     var images: [WalletImage]
+    
+    public init(images: [WalletImage]) {
+        self.images = images
+    }
 
-    var body: some View {
+    public var body: some View {
         VStack(spacing: 2 * scale) {
             HStack(spacing: 2 * scale) {
                 walletImage(images[safe: 0])
@@ -56,6 +60,31 @@ struct W3MAllWalletsImage: View {
             RoundedRectangle(cornerRadius: Radius.xxxxxs)
                 .strokeBorder(.Overgray010, lineWidth: 1)
         }
+    }
+}
+
+public struct WalletImage {
+    let image: Image?
+    let url: String?
+    let walletName: String?
+    
+    public init(url: String, walletName: String?) {
+        self.image = nil
+        self.url = url
+        self.walletName = walletName
+    }
+    
+    public init(image: Image, walletName: String?) {
+        self.image = image
+        self.url = nil
+        self.walletName = walletName
+    }
+}
+
+private extension Collection {
+    /// Returns the element at the specified index if it is within bounds, otherwise nil.
+    subscript(safe index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
     }
 }
 

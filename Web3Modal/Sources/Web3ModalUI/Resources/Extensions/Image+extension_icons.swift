@@ -1,6 +1,6 @@
 import SwiftUI
 
-extension Image {
+public extension Image {
     static var Add: Image { Image(#function, bundle: .module) }
     static var ArrowDown: Image { Image(#function, bundle: .module) }
     static var ArrowExchange: Image { Image(#function, bundle: .module) }

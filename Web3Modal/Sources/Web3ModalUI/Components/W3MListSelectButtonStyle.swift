@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
+public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
@@ -12,7 +12,7 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
 
     var isPressedOverride: Bool?
 
-    init(
+    public init(
         @ViewBuilder imageContent: @escaping () -> ImageContent,
         tag: W3MTag? = nil
     ) {
@@ -32,7 +32,7 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
         }
     #endif
 
-    func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         let layoutBreakCondition = dynamicTypeSize >= .accessibility2
         
         AdaptiveStack(

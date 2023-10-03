@@ -1,6 +1,6 @@
 import SwiftUI
 
-extension Image {
+public extension Image {
     static var imageBrowser: Image { Image(#function, bundle: .module) }
     static var imageDao: Image { Image(#function, bundle: .module) }
     static var imageDeFi: Image { Image(#function, bundle: .module) }

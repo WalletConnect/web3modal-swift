@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ShimmerBackground: ViewModifier {
+public struct ShimmerBackground: ViewModifier {
     private let animation: Animation
     private let gradient: Gradient
     private let min, max: CGFloat
@@ -45,7 +45,7 @@ struct ShimmerBackground: ViewModifier {
         return isInitialState ? UnitPoint(x: 0, y: 0) : UnitPoint(x: max, y: max)
     }
 
-    func body(content: Content) -> some View {
+    public func body(content: Content) -> some View {
         content
             .mask(LinearGradient(gradient: gradient, startPoint: startPoint, endPoint: endPoint))
             .onAppear {
