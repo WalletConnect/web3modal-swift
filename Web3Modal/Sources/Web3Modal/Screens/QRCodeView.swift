@@ -1,5 +1,6 @@
 import QRCode
 import SwiftUI
+import Web3ModalUI
 
 struct QRCodeView: View {
     let uri: String
@@ -47,7 +48,7 @@ struct QRCodeView: View {
         let uiImage = imageData != nil ?
             UIImage(data: imageData!) :
             UIImage(named: "imageLogo",
-                    in: .module,
+                    in: .UIModule,
                     compatibleWith: nil)?.withColor(UIColor(.Blue100))
         
         if let uiImage = uiImage {
@@ -109,7 +110,7 @@ public struct QRCodeViewPreviewView: View {
         VStack {
             QRCodeView(
                 uri: QRCodeViewPreviewView.stubUri,
-                imageData: UIImage(named: "MockWalletImage", in: .module, compatibleWith: nil)?.pngData()
+                imageData: UIImage(named: "MockWalletImage", in: .UIModule, compatibleWith: nil)?.pngData()
             )
             .previewLayout(.sizeThatFits)
             

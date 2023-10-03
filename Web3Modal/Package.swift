@@ -14,6 +14,10 @@ let package = Package(
         .library(
             name: "Web3Modal",
             targets: ["Web3Modal"]
+        ),
+        .library(
+            name: "Web3ModalUI",
+            targets: ["Web3ModalUI"]
         )
     ],
     dependencies: [
@@ -34,7 +38,14 @@ let package = Package(
                 .product(
                     name: "WalletConnect",
                     package: "WalletConnectSwiftV2"
-                )
+                ),
+                "Web3ModalUI"
+            ]
+        ),
+        .target(
+            name: "Web3ModalUI",
+            resources: [
+                .process("Resources/Assets.xcassets")
             ]
         ),
 
@@ -44,7 +55,14 @@ let package = Package(
             name: "Web3ModalTests",
             dependencies: [
                 "Web3Modal",
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
+            ]
+        ),
+        .testTarget(
+            name: "Web3ModalUITests",
+            dependencies: [
+                "Web3ModalUI",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ]
         )
     ]

@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct W3MTag: View {
-    enum Variant: String, CaseIterable, Identifiable {
+public struct W3MTag: View {
+    public enum Variant: String, CaseIterable, Identifiable {
         case main
         case info
         case success
@@ -48,7 +48,7 @@ struct W3MTag: View {
             }
         }
         
-        var id: Self {
+        public var id: Self {
             return self
         }
     }
@@ -58,7 +58,12 @@ struct W3MTag: View {
     
     @ScaledMetric var scale: CGFloat = 1
 
-    var body: some View {
+    public init(title: String, variant: Variant) {
+        self.title = title
+        self.variant = variant
+    }
+    
+    public var body: some View {
         Text(title)
             .textCase(.uppercase)
             .font(.micro700)

@@ -1,4 +1,5 @@
 import SwiftUI
+import Web3ModalUI
 
 struct GetAWalletView: View {
     let wallets: [Wallet]
@@ -33,10 +34,10 @@ struct GetAWalletView: View {
             .buttonStyle(W3MListSelectStyle(
                 imageContent: {
                     W3MAllWalletsImage(images: [
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
+                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Metamask"),
+                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Trust"),
+                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Safe"),
+                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Rainbow"),
                     ])
                 }
             ))

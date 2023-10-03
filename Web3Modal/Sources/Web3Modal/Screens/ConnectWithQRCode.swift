@@ -1,4 +1,5 @@
 import SwiftUI
+import Web3ModalUI
 
 struct ConnectWithQRCode: View {
     

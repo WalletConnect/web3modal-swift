@@ -1,6 +1,6 @@
 import SwiftUI
 
-extension ShapeStyle where Self == Color {
+public extension ShapeStyle where Self == Color {
     static var Background100: Color { Color(#function, bundle: .module) }
     static var Background125: Color { Color(#function, bundle: .module) }
     static var Background150: Color { Color(#function, bundle: .module) }

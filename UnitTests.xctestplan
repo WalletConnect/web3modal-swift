@@ -18,6 +18,13 @@
         "identifier" : "Web3ModalTests",
         "name" : "Web3ModalTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Web3Modal",
+        "identifier" : "Web3ModalUITests",
+        "name" : "Web3ModalUITests"
+      }
     }
   ],
   "version" : 1

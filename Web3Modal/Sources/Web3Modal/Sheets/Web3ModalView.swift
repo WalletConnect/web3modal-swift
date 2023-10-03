@@ -1,4 +1,5 @@
 import SwiftUI
+import Web3ModalUI
 
 struct Web3ModalView: View {
     @StateObject var router: Router
@@ -12,6 +13,12 @@ struct Web3ModalView: View {
         _interactor = StateObject(
             wrappedValue: W3MAPIInteractor(store: store)
         )
+        
+        ImageLoader.headers = [
+            "x-sdk-type": "w3m",
+            "x-sdk-version": "ios-3.0.0-alpha.0",
+            "x-project-id": Web3Modal.config?.projectId ?? ""
+        ]
     }
     
     var body: some View {
@@ -98,7 +105,7 @@ struct Web3ModalView: View {
                 Text("Rainbow")
             })
             .buttonStyle(W3MListSelectStyle(
-                imageContent: { Image("MockWalletImage", bundle: .module).resizable() }
+                imageContent: { Image("MockWalletImage", bundle: .UIModule).resizable() }
             ))
                 
             Button(action: {
@@ -109,10 +116,10 @@ struct Web3ModalView: View {
             .buttonStyle(W3MListSelectStyle(
                 imageContent: {
                     W3MAllWalletsImage(images: [
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
+                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Metamask"),
+                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Trust"),
+                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Safe"),
+                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Rainbow"),
                     ])
                 }
             ))

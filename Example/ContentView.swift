@@ -1,5 +1,6 @@
 import SwiftUI
 import Web3Modal
+import Web3ModalUI
 
 struct ContentView: View {
     var body: some View {

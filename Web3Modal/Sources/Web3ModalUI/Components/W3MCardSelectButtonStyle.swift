@@ -1,7 +1,7 @@
 import SwiftUI
 
-struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
-    enum Variant {
+public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
+    public enum Variant {
         case wallet
         case network
     }
@@ -15,7 +15,7 @@ struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
 
     @Binding var isLoading: Bool
 
-    init(
+    public init(
         variant: Variant,
         @ViewBuilder imageContent: @escaping () -> ImageContent,
         isLoading: Binding<Bool>
@@ -39,7 +39,7 @@ struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
         }
     #endif
 
-    func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         VStack(spacing: Spacing.xs) {
             imageComponent()
 

@@ -1,6 +1,6 @@
 import SwiftUI
 
-extension Font {
+public extension Font {
     static var large500: Font = .custom("SF Pro Text", size: 20.0).weight(.regular)
     static var large600: Font = .custom("SF Pro Text", size: 20.0).weight(.medium)
     static var large700: Font = .custom("SF Pro Text", size: 20.0).weight(.semibold)

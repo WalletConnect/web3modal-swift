@@ -51,7 +51,10 @@ enum AsyncImagePhase {
     case failure(Error)
 }
 
-private class ImageLoader: ObservableObject {
+public class ImageLoader: ObservableObject {
+    
+    public static var headers: [String: String] = [:]
+    
     private static let session: URLSession = {
         let configuration = URLSessionConfiguration.default
         configuration.requestCachePolicy = .returnCacheDataElseLoad
@@ -84,10 +87,8 @@ private class ImageLoader: ObservableObject {
         }
 
         var request = URLRequest(url: url)
-        request.setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")
-        request.setValue("w3m", forHTTPHeaderField: "x-sdk-type")
-        request.setValue("ios-3.0.0-alpha.0", forHTTPHeaderField: "x-sdk-version")
-
+        request.allHTTPHeaderFields = ImageLoader.headers
+        
         ImageLoader.session.dataTaskPublisher(for: request)
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { completion in
