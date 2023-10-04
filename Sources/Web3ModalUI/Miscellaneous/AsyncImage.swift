@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import UIKit
 
 struct AsyncImage<Content>: View where Content: View {
     @StateObject fileprivate var loader: ImageLoader
