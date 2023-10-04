@@ -23,4 +23,14 @@ class SignInteractor: ObservableObject {
             self.store.uri = uri
         }
     }
+    
+    func disconnect() async throws {
+        defer {
+            DispatchQueue.main.async {
+                self.store.session = nil
+            }
+        }
+        
+        try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
+    }
 }

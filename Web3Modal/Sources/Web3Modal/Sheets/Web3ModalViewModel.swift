@@ -64,7 +64,7 @@ class Web3ModalViewModel: ObservableObject {
         
         signInteractor.sessionDeletePublisher
             .receive(on: DispatchQueue.main)
-            .sink { (topic, reason) in
+            .sink { topic, _ in
                 
                 if store.session?.topic == topic {
                     store.session = nil
@@ -78,8 +78,10 @@ class Web3ModalViewModel: ObservableObject {
             .sink { sessions in
                 
                 if sessions.isEmpty {
-                    store.session = nil
-                    router.setRoute(Router.ConnectingSubpage.connectWallet)
+                    DispatchQueue.main.async {
+                        store.session = nil
+                        router.setRoute(Router.ConnectingSubpage.connectWallet)
+                    }
                 }
             }
             .store(in: &disposeBag)

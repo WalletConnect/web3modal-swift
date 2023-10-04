@@ -4,6 +4,7 @@ struct AccountView: View {
     
     @EnvironmentObject var router: Router
     @EnvironmentObject var blockchainApiInteractor: BlockchainAPIInteractor
+    @EnvironmentObject var signInteractor: SignInteractor
     @EnvironmentObject var store: Store
     
     @Binding var isModalShown: Bool
@@ -74,10 +75,8 @@ struct AccountView: View {
     func disconnect() {
         Task {
             do {
-                try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
-                withAnimation {
-                    isModalShown = false
-                }
+                router.setRoute(Router.ConnectingSubpage.connectWallet)
+                try await signInteractor.disconnect()
             } catch {
                 print(error.localizedDescription)
             }
