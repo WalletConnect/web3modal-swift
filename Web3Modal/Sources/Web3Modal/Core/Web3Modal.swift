@@ -76,6 +76,10 @@ public class Web3Modal {
             recommendedWalletIds: recommendedWalletIds,
             excludedWalletIds: excludedWalletIds
         )
+        
+        Task {
+            try? await W3MAPIInteractor().fetchFeaturedWallets()
+        }
     }
     
     public static func set(sessionParams: SessionParams) {

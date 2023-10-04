@@ -19,6 +19,7 @@ struct ExampleApp: App {
 
         Web3Modal.configure(
             projectId: "9bfe94c9cbf74aaa0597094ef561f703",
+            chainId: "eip155:1",
             metadata: metadata
         )
     }

@@ -27,6 +27,13 @@ class Web3ModalViewModel: ObservableObject {
         self.signInteractor = signInteractor
         self.blockchainApiInteractor = blockchainApiInteractor
         
+        signInteractor.sessionResponsePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { response in
+                print(response)
+            }
+            .store(in: &disposeBag)
+        
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
             .sink { session in
@@ -36,6 +43,7 @@ class Web3ModalViewModel: ObservableObject {
                 }
                 router.setRoute(Router.AccountSubpage.profile)
                 store.session = session
+                store.uri = nil
                 
                 self.fetchIdentity()
             }
@@ -47,11 +55,46 @@ class Web3ModalViewModel: ObservableObject {
                 
                 print(reason)
                 
+                store.uri = nil
                 Task {
                     try? await signInteractor.createPairingAndConnect()
                 }
             }
             .store(in: &disposeBag)
+        
+        signInteractor.sessionDeletePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { (topic, reason) in
+                
+                if store.session?.topic == topic {
+                    store.session = nil
+                }
+                router.setRoute(Router.ConnectingSubpage.connectWallet)
+            }
+            .store(in: &disposeBag)
+        
+        signInteractor.sessionsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { sessions in
+                
+                if sessions.isEmpty {
+                    store.session = nil
+                    router.setRoute(Router.ConnectingSubpage.connectWallet)
+                }
+            }
+            .store(in: &disposeBag)
+        
+        fetchFeaturedWallets()
+    }
+    
+    func fetchFeaturedWallets() {
+        Task {
+            do {
+                try await w3mApiInteractor.fetchFeaturedWallets()
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
     }
     
     func fetchIdentity() {

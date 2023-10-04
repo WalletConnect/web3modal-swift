@@ -4,15 +4,11 @@ struct Web3ModalView: View {
     @ObservedObject var viewModel: Web3ModalViewModel
 
     var body: some View {
-        
-        
         VStack(spacing: 0) {
-            
             switch viewModel.router.currentRoute {
             case _ where viewModel.router.currentRoute as? Router.AccountSubpage != nil:
-                modalHeader()
-                
-                AccountView()
+                AccountView(isModalShown: viewModel.isShown)
+                    .frame(maxWidth: .infinity)
             case _ where viewModel.router.currentRoute as? Router.ConnectingSubpage != nil :
                 modalHeader()
                     
@@ -33,11 +29,9 @@ struct Web3ModalView: View {
     
     @ViewBuilder
     private func routes() -> some View {
-        switch viewModel.router.currentRoute as? Router.ConnectingSubpage {
-        case .none:
-            EmptyView()
+        switch viewModel.router.currentRoute as! Router.ConnectingSubpage {
         case .connectWallet:
-            content()
+            ConnectWalletView()
         case .allWallets:
             AllWalletsView()
         case .qr:
@@ -86,54 +80,6 @@ struct Web3ModalView: View {
         .cornerRadius(30, corners: [.topLeft, .topRight])
     }
     
-    private func content() -> some View {
-        VStack {
-            Button(action: {
-                viewModel.router.setRoute(Router.ConnectingSubpage.qr)
-            }, label: {
-                Text("WalletConnect")
-            })
-            .buttonStyle(W3MListSelectStyle(
-                imageContent: {
-                    ZStack {
-                        Color.Blue100
-                        
-                        Image.imageLogo
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .foregroundColor(.white)
-                    }
-                },
-                tag: W3MTag(title: "QR Code", variant: .main)
-            ))
-                
-            Button(action: {}, label: {
-                Text("Rainbow")
-            })
-            .buttonStyle(W3MListSelectStyle(
-                imageContent: { Image("MockWalletImage", bundle: .module).resizable() }
-            ))
-                
-            Button(action: {
-                viewModel.router.setRoute(Router.ConnectingSubpage.allWallets)
-            }, label: {
-                Text("All wallets")
-            })
-            .buttonStyle(W3MListSelectStyle(
-                imageContent: {
-                    W3MAllWalletsImage(images: [
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
-                        .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
-                    ])
-                }
-            ))
-        }
-        .padding(Spacing.s)
-        .padding(.bottom)
-    }
-    
     private func helpButton() -> some View {
         Button(action: {
             viewModel.router.setRoute(Router.ConnectingSubpage.whatIsAWallet)
@@ -151,7 +97,11 @@ struct Web3ModalView: View {
     }
     
     private func closeButton() -> some View {
-        Button {} label: {
+        Button {
+            withAnimation {
+                viewModel.isShown.wrappedValue = false
+            }
+        } label: {
             Image.LargeClose
         }
     }

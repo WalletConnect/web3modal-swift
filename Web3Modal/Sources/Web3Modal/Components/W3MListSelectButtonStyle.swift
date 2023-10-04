@@ -34,7 +34,7 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         let layoutBreakCondition = dynamicTypeSize >= .accessibility2
-        
+
         AdaptiveStack(
             condition: layoutBreakCondition,
             horizontalAlignment: .center,
@@ -44,18 +44,18 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                 imageComponent()
                     .scaledToFill()
                     .layoutPriority(3)
-                
+
                 configuration.label
                     .lineLimit(1)
                     .scaledToFill()
                     .font(.paragraph500)
                     .foregroundColor(.Foreground100)
                     .layoutPriority(5)
-                
+
                 if !layoutBreakCondition {
                     Spacer()
                 }
-                
+
                 if let tag {
                     tag
                         .saturation(isEnabled ? 1 : 0)
@@ -82,12 +82,7 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
             .aspectRatio(contentMode: .fit)
             .saturation(isEnabled ? 1 : 0)
             .opacity(isEnabled ? 1 : 0.5)
-            .background(.Overgray005)
             .cornerRadius(Radius.xxxs * scale)
-            .overlay {
-                RoundedRectangle(cornerRadius: Radius.xxxs * scale)
-                    .strokeBorder(.Overgray010, lineWidth: 1 * scale)
-            }
     }
 }
 
@@ -105,7 +100,7 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                         imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
                         tag: W3MTag(title: "QR Code", variant: .main)
                     ))
-                    
+
                     Button(action: {}, label: {
                         Text("Rainbow")
                     })
@@ -116,28 +111,23 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                         tag: W3MTag(title: "Installed", variant: .success),
                         isPressedOverride: true
                     ))
-                    
+
                     Button(action: {}, label: {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
                         imageContent: { Image("MockWalletImage", bundle: .module).resizable() }
                     ))
-                    
+
                     Button(action: {}, label: {
                         Text("All wallets")
                     })
                     .buttonStyle(W3MListSelectStyle(
                         imageContent: {
-                            W3MAllWalletsImage(images: [
-                                .init(image: Image("MockWalletImage", bundle: .module), walletName: "Metamask"),
-                                .init(image: Image("MockWalletImage", bundle: .module), walletName: "Trust"),
-                                .init(image: Image("MockWalletImage", bundle: .module), walletName: "Safe"),
-                                .init(image: Image("MockWalletImage", bundle: .module), walletName: "Rainbow"),
-                            ])
+                            Image.optionAll
                         }
                     ))
-                    
+
                     Button(action: {}, label: {
                         Text("Rainbow")
                     })
@@ -161,4 +151,3 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
     }
 
 #endif
-

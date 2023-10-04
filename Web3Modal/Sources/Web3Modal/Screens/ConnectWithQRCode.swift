@@ -40,8 +40,6 @@ struct ConnectWithQRCode: View {
     }
     
     private func connect() {
-        guard store.uri == nil else { return }
-        
         Task {
             do {
                 try await signInteractor.createPairingAndConnect()

@@ -17,7 +17,7 @@ final class W3MAPIInteractor: ObservableObject {
         self.store = store
     }
     
-    func getWallets(search: String = "") async throws {
+    func fetchWallets(search: String = "") async throws {
         DispatchQueue.main.async {
             self.isLoading = true
         }
@@ -55,6 +55,32 @@ final class W3MAPIInteractor: ObservableObject {
             }
             
             self.isLoading = false
+        }
+    }
+    
+    func fetchFeaturedWallets() async throws {
+        
+        let httpClient = HTTPNetworkClient(host: "api.web3modal.com", session: URLSession(configuration: .ephemeral))
+        let response = try await httpClient.request(
+            GetWalletsResponse.self,
+            at: Web3ModalAPI.getWallets(
+                params: .init(
+                    page: 1,
+                    entries: 4,
+                    search: "",
+                    projectId: Web3Modal.config.projectId,
+                    metadata: Web3Modal.config.metadata,
+                    recommendedIds: Web3Modal.config.recommendedWalletIds,
+                    excludedIds: Web3Modal.config.excludedWalletIds
+                )
+            )
+        )
+        
+        try await fetchWalletImages(for: response.data)
+        
+        DispatchQueue.main.async { [self] in
+            self.store.totalNumberOfWallets = response.count
+            self.store.featuredWallets = response.data
         }
     }
     
