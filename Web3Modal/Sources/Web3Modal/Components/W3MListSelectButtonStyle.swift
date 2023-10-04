@@ -6,14 +6,14 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
 
     @ScaledMetric var scale: CGFloat = 1
 
-    var imageContent: () -> ImageContent
+    var imageContent: (CGFloat) -> ImageContent
     var tag: W3MTag?
     var allWalletsImage: W3MAllWalletsImage?
 
     var isPressedOverride: Bool?
 
     init(
-        @ViewBuilder imageContent: @escaping () -> ImageContent,
+        @ViewBuilder imageContent: @escaping (CGFloat) -> ImageContent,
         tag: W3MTag? = nil
     ) {
         self.imageContent = imageContent
@@ -22,7 +22,7 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
 
     #if DEBUG
         init(
-            @ViewBuilder imageContent: @escaping () -> ImageContent,
+            @ViewBuilder imageContent: @escaping (CGFloat) -> ImageContent,
             tag: W3MTag? = nil,
             isPressedOverride: Bool? = nil
         ) {
@@ -77,7 +77,7 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
 
     @ViewBuilder
     func imageComponent() -> some View {
-        imageContent()
+        imageContent(scale)
             .frame(maxWidth: 40 * scale, maxHeight: 40 * scale)
             .aspectRatio(contentMode: .fit)
             .saturation(isEnabled ? 1 : 0)
@@ -89,6 +89,8 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
 #if DEBUG
     public struct W3MListSelectStylePreviewView: View {
         public init() {}
+        
+        
 
         public var body: some View {
             ScrollView {
@@ -97,7 +99,7 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
+                        imageContent: { _ in Image("MockWalletImage", bundle: .module).resizable() },
                         tag: W3MTag(title: "QR Code", variant: .main)
                     ))
 
@@ -105,8 +107,12 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        imageContent: {
-                            Image.Wallet
+                        imageContent: { scale in
+                            ZStack {
+                                Color.Overgray005
+                                RoundedRectangle(cornerRadius: Radius.xxxs * scale).stroke(.Overgray010, lineWidth: 1 * scale)
+                                Image.Wallet
+                            }
                         },
                         tag: W3MTag(title: "Installed", variant: .success),
                         isPressedOverride: true
@@ -116,14 +122,14 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() }
+                        imageContent: { _ in Image("MockWalletImage", bundle: .module).resizable() }
                     ))
 
                     Button(action: {}, label: {
                         Text("All wallets")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        imageContent: {
+                        imageContent: { _ in
                             Image.optionAll
                         }
                     ))
@@ -132,7 +138,7 @@ struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
+                        imageContent: { _ in Image("MockWalletImage", bundle: .module).resizable() },
                         tag: W3MTag(title: "QR Code", variant: .main)
                     ))
                     .disabled(true)

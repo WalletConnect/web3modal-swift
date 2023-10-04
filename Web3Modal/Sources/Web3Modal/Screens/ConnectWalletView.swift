@@ -12,7 +12,7 @@ struct ConnectWalletView: View {
                 Text("WalletConnect")
             })
             .buttonStyle(W3MListSelectStyle(
-                imageContent: {
+                imageContent: { _ in
                     ZStack {
                         Color.Blue100
                         
@@ -32,7 +32,7 @@ struct ConnectWalletView: View {
                     Text(wallet.name)
                 })
                 .buttonStyle(W3MListSelectStyle(
-                    imageContent: {
+                    imageContent: { scale in
                         Image(
                             uiImage: store.walletImages[wallet.imageId]
                             ?? UIImage(named: "Wallet", in: .module, compatibleWith: nil)
@@ -42,8 +42,8 @@ struct ConnectWalletView: View {
                         .resizable()
                         .background(.Overgray005)
                         .overlay {
-                            RoundedRectangle(cornerRadius: Radius.xxxs)
-                                .strokeBorder(.Overgray010, lineWidth: 1)
+                            RoundedRectangle(cornerRadius: Radius.xxxs * scale)
+                                .strokeBorder(.Overgray010, lineWidth: 1 * scale)
                         }
                     }
                 ))
@@ -55,7 +55,7 @@ struct ConnectWalletView: View {
                 Text("All wallets")
             })
             .buttonStyle(W3MListSelectStyle(
-                imageContent: {
+                imageContent: { _ in
                     Image.optionAll
                 },
                 tag: store.totalNumberOfWallets != 0 ? W3MTag(title: "\(store.totalNumberOfWallets)+", variant: .info) : nil
