@@ -3,16 +3,17 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BCCE42AB0886400A2866C /* ContentView.swift */; };
+		CF3B9AD02ACDBA3A00984D53 /* Web3Modal in Frameworks */ = {isa = PBXBuildFile; productRef = CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */; };
+		CF3B9AD22ACDBA3A00984D53 /* Web3ModalUI in Frameworks */ = {isa = PBXBuildFile; productRef = CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */; };
 		CFD720782A9CC60600636CAF /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720772A9CC60600636CAF /* ExampleApp.swift */; };
 		CFD7207A2A9CC60600636CAF /* ComponentLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */; };
 		CFD7207C2A9CC60700636CAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFD7207B2A9CC60700636CAF /* Assets.xcassets */; };
 		CFD720802A9CC60700636CAF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFD7207F2A9CC60700636CAF /* Preview Assets.xcassets */; };
-		CFD720B12A9CC71600636CAF /* Web3Modal in Frameworks */ = {isa = PBXBuildFile; productRef = CFD720B02A9CC71600636CAF /* Web3Modal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,7 +24,6 @@
 		CFD7207B2A9CC60700636CAF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CFD7207D2A9CC60700636CAF /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		CFD7207F2A9CC60700636CAF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		CFD720AE2A9CC6A600636CAF /* Web3Modal */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Web3Modal; sourceTree = "<group>"; };
 		CFD720B22A9CCA0C00636CAF /* UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -32,7 +32,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CFD720B12A9CC71600636CAF /* Web3Modal in Frameworks */,
+				CF3B9AD02ACDBA3A00984D53 /* Web3Modal in Frameworks */,
+				CF3B9AD22ACDBA3A00984D53 /* Web3ModalUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,7 +45,6 @@
 			children = (
 				CFD720B22A9CCA0C00636CAF /* UnitTests.xctestplan */,
 				CFD720762A9CC60600636CAF /* Example */,
-				CFD720AE2A9CC6A600636CAF /* Web3Modal */,
 				CFD720752A9CC60600636CAF /* Products */,
 				CFD720AF2A9CC71600636CAF /* Frameworks */,
 			);
@@ -103,7 +103,8 @@
 			);
 			name = Example;
 			packageProductDependencies = (
-				CFD720B02A9CC71600636CAF /* Web3Modal */,
+				CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */,
+				CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */,
 			);
 			productName = Example;
 			productReference = CFD720742A9CC60600636CAF /* Example.app */;
@@ -133,6 +134,9 @@
 				Base,
 			);
 			mainGroup = CFD7206B2A9CC60600636CAF;
+			packageReferences = (
+				CF3B9ACE2ACDBA3A00984D53 /* XCLocalSwiftPackageReference ".." */,
+			);
 			productRefGroup = CFD720752A9CC60600636CAF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -383,10 +387,21 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		CF3B9ACE2ACDBA3A00984D53 /* XCLocalSwiftPackageReference ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
-		CFD720B02A9CC71600636CAF /* Web3Modal */ = {
+		CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Web3Modal;
+		};
+		CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Web3ModalUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
