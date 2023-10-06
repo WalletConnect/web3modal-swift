@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 set -eE
 trap 'xcrun simctl delete "$DEVICE_ID"' ERR
 
