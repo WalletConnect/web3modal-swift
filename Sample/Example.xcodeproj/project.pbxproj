@@ -10,10 +10,6 @@
 		CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BCCE42AB0886400A2866C /* ContentView.swift */; };
 		CF3B9AD02ACDBA3A00984D53 /* Web3Modal in Frameworks */ = {isa = PBXBuildFile; productRef = CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */; };
 		CF3B9AD22ACDBA3A00984D53 /* Web3ModalUI in Frameworks */ = {isa = PBXBuildFile; productRef = CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */; };
-		CF7702E72AD04920004AFBAF /* WCSocketFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7702E62AD04920004AFBAF /* WCSocketFactory.swift */; };
-		CF7702EA2AD04A4B004AFBAF /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7702E92AD04A4B004AFBAF /* Secrets.swift */; };
-		CF7702EC2AD04A81004AFBAF /* secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = CF7702EB2AD04A81004AFBAF /* secrets.json */; };
-		CF7702EE2AD04A90004AFBAF /* secrets.sample.json in Resources */ = {isa = PBXBuildFile; fileRef = CF7702ED2AD04A90004AFBAF /* secrets.sample.json */; };
 		CFD720782A9CC60600636CAF /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720772A9CC60600636CAF /* ExampleApp.swift */; };
 		CFD7207A2A9CC60600636CAF /* ComponentLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */; };
 		CFD7207C2A9CC60700636CAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFD7207B2A9CC60700636CAF /* Assets.xcassets */; };
@@ -22,16 +18,13 @@
 
 /* Begin PBXFileReference section */
 		CF0BCCE42AB0886400A2866C /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		CF7702E62AD04920004AFBAF /* WCSocketFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WCSocketFactory.swift; sourceTree = "<group>"; };
-		CF7702E92AD04A4B004AFBAF /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
-		CF7702EB2AD04A81004AFBAF /* secrets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = secrets.json; sourceTree = "<group>"; };
-		CF7702ED2AD04A90004AFBAF /* secrets.sample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = secrets.sample.json; sourceTree = "<group>"; };
 		CFD720742A9CC60600636CAF /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFD720772A9CC60600636CAF /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
 		CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentLibraryView.swift; sourceTree = "<group>"; };
 		CFD7207B2A9CC60700636CAF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CFD7207D2A9CC60700636CAF /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		CFD7207F2A9CC60700636CAF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		CFD720B22A9CCA0C00636CAF /* UnitTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = UnitTests.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,19 +40,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CF7702E82AD04A3C004AFBAF /* Secrets */ = {
-			isa = PBXGroup;
-			children = (
-				CF7702E92AD04A4B004AFBAF /* Secrets.swift */,
-				CF7702EB2AD04A81004AFBAF /* secrets.json */,
-				CF7702ED2AD04A90004AFBAF /* secrets.sample.json */,
-			);
-			path = Secrets;
-			sourceTree = "<group>";
-		};
 		CFD7206B2A9CC60600636CAF = {
 			isa = PBXGroup;
 			children = (
+				CFD720B22A9CCA0C00636CAF /* UnitTests.xctestplan */,
 				CFD720762A9CC60600636CAF /* Example */,
 				CFD720752A9CC60600636CAF /* Products */,
 				CFD720AF2A9CC71600636CAF /* Frameworks */,
@@ -77,8 +61,6 @@
 		CFD720762A9CC60600636CAF /* Example */ = {
 			isa = PBXGroup;
 			children = (
-				CF7702E82AD04A3C004AFBAF /* Secrets */,
-				CF7702E62AD04920004AFBAF /* WCSocketFactory.swift */,
 				CFD720772A9CC60600636CAF /* ExampleApp.swift */,
 				CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */,
 				CF0BCCE42AB0886400A2866C /* ContentView.swift */,
@@ -169,8 +151,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CF7702EE2AD04A90004AFBAF /* secrets.sample.json in Resources */,
-				CF7702EC2AD04A81004AFBAF /* secrets.json in Resources */,
 				CFD720802A9CC60700636CAF /* Preview Assets.xcassets in Resources */,
 				CFD7207C2A9CC60700636CAF /* Assets.xcassets in Resources */,
 			);
@@ -184,10 +164,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				CFD7207A2A9CC60600636CAF /* ComponentLibraryView.swift in Sources */,
-				CF7702EA2AD04A4B004AFBAF /* Secrets.swift in Sources */,
 				CFD720782A9CC60600636CAF /* ExampleApp.swift in Sources */,
 				CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */,
-				CF7702E72AD04920004AFBAF /* WCSocketFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
