@@ -12,13 +12,15 @@ struct ExampleApp: App {
             icons: ["https://avatars.githubusercontent.com/u/37784886"]
         )
         
+        let projectId = Secrets.load().projectID
+        
         Networking.configure(
-            projectId: "9bfe94c9cbf74aaa0597094ef561f703",
+            projectId: projectId,
             socketFactory: WalletConnectSocketClientFactory()
         )
 
         Web3Modal.configure(
-            projectId: "9bfe94c9cbf74aaa0597094ef561f703",
+            projectId: projectId,
             chainId: "eip155:1",
             metadata: metadata
         )
