@@ -130,7 +130,7 @@ struct AllWalletsView: View {
     private func fetchWallets(search: String = "") {
         Task {
             do {
-                try await interactor.getWallets(search: search)
+                try await interactor.fetchWallets(search: search)
             } catch {
                 print(error.localizedDescription)
                 // TODO: Handle error
