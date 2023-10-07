@@ -11,9 +11,16 @@ struct ExampleApp: App {
             url: "wallet.connect",
             icons: ["https://avatars.githubusercontent.com/u/37784886"]
         )
+        
+        let projectId = Secrets.load().projectID
+        
+        Networking.configure(
+            projectId: projectId,
+            socketFactory: WalletConnectSocketClientFactory()
+        )
 
         Web3Modal.configure(
-            projectId: "foo",
+            projectId: projectId,
             metadata: metadata
         )
     }
