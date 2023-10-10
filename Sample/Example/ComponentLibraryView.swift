@@ -29,6 +29,10 @@ struct ComponentLibraryView: View {
             NavigationLink(destination: QRCodeViewPreviewView()) {
                 Text("QRCode")
             }
+            NavigationLink(destination: W3MChipButtonStylePreviewView()) {
+                Text("W3MChipButtonStyle")
+            }
+            
         }
         .listStyle(.plain)
         #endif
