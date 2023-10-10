@@ -9,7 +9,7 @@ public struct W3MChipButtonStyle<LeadingImageContent: View, TrailingImageContent
         var textColor: Color {
             switch self {
             case .fill:
-                return Color.Foreground100
+                return Color.Inverse100
             case .shade:
                 return Color.Foreground200
             case .transparent:
@@ -31,13 +31,7 @@ public struct W3MChipButtonStyle<LeadingImageContent: View, TrailingImageContent
         var pressedColor: Color {
             switch self {
             case .fill:
-                return Color.Accent100
-                    .adjust(
-                        hue: 0,
-                        saturation: 0,
-                        brightness: -0.2,
-                        opacity: 0
-                    )
+                return Color.Blue080
             case .shade:
                 return Color.GrayGlass020
             case .transparent:
@@ -171,268 +165,273 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
         public var body: some View {
             ScrollView([.horizontal, .vertical]) {
                 VStack(alignment: .leading, spacing: 15) {
-                    Text("Fill")
-                        .font(.large600)
-                    
-                    HStack {
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .fill,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
-                            )
-                        )
+                    Group {
+                        Text("Fill")
+                            .font(.large600)
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .fill,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: true
+                        HStack {
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .fill,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
                             )
-                        )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .fill,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: true
+                                )
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .fill,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
+                            )
+                            .disabled(true)
+                        }
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .fill,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
-                            )
-                        )
-                        .disabled(true)
-                    }
-                    
-                    Text("Shade")
-                        .font(.large600)
-                    
-                    HStack {
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .shade,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
-                            )
-                        )
+                        Text("Shade")
+                            .font(.large600)
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .shade,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: true
+                        HStack {
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .shade,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
                             )
-                        )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .shade,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: true
+                                )
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .shade,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
+                            )
+                            .disabled(true)
+                        }
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .shade,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
-                            )
-                        )
-                        .disabled(true)
-                    }
-                    
-                    Text("Transparent")
-                        .font(.large600)
-                    
-                    HStack {
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .transparent,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
-                            )
-                        )
+                        Text("Transparent")
+                            .font(.large600)
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .transparent,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: true
+                        HStack {
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .transparent,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
                             )
-                        )
-                        
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .transparent,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .transparent,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: true
+                                )
                             )
-                        )
-                        .disabled(true)
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .transparent,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
+                            )
+                            .disabled(true)
+                        }
                     }
                     
                     Divider()
                         .padding(.vertical, 24)
                     
-                    Text("Fill S")
-                        .font(.large600)
-                    
-                    HStack {
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .fill,
-                                size: .s,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
-                            )
-                        )
+                    Group {
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .fill,
-                                size: .s,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: true
-                            )
-                        )
+                        Text("Fill S")
+                            .font(.large600)
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .fill,
-                                size: .s,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
+                        HStack {
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .fill,
+                                    size: .s,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
                             )
-                        )
-                        .disabled(true)
-                    }
-                    
-                    Text("Shade S")
-                        .font(.large600)
-                    
-                    HStack {
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .shade,
-                                size: .s,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .fill,
+                                    size: .s,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: true
+                                )
                             )
-                        )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .fill,
+                                    size: .s,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
+                            )
+                            .disabled(true)
+                        }
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .shade,
-                                size: .s,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: true
-                            )
-                        )
+                        Text("Shade S")
+                            .font(.large600)
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .shade,
-                                size: .s,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
+                        HStack {
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .shade,
+                                    size: .s,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
                             )
-                        )
-                        .disabled(true)
-                    }
-                    
-                    Text("Transparent S")
-                        .font(.large600)
-                    
-                    HStack {
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .transparent,
-                                size: .s,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .shade,
+                                    size: .s,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: true
+                                )
                             )
-                        )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .shade,
+                                    size: .s,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
+                            )
+                            .disabled(true)
+                        }
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .transparent,
-                                size: .s,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: true
-                            )
-                        )
+                        Text("Transparent S")
+                            .font(.large600)
                         
-                        Button(action: {}) {
-                            Text("Button")
-                        }
-                        .buttonStyle(
-                            W3MChipButtonStyle(
-                                variant: .transparent,
-                                size: .s,
-                                leadingImage: { Image.imageEth.resizable() },
-                                trailingImage: { Image.ExternalLink },
-                                isPressedOverride: nil
+                        HStack {
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .transparent,
+                                    size: .s,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
                             )
-                        )
-                        .disabled(true)
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .transparent,
+                                    size: .s,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: true
+                                )
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(
+                                    variant: .transparent,
+                                    size: .s,
+                                    leadingImage: { Image.imageEth.resizable() },
+                                    trailingImage: { Image.ExternalLink },
+                                    isPressedOverride: nil
+                                )
+                            )
+                            .disabled(true)
+                        }
                     }
                 }
                 .padding()
