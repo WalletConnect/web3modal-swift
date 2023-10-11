@@ -56,4 +56,5 @@ public extension ShapeStyle where Self == Color {
     static var GrayGlass002: Color { Color(#function, bundle: .module) }
     static var GrayGlass005: Color { Color(#function, bundle: .module) }
     static var GrayGlass010: Color { Color(#function, bundle: .module) }
+    static var GrayGlass020: Color { Color(#function, bundle: .module) }
 }

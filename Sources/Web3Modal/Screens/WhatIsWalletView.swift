@@ -93,7 +93,6 @@ struct HelpSection: View {
             Text(title)
                 .font(.paragraph500)
                 .foregroundColor(.Foreground100)
-                .fontWeight(.medium)
                 .multilineTextAlignment(.center)
                 .padding(.bottom, Spacing.xs)
             Text(description)

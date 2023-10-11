@@ -43,6 +43,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
             Group {
                 imageComponent()
                     .scaledToFill()
+                    .foregroundColor(.Foreground100)
                     .layoutPriority(3)
                 
                 configuration.label

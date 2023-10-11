@@ -1,19 +1,118 @@
 import SwiftUI
 
-public extension Font {
-    static var large500: Font = .custom("SF Pro Text", size: 20.0).weight(.regular)
-    static var large600: Font = .custom("SF Pro Text", size: 20.0).weight(.medium)
-    static var large700: Font = .custom("SF Pro Text", size: 20.0).weight(.semibold)
-    static var micro600: Font = .custom("SF Pro Text", size: 10.0).weight(.bold)
-    static var micro700: Font = .custom("SF Pro Text", size: 10.0).weight(.medium)
-    static var paragraph500: Font = .custom("SF Pro Text", size: 16.0).weight(.regular)
-    static var paragraph600: Font = .custom("SF Pro Text", size: 16.0).weight(.medium)
-    static var paragraph700: Font = .custom("SF Pro Text", size: 16.0).weight(.semibold)
-    static var small500: Font = .custom("SF Pro Text", size: 14.0).weight(.regular)
-    static var small600: Font = .custom("SF Pro Text", size: 14.0).weight(.medium)
-    static var tiny500: Font = .custom("SF Pro Text", size: 12.0).weight(.regular)
-    static var tiny600: Font = .custom("SF Pro Text", size: 12.0).weight(.medium)
-    static var title500: Font = .custom("SF Pro Text", size: 24.0).weight(.regular)
-    static var title600: Font = .custom("SF Pro Text", size: 24.0).weight(.medium)
-    static var title700: Font = .custom("SF Pro Text", size: 24.0).weight(.semibold)
+public enum W3MFont {
+    case large500
+    case large600
+    case large700
+    case micro600
+    case micro700
+    case paragraph500
+    case paragraph600
+    case paragraph700
+    case small500
+    case small600
+    case tiny500
+    case tiny600
+    case title500
+    case title600
+    case title700
+    
+    var weight: Font.Weight {
+        switch self {
+        case .large500: return .regular
+        case .large600: return .medium
+        case .large700: return .semibold
+        case .micro600: return .medium
+        case .micro700: return .semibold
+        case .paragraph500: return .regular
+        case .paragraph600: return .medium
+        case .paragraph700: return .semibold
+        case .small500: return .regular
+        case .small600: return .medium
+        case .tiny500: return .regular
+        case .tiny600: return .medium
+        case .title500: return .regular
+        case .title600: return .medium
+        case .title700: return .semibold
+        }
+    }
+    
+    var size: CGFloat {
+        switch self {
+        case .large500: return 20.0
+        case .large600: return 20.0
+        case .large700: return 20.0
+        case .micro600: return 10.0
+        case .micro700: return 10.0
+        case .paragraph500: return 16.0
+        case .paragraph600: return 16.0
+        case .paragraph700: return 16.0
+        case .small500: return 14.0
+        case .small600: return 14.0
+        case .tiny500: return 12.0
+        case .tiny600: return 12.0
+        case .title500: return 24.0
+        case .title600: return 24.0
+        case .title700: return 24.0
+        }
+    }
+}
+
+struct ScaledFont: ViewModifier {
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.sizeCategory) var sizeCategory
+    var size: Double
+    var weight: Font.Weight
+
+    func body(content: Content) -> some View {
+        let scaledSize = UIFontMetrics.default.scaledValue(for: size)
+        return content.font(.system(size: scaledSize, weight: weight))
+    }
+}
+
+extension View {
+    public func scaledFont(size: Double, weight: Font.Weight) -> some View {
+        return modifier(ScaledFont(size: size, weight: weight))
+    }
+    
+    public func font(_ font: W3MFont) -> some View {
+        return modifier(ScaledFont(size: font.size, weight: font.weight))
+    }
+}
+
+struct FontPreviews: PreviewProvider {
+    @Environment(\.sizeCategory) var sizeCategory
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    
+    static var previews: some View {
+        VStack(spacing: 10) {
+            Group {
+                Text("large500").font(.large500)
+                Text("large600").font(.large600)
+                Text("large700").font(.large700)
+            }
+            Group {
+                Text("title500").font(.title500)
+                Text("title600").font(.title600)
+                Text("title700").font(.title700)
+            }
+            Group {
+                Text("paragraph500").font(.paragraph500)
+                Text("paragraph600").font(.paragraph600)
+                Text("paragraph700").font(.paragraph700)
+            }
+            Group {
+                Text("micro600").font(.micro600)
+                Text("micro700").font(.micro700)
+            }
+            Group {
+                Text("small500").font(.small500)
+                Text("small600").font(.small600)
+            }
+            Group {
+                Text("tiny500").font(.tiny500)
+                Text("tiny600").font(.tiny600)
+            }
+        }
+    }
 }
