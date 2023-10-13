@@ -40,7 +40,7 @@ struct Web3ModalView: View {
                 EmptyView()
             case .getWallet:
                 GetAWalletView(
-                    wallets: Wallet.stubList
+                    wallets: []
                 )
             }
         }
