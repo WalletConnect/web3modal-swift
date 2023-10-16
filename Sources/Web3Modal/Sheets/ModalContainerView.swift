@@ -32,7 +32,6 @@ struct ModalContainerView: View {
                     switch router.currentRoute {
                         case _ where router.currentRoute as? Router.AccountSubpage != nil:
                             AccountView(isModalShown: $showModal)
-                                .frame(maxWidth: .infinity)
                         case _ where router.currentRoute as? Router.ConnectingSubpage != nil:
                             
                             Web3ModalView(

@@ -2,6 +2,8 @@ import SwiftUI
 
 struct Web3ModalView: View {
     @ObservedObject var viewModel: Web3ModalViewModel
+    
+    @EnvironmentObject var router: Router
 
     var body: some View {
         VStack(spacing: 0) {
@@ -17,7 +19,9 @@ struct Web3ModalView: View {
     
     @ViewBuilder
     private func routes() -> some View {
-        switch viewModel.router.currentRoute as! Router.ConnectingSubpage {
+        switch router.currentRoute as? Router.ConnectingSubpage {
+        case .none:
+            EmptyView()
         case .connectWallet:
             ConnectWalletView()
         case .allWallets:
@@ -37,7 +41,7 @@ struct Web3ModalView: View {
     
     private func modalHeader() -> some View {
         HStack(spacing: 0) {
-            switch viewModel.router.currentRoute as? Router.ConnectingSubpage {
+            switch router.currentRoute as? Router.ConnectingSubpage {
             case .none:
                 EmptyView()
             case .connectWallet:
@@ -48,7 +52,7 @@ struct Web3ModalView: View {
             
             Spacer()
             
-            (viewModel.router.currentRoute as? Router.ConnectingSubpage)?.title.map { title in
+            (router.currentRoute as? Router.ConnectingSubpage)?.title.map { title in
                 Text(title)
                     .font(.paragraph700)
             }
@@ -70,7 +74,7 @@ struct Web3ModalView: View {
     
     private func helpButton() -> some View {
         Button(action: {
-            viewModel.router.setRoute(Router.ConnectingSubpage.whatIsAWallet)
+            router.setRoute(Router.ConnectingSubpage.whatIsAWallet)
         }, label: {
             Image.QuestionMarkCircle
         })
@@ -78,7 +82,7 @@ struct Web3ModalView: View {
     
     private func backButton() -> some View {
         Button {
-            viewModel.router.goBack()
+            router.goBack()
         } label: {
             Image.LargeBackward
         }

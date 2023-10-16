@@ -19,11 +19,13 @@ struct ChainSelectView: View {
 
     @ViewBuilder
     private func routes() -> some View {
-        switch viewModel.router.currentRoute as! Router.NetworkSwitchSubpage {
+        switch router.currentRoute as? Router.NetworkSwitchSubpage {
+        case .none:
+            EmptyView()
         case .selectChain:
             grid()
         case .whatIsANetwork:
-            WhatIsWalletView()
+            WhatIsNetworkView()
         }
     }
     
@@ -43,34 +45,50 @@ struct ChainSelectView: View {
     }
 
     private func gridElement(for chain: Chain) -> some View {
-        Button(action: {
-            // select chain action
+        
+        let isSelected = chain.id == store.selectedChain.id
+        
+        return Button(action: {
+            store.selectedChain = chain
+            if store.session != nil {
+                router.setRoute(Router.AccountSubpage.profile)
+            } else {
+                router.setRoute(Router.ConnectingSubpage.connectWallet)
+            }
         }, label: {
             Text(chain.chainName)
         })
         .buttonStyle(W3MCardSelectStyle(
             variant: .network,
             imageContent: {
-                Image("MockChainImage", bundle: .UIModule)
-                    .resizable()
-            }
+                Image(
+                    uiImage: store.chainImages[chain.imageId] ?? UIImage()
+                )
+                .resizable()
+            },
+            isSelected: isSelected
         ))
+        .disabled(isSelected)
     }
     
     private func modalHeader() -> some View {
         HStack(spacing: 0) {
-            switch viewModel.router.currentRoute as? Router.NetworkSwitchSubpage {
+            switch router.currentRoute as? Router.NetworkSwitchSubpage {
             case .none:
                 EmptyView()
             case .selectChain:
-                helpButton()
+                if router.previousRoute as? Router.AccountSubpage == .profile {
+                    backButton()
+                } else {
+                    helpButton()
+                }
             default:
                 backButton()
             }
             
             Spacer()
             
-            (viewModel.router.currentRoute as? Router.NetworkSwitchSubpage)?.title.map { title in
+            (router.currentRoute as? Router.NetworkSwitchSubpage)?.title.map { title in
                 Text(title)
                     .font(.paragraph700)
             }
@@ -92,7 +110,7 @@ struct ChainSelectView: View {
     
     private func helpButton() -> some View {
         Button(action: {
-            viewModel.router.setRoute(Router.NetworkSwitchSubpage.whatIsANetwork)
+            router.setRoute(Router.NetworkSwitchSubpage.whatIsANetwork)
         }, label: {
             Image.QuestionMarkCircle
         })
@@ -100,7 +118,7 @@ struct ChainSelectView: View {
     
     private func backButton() -> some View {
         Button {
-            viewModel.router.goBack()
+            router.goBack()
         } label: {
             Image.LargeBackward
         }

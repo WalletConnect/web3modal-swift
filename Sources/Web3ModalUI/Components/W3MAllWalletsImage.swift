@@ -42,7 +42,7 @@ public struct W3MAllWalletsImage: View {
                     .resizable()
                     .scaledToFit()
             } else {
-                AsyncImage(url: URL(string: imageObject?.url ?? "")) { image in
+                W3MAPIAsyncImage(url: URL(string: imageObject?.url ?? "")) { image in
                     image
                         .resizable()
                         .scaledToFit()

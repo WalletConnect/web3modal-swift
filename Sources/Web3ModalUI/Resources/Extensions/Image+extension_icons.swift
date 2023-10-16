@@ -51,4 +51,5 @@ public extension Image {
     static var Telegram: Image { Image(#function, bundle: .module) }
     static var Twitch: Image { Image(#function, bundle: .module) }
     static var Twitter: Image { Image(#function, bundle: .module) }
+    static var Compass: Image { Image(#function, bundle: .module) }
 }

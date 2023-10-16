@@ -2,11 +2,11 @@ import Combine
 import SwiftUI
 import UIKit
 
-struct AsyncImage<Content>: View where Content: View {
+public struct W3MAPIAsyncImage<Content>: View where Content: View {
     @StateObject fileprivate var loader: ImageLoader
     @ViewBuilder private var content: (AsyncImagePhase) -> Content
 
-    init(
+    public init(
         url: URL?,
         @ViewBuilder content: @escaping (AsyncImagePhase) -> Content
     ) {
@@ -33,20 +33,14 @@ struct AsyncImage<Content>: View where Content: View {
         }
     }
 
-    var body: some View {
+    public var body: some View {
         content(loader.phase).onAppear {
             loader.load()
         }
     }
 }
 
-enum ImageSource {
-    case remote(url: URL?)
-    case local(name: String)
-    case captured(image: UIImage)
-}
-
-enum AsyncImagePhase {
+public enum AsyncImagePhase {
     case empty
     case success(Image)
     case failure(Error)
@@ -65,6 +59,7 @@ public class ImageLoader: ObservableObject {
 
     private enum LoaderError: Swift.Error {
         case missingURL
+        case missingHeaders
         case failedToDecodeFromData
     }
 
@@ -84,6 +79,12 @@ public class ImageLoader: ObservableObject {
     func load() {
         guard let url = url else {
             phase = .failure(LoaderError.missingURL)
+            return
+        }
+        
+        guard !ImageLoader.headers.isEmpty else {
+            assertionFailure("Headers should be set before loading image")
+            phase = .failure(LoaderError.missingHeaders)
             return
         }
 

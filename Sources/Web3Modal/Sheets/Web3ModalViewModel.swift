@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 
 class Web3ModalViewModel: ObservableObject {
-    @Published var router: Router
+    private var router: Router
     @Published var store: Store
     @Published var w3mApiInteractor: W3MAPIInteractor
     @Published var signInteractor: SignInteractor

@@ -19,45 +19,97 @@ struct AccountView: View {
     }
     
     var body: some View {
-        VStack {
-            AvatarView()
+        VStack(spacing: 0) {
+            Image.imageNft
+                .resizable()
+                .frame(width: 64, height: 64)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(.GrayGlass005, lineWidth: 8))
+            
+            Spacer()
+                .frame(height: Spacing.xl)
             
             HStack {
-                
                 (store.identity?.name ?? addressFormatted).map {
                     Text($0)
                         .font(.title600)
+                        .foregroundColor(.Foreground100)
                 }
                 
-                Image.LargeCopy
+                Button { 
+                    UIPasteboard.general.string = store.session?.accounts.first?.address
+                } label: {
+                    Image.LargeCopy
+                        .resizable()
+                        .frame(width: 12, height: 12)
+                        .foregroundColor(.Foreground250)
+                }
             }
             
+            Spacer()
+                .frame(height: Spacing.xxxxs)
+            
             Text("0.527 ETH")
+                .font(.paragraph500)
+                .foregroundColor(.Foreground200)
+            
+            Spacer()
+                .frame(height: Spacing.s)
             
             Button {
-                router.navigateToExternalLink(URL(string: "www.chain.com/explorer")!)
+                router.navigateToExternalLink(URL(string: store.selectedChain.blockExplorerUrl)!)
             } label: {
                 Text("Block Explorer")
             }
-            .buttonStyle(W3MButtonStyle(
+            .buttonStyle(W3MChipButtonStyle(
+                variant: .transparent,
                 size: .s,
-                variant: .accent,
-                leftIcon: Image(systemName: "network"),
-                rightIcon: Image.ExternalLink
+                leadingImage: {
+                    Image.Compass
+                        .resizable()
+                },
+                trailingImage: {
+                    Image.ExternalLink
+                        .resizable()
+                }
             ))
+            
+            Spacer()
+                .frame(height: Spacing.xl)
 
+            Button {
+                router.setRoute(Router.NetworkSwitchSubpage.selectChain)
+            } label: {
+                Text(store.selectedChain.chainName)
+            }
+            .buttonStyle(W3MListSelectStyle(imageContent: { scale in
+                Image(
+                    uiImage: store.chainImages[store.selectedChain.imageId] ?? UIImage()
+                )
+                .resizable()
+                .clipShape(Circle())
+            }))
+            
+            Spacer()
+                .frame(height: Spacing.xs)
+            
             Button {
                 disconnect()
             } label: {
                 Text("Disconnect")
             }
-            .buttonStyle(W3MButtonStyle(
-                size: .s,
-                variant: .accent,
-                rightIcon: Image.Disconnect
-            ))
+            .buttonStyle(W3MListSelectStyle(imageContent: { scale in
+                Image.Disconnect
+                    .resizable()
+                    .frame(width: 22, height: 22)
+            }))
+            
+            Spacer()
+                .frame(height: Spacing.m)
+            
         }
-        .padding()
+        .padding(.horizontal)
+        .padding(.top, 40)
         .padding(.bottom)
         .onAppear {
             
@@ -71,6 +123,10 @@ struct AccountView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity)
+        .background(Color.Background125)
+        .overlay(closeButton().padding().foregroundColor(.Foreground100), alignment: .topTrailing)
+        .cornerRadius(30, corners: [.topLeft, .topRight])
     }
     
     func disconnect() {
@@ -83,24 +139,14 @@ struct AccountView: View {
             }
         }
     }
-}
-
-struct AccountView_Previews: PreviewProvider {
-    static var previews: some View {
-        AccountView(isModalShown: .constant(true))
-    }
-}
-
-struct AvatarView: View {
-    var body: some View {
-        VStack {
-            Image.imageNft
+    
+    private func closeButton() -> some View {
+        Button {
+            withAnimation {
+                $isModalShown.wrappedValue = false
+            }
+        } label: {
+            Image.LargeClose
         }
-    }
-}
-
-struct AvatarViewView_Previews: PreviewProvider {
-    static var previews: some View {
-        AvatarView()
     }
 }

@@ -4,7 +4,7 @@ import SwiftUI
 
 class Router: ObservableObject {
     @Published private(set) var currentRoute: any SubPage = Router.ConnectingSubpage.connectWallet
-    private var previousRoute: (any SubPage)?
+    private(set) var previousRoute: (any SubPage)?
     
     private let uiApplicationWrapper: UIApplicationWrapper
     

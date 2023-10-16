@@ -1,6 +1,8 @@
 import Foundation
 import SwiftUI
 
+import Web3ModalUI
+
 import WalletConnectSign
 import WalletConnectVerify
 
@@ -77,8 +79,15 @@ public class Web3Modal {
             excludedWalletIds: excludedWalletIds
         )
         
+        Web3ModalUI.ImageLoader.headers = [
+            "x-project-id": projectId,
+            "x-sdk-version": "ios-3.0.0-alpha.0",
+            "x-sdk-type": "w3m"
+        ]
+        
         Task {
             try? await W3MAPIInteractor().fetchFeaturedWallets()
+            try? await W3MAPIInteractor().prefetchChainImages()
         }
     }
     
