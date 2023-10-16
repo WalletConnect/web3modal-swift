@@ -2,7 +2,6 @@ import SwiftUI
 import Web3ModalUI
 
 struct AccountView: View {
-    
     @EnvironmentObject var router: Router
     @EnvironmentObject var blockchainApiInteractor: BlockchainAPIInteractor
     @EnvironmentObject var signInteractor: SignInteractor
@@ -36,7 +35,7 @@ struct AccountView: View {
                         .foregroundColor(.Foreground100)
                 }
                 
-                Button { 
+                Button {
                     UIPasteboard.general.string = store.session?.accounts.first?.address
                 } label: {
                     Image.LargeCopy
@@ -49,9 +48,13 @@ struct AccountView: View {
             Spacer()
                 .frame(height: Spacing.xxxxs)
             
-            Text("\(store.balance ?? 0) \(store.selectedChain.token.symbol)")
-                .font(.paragraph500)
-                .foregroundColor(.Foreground200)
+            if store.balance != nil {
+                let balance = store.balance?.roundedDecimal(to: 4, mode: .down) ?? 0
+                    
+                Text(balance == 0 ? "0 \(store.selectedChain.token.symbol)" : "\(balance, specifier: "%.4f") \(store.selectedChain.token.symbol)")
+                    .font(.paragraph500)
+                    .foregroundColor(.Foreground200)
+            }
             
             Spacer()
                 .frame(height: Spacing.s)
@@ -82,7 +85,7 @@ struct AccountView: View {
             } label: {
                 Text(store.selectedChain.chainName)
             }
-            .buttonStyle(W3MListSelectStyle(imageContent: { scale in
+            .buttonStyle(W3MListSelectStyle(imageContent: { _ in
                 Image(
                     uiImage: store.chainImages[store.selectedChain.imageId] ?? UIImage()
                 )
@@ -98,7 +101,7 @@ struct AccountView: View {
             } label: {
                 Text("Disconnect")
             }
-            .buttonStyle(W3MListSelectStyle(imageContent: { scale in
+            .buttonStyle(W3MListSelectStyle(imageContent: { _ in
                 Image.Disconnect
                     .resizable()
                     .frame(width: 22, height: 22)
@@ -106,13 +109,11 @@ struct AccountView: View {
             
             Spacer()
                 .frame(height: Spacing.m)
-            
         }
         .padding(.horizontal)
         .padding(.top, 40)
         .padding(.bottom)
         .onAppear {
-            
             Task {
                 do {
                     try await blockchainApiInteractor.getBalance()
@@ -158,5 +159,14 @@ struct AccountView: View {
         } label: {
             Image.LargeClose
         }
+    }
+}
+
+extension Double {
+    func roundedDecimal(to scale: Int = 0, mode: NSDecimalNumber.RoundingMode = .plain) -> Double {
+        var decimalValue = Decimal(self)
+        var result = Decimal()
+        NSDecimalRound(&result, &decimalValue, scale, mode)
+        return Double(truncating: result as NSNumber)
     }
 }

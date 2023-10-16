@@ -4,7 +4,6 @@ import HTTPClient
 import JSONRPC
 
 final class BlockchainAPIInteractor: ObservableObject {
-    
     private let store: Store
     
     init(store: Store = .shared) {
@@ -12,7 +11,6 @@ final class BlockchainAPIInteractor: ObservableObject {
     }
     
     func getIdentity() async throws {
-        
         let account = store.session?.accounts.first
         let address = account?.address
         let chainId = account?.blockchainIdentifier
@@ -43,17 +41,26 @@ final class BlockchainAPIInteractor: ObservableObject {
             throw GetBalanceError.noAddress
         }
         
-        let request = BalanceRequest(address: address)
+        let request = RPCRequest(
+            method: "eth_getBalance", params: [
+                address, "latest"
+            ]
+        )
+        
         var urlRequest = URLRequest(url: URL(string: store.selectedChain.rpcUrl)!)
         urlRequest.httpMethod = "POST"
         urlRequest.httpBody = try JSONEncoder().encode(request)
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let (data, _) = try await URLSession.shared.data(for: urlRequest)
-        let decodedResponse = try JSONDecoder().decode(BalanceRpcResponse.self, from: data)
+        let decodedResponse = try JSONDecoder().decode(RPCResponse.self, from: data)
         let weiFactor = pow(10, store.selectedChain.token.decimal)
         
-        guard let decimalValue = decodedResponse.result?.convertBalanceHexToBigDecimal()?.toWei(weiFactor: weiFactor) else {
+        guard let decimalValue = try decodedResponse.result?
+            .get(String.self)
+            .convertBalanceHexToBigDecimal()?
+            .toWei(weiFactor: weiFactor)
+        else {
             throw GetBalanceError.invalidValue
         }
         
@@ -101,7 +108,7 @@ struct BalanceRpcResponse: Codable {
 
 extension String {
     func convertBalanceHexToBigDecimal() -> Decimal? {
-        let substring = self.dropFirst(2)
+        let substring = dropFirst(2)
         guard let longValue = UInt64(substring, radix: 16) else { return nil }
         return Decimal(string: "\(longValue)")
     }
