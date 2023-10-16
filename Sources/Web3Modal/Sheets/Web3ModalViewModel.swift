@@ -46,6 +46,7 @@ class Web3ModalViewModel: ObservableObject {
                 store.uri = nil
                 
                 self.fetchIdentity()
+                self.fetchIdentity()
             }
             .store(in: &disposeBag)
         
@@ -103,6 +104,16 @@ class Web3ModalViewModel: ObservableObject {
         Task {
             do {
                 try await blockchainApiInteractor.getIdentity()
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
+    
+    func fetchBalance() {
+        Task {
+            do {
+                try await blockchainApiInteractor.getBalance()
             } catch {
                 print(error.localizedDescription)
             }

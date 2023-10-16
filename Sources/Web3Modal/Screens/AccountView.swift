@@ -49,7 +49,7 @@ struct AccountView: View {
             Spacer()
                 .frame(height: Spacing.xxxxs)
             
-            Text("0.527 ETH")
+            Text("\(store.balance ?? 0) \(store.selectedChain.token.symbol)")
                 .font(.paragraph500)
                 .foregroundColor(.Foreground200)
             
@@ -113,7 +113,17 @@ struct AccountView: View {
         .padding(.bottom)
         .onAppear {
             
-            guard store.identity == nil else { return }
+            Task {
+                do {
+                    try await blockchainApiInteractor.getBalance()
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            
+            guard store.identity == nil else {
+                return
+            }
             
             Task {
                 do {

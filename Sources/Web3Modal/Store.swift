@@ -6,6 +6,8 @@ class Store: ObservableObject {
     public static var shared: Store = .init()
     
     @Published var identity: Identity?
+    @Published var balance: Double?
+    
     @Published var session: Session?
     @Published var uri: WalletConnectURI?
     
