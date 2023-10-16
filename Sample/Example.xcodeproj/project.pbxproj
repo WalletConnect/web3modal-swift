@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 60;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,6 +22,7 @@
 
 /* Begin PBXFileReference section */
 		CF0BCCE42AB0886400A2866C /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		CF533D032ADD411A00B3441C /* web3modal-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "web3modal-swift"; path = ..; sourceTree = "<group>"; };
 		CFA99B912AD0549F00EB5331 /* WCSocketFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WCSocketFactory.swift; sourceTree = "<group>"; };
 		CFA99B942AD054A600EB5331 /* secrets.sample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = secrets.sample.json; sourceTree = "<group>"; };
 		CFA99B952AD054A600EB5331 /* Secrets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
@@ -60,6 +61,7 @@
 		CFD7206B2A9CC60600636CAF = {
 			isa = PBXGroup;
 			children = (
+				CF533D032ADD411A00B3441C /* web3modal-swift */,
 				CFD720762A9CC60600636CAF /* Example */,
 				CFD720752A9CC60600636CAF /* Products */,
 				CFD720AF2A9CC71600636CAF /* Frameworks */,
@@ -153,7 +155,6 @@
 			);
 			mainGroup = CFD7206B2A9CC60600636CAF;
 			packageReferences = (
-				CF3B9ACE2ACDBA3A00984D53 /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = CFD720752A9CC60600636CAF /* Products */;
 			projectDirPath = "";
@@ -408,13 +409,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		CF3B9ACE2ACDBA3A00984D53 /* XCLocalSwiftPackageReference ".." */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ..;
-		};
-/* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */ = {

@@ -1,46 +1,68 @@
 import SwiftUI
+import Web3ModalUI
 
-struct Web3ModalView: View {
+struct ChainSelectView: View {
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var store: Store
+    
     @ObservedObject var viewModel: Web3ModalViewModel
 
     var body: some View {
         VStack(spacing: 0) {
             modalHeader()
-                    
             Divider()
-                    
             routes()
         }
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
     }
-    
+
     @ViewBuilder
     private func routes() -> some View {
-        switch viewModel.router.currentRoute as! Router.ConnectingSubpage {
-        case .connectWallet:
-            ConnectWalletView()
-        case .allWallets:
-            AllWalletsView()
-        case .qr:
-            ConnectWithQRCode()
-        case .whatIsAWallet:
+        switch viewModel.router.currentRoute as! Router.NetworkSwitchSubpage {
+        case .selectChain:
+            grid()
+        case .whatIsANetwork:
             WhatIsWalletView()
-        case .walletDetail:
-            EmptyView()
-        case .getWallet:
-            GetAWalletView(
-                wallets: Wallet.stubList
-            )
         }
+    }
+    
+    @ViewBuilder
+    private func grid() -> some View {
+        let collumns = Array(repeating: GridItem(.flexible()), count: 4)
+
+        ScrollView {
+            LazyVGrid(columns: collumns) {
+                ForEach(ChainsPresets.ethChains, id: \.self) { chain in
+                    gridElement(for: chain)
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical)
+        }
+    }
+
+    private func gridElement(for chain: Chain) -> some View {
+        Button(action: {
+            // select chain action
+        }, label: {
+            Text(chain.chainName)
+        })
+        .buttonStyle(W3MCardSelectStyle(
+            variant: .network,
+            imageContent: {
+                Image("MockChainImage", bundle: .UIModule)
+                    .resizable()
+            }
+        ))
     }
     
     private func modalHeader() -> some View {
         HStack(spacing: 0) {
-            switch viewModel.router.currentRoute as? Router.ConnectingSubpage {
+            switch viewModel.router.currentRoute as? Router.NetworkSwitchSubpage {
             case .none:
                 EmptyView()
-            case .connectWallet:
+            case .selectChain:
                 helpButton()
             default:
                 backButton()
@@ -48,7 +70,7 @@ struct Web3ModalView: View {
             
             Spacer()
             
-            (viewModel.router.currentRoute as? Router.ConnectingSubpage)?.title.map { title in
+            (viewModel.router.currentRoute as? Router.NetworkSwitchSubpage)?.title.map { title in
                 Text(title)
                     .font(.paragraph700)
             }
@@ -70,7 +92,7 @@ struct Web3ModalView: View {
     
     private func helpButton() -> some View {
         Button(action: {
-            viewModel.router.setRoute(Router.ConnectingSubpage.whatIsAWallet)
+            viewModel.router.setRoute(Router.NetworkSwitchSubpage.whatIsANetwork)
         }, label: {
             Image.QuestionMarkCircle
         })
@@ -95,36 +117,13 @@ struct Web3ModalView: View {
     }
 }
 
-extension Router.ConnectingSubpage {
+extension Router.NetworkSwitchSubpage {
     var title: String? {
         switch self {
-        case .connectWallet:
-            return "Connect Wallet"
-        case .qr:
-            return "Scan QR Code"
-        case .allWallets:
-            return "All wallets"
-        case .whatIsAWallet:
-            return "What is a Wallet?"
-        case let .walletDetail(wallet):
-            return "\(wallet.name)"
-        case .getWallet:
-            return "Get wallet"
+        case .selectChain:
+            return "Choose Network"
+        case .whatIsANetwork:
+            return "What is a Network?"
         }
-    }
-}
-
-struct Web3ModalView_Previews: PreviewProvider {
-    static var previews: some View {
-        Web3ModalView(
-            viewModel: .init(
-                router: Router(),
-                store: Store(),
-                w3mApiInteractor: W3MAPIInteractor(store: Store()),
-                signInteractor: SignInteractor(store: Store()),
-                blockchainApiInteractor: BlockchainAPIInteractor(store: Store()),
-                isShown: .constant(true)
-            ))
-            .previewLayout(.sizeThatFits)
     }
 }

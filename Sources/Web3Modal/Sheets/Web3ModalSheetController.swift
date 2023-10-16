@@ -7,8 +7,8 @@ class Web3ModalSheetController: UIHostingController<ModalContainerView> {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init() {
-        super.init(rootView: ModalContainerView())
+    init(router: Router) {
+        super.init(rootView: ModalContainerView(router: router))
         self.modalTransitionStyle = .crossDissolve
         self.modalPresentationStyle = .overFullScreen
     }

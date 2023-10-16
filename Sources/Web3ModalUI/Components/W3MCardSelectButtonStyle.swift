@@ -18,7 +18,7 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
     public init(
         variant: Variant,
         @ViewBuilder imageContent: @escaping () -> ImageContent,
-        isLoading: Binding<Bool>
+        isLoading: Binding<Bool> = .constant(false)
     ) {
         self.variant = variant
         self.imageContent = imageContent

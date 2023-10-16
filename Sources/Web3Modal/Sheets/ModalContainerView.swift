@@ -10,9 +10,7 @@ struct ModalContainerView: View {
     @StateObject var signInteractor: SignInteractor
     @StateObject var blockchainApiInteractor: BlockchainAPIInteractor
     
-    init() {
-        let router = Router()
-        router.setRoute(Store.shared.session != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
+    init(router: Router) {
         _router = StateObject(wrappedValue: router)
         _w3mApiInteractor = StateObject(
             wrappedValue: W3MAPIInteractor(store: Store.shared)
@@ -30,16 +28,37 @@ struct ModalContainerView: View {
             Color.clear
             
             if self.showModal {
-                Web3ModalView(
-                    viewModel: .init(
-                        router: router,
-                        store: Store.shared,
-                        w3mApiInteractor: w3mApiInteractor,
-                        signInteractor: signInteractor,
-                        blockchainApiInteractor: blockchainApiInteractor,
-                        isShown: $showModal
-                    )
-                )
+                Group {
+                    switch router.currentRoute {
+                        case _ where router.currentRoute as? Router.AccountSubpage != nil:
+                            AccountView(isModalShown: $showModal)
+                                .frame(maxWidth: .infinity)
+                        case _ where router.currentRoute as? Router.ConnectingSubpage != nil:
+                            
+                            Web3ModalView(
+                                viewModel: .init(
+                                    router: router,
+                                    store: Store.shared,
+                                    w3mApiInteractor: w3mApiInteractor,
+                                    signInteractor: signInteractor,
+                                    blockchainApiInteractor: blockchainApiInteractor,
+                                    isShown: $showModal
+                                )
+                            )
+                        case _ where router.currentRoute as? Router.NetworkSwitchSubpage != nil:
+                            ChainSelectView(viewModel: .init(
+                                router: router,
+                                store: Store.shared,
+                                w3mApiInteractor: w3mApiInteractor,
+                                signInteractor: signInteractor,
+                                blockchainApiInteractor: blockchainApiInteractor,
+                                isShown: $showModal
+                            )
+                            )
+                        default:
+                            EmptyView()
+                    }
+                }
                 .transition(.move(edge: .bottom))
                 .animation(.spring(), value: self.showModal)
                 .environmentObject(router)
@@ -88,6 +107,6 @@ struct ModalContainerView: View {
 
 struct ModalContainerView_Previews: PreviewProvider {
     static var previews: some View {
-        ModalContainerView()
+        ModalContainerView(router: Router())
     }
 }

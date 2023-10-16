@@ -91,6 +91,21 @@ public class Web3Modal {
 
 extension Web3Modal {
     
+    public static func selectChain(from presentingViewController: UIViewController? = nil) {
+        guard let vc = presentingViewController ?? topViewController() else {
+            assertionFailure("No controller found for presenting modal")
+            return
+        }
+        
+        _ = Web3Modal.instance
+        
+        let router = Router()
+        router.setRoute(Router.NetworkSwitchSubpage.selectChain)
+        
+        let modal = Web3ModalSheetController(router: router)
+        vc.present(modal, animated: true)
+    }
+    
     public static func present(from presentingViewController: UIViewController? = nil) {
         guard let vc = presentingViewController ?? topViewController() else {
             assertionFailure("No controller found for presenting modal")
@@ -99,7 +114,10 @@ extension Web3Modal {
         
         _ = Web3Modal.instance
         
-        let modal = Web3ModalSheetController()
+        let router = Router()
+        router.setRoute(Store.shared.session != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
+        
+        let modal = Web3ModalSheetController(router: router)
         vc.present(modal, animated: true)
     }
     

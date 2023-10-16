@@ -3,8 +3,7 @@ import SwiftUI
 import WalletConnectSign
 
 class Store: ObservableObject {
-    
-    public static var shared: Store = Store()
+    public static var shared: Store = .init()
     
     @Published var identity: Identity?
     @Published var session: Session?
@@ -15,4 +14,6 @@ class Store: ObservableObject {
     @Published var searchedWallets: [Wallet] = []
     @Published var totalNumberOfWallets: Int = 0
     @Published var walletImages: [String: UIImage] = [:]
+    
+    @Published var selectedChain: Chain? = ChainsPresets.ethChains.first
 }
