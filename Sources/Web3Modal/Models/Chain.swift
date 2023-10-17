@@ -24,9 +24,22 @@ public struct Chain: Identifiable, Hashable {
 }
 
 enum EthUtils {
-    static let ethRequiredMethods = [String]()
-    static let ethOptionalMethods = [String]()
-    static let ethEvents = [String]()
+    
+    static let walletSwitchEthChain = "wallet_switchEthereumChain"
+    static let walletAddEthChain = "wallet_addEthereumChain"
+    
+    static let ethRequiredMethods = [
+        "personal_sign",
+        "eth_signTypedData",
+        "eth_sendTransaction",
+    ]
+    static let ethOptionalMethods = [walletSwitchEthChain, walletAddEthChain]
+    static let ethMethods = ethRequiredMethods + ethOptionalMethods
+    
+    static let chainChanged = "chainChanged"
+    static let accountsChanged = "accountsChanged"
+
+    static let ethEvents = [chainChanged, accountsChanged]
 }
 
 enum ChainsPresets {

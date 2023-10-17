@@ -34,7 +34,7 @@ final class BlockchainAPIInteractor: ObservableObject {
     
     func getBalance() async throws {
         enum GetBalanceError: Error {
-            case noAddress, invalidValue
+            case noAddress, invalidValue, noChain
         }
         
         guard let address = store.session?.accounts.first?.address else {
@@ -47,14 +47,18 @@ final class BlockchainAPIInteractor: ObservableObject {
             ]
         )
         
-        var urlRequest = URLRequest(url: URL(string: store.selectedChain.rpcUrl)!)
+        guard let chain = store.selectedChain else {
+            throw GetBalanceError.noChain
+        }
+        
+        var urlRequest = URLRequest(url: URL(string: chain.rpcUrl)!)
         urlRequest.httpMethod = "POST"
         urlRequest.httpBody = try JSONEncoder().encode(request)
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let (data, _) = try await URLSession.shared.data(for: urlRequest)
         let decodedResponse = try JSONDecoder().decode(RPCResponse.self, from: data)
-        let weiFactor = pow(10, store.selectedChain.token.decimal)
+        let weiFactor = pow(10, chain.token.decimal)
         
         guard let decimalValue = try decodedResponse.result?
             .get(String.self)

@@ -14,6 +14,7 @@
 		CFA99B962AD054A600EB5331 /* secrets.sample.json in Resources */ = {isa = PBXBuildFile; fileRef = CFA99B942AD054A600EB5331 /* secrets.sample.json */; };
 		CFA99B972AD054A600EB5331 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA99B952AD054A600EB5331 /* Secrets.swift */; };
 		CFA99B992AD054CD00EB5331 /* secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = CFA99B982AD054CD00EB5331 /* secrets.json */; };
+		CFD6A70F2ADE8DE2002B402C /* Atlantis in Frameworks */ = {isa = PBXBuildFile; productRef = CFD6A70E2ADE8DE2002B402C /* Atlantis */; };
 		CFD720782A9CC60600636CAF /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720772A9CC60600636CAF /* ExampleApp.swift */; };
 		CFD7207A2A9CC60600636CAF /* ComponentLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */; };
 		CFD7207C2A9CC60700636CAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFD7207B2A9CC60700636CAF /* Assets.xcassets */; };
@@ -27,6 +28,7 @@
 		CFA99B942AD054A600EB5331 /* secrets.sample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = secrets.sample.json; sourceTree = "<group>"; };
 		CFA99B952AD054A600EB5331 /* Secrets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		CFA99B982AD054CD00EB5331 /* secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = secrets.json; sourceTree = "<group>"; };
+		CFD6A7102ADE8E26002B402C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CFD720742A9CC60600636CAF /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFD720772A9CC60600636CAF /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
 		CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentLibraryView.swift; sourceTree = "<group>"; };
@@ -41,6 +43,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CF3B9AD02ACDBA3A00984D53 /* Web3Modal in Frameworks */,
+				CFD6A70F2ADE8DE2002B402C /* Atlantis in Frameworks */,
 				CF3B9AD22ACDBA3A00984D53 /* Web3ModalUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -79,6 +82,7 @@
 		CFD720762A9CC60600636CAF /* Example */ = {
 			isa = PBXGroup;
 			children = (
+				CFD6A7102ADE8E26002B402C /* Info.plist */,
 				CFA99B932AD054A600EB5331 /* Secrets */,
 				CFA99B912AD0549F00EB5331 /* WCSocketFactory.swift */,
 				CFD720772A9CC60600636CAF /* ExampleApp.swift */,
@@ -125,6 +129,7 @@
 			packageProductDependencies = (
 				CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */,
 				CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */,
+				CFD6A70E2ADE8DE2002B402C /* Atlantis */,
 			);
 			productName = Example;
 			productReference = CFD720742A9CC60600636CAF /* Example.app */;
@@ -155,6 +160,7 @@
 			);
 			mainGroup = CFD7206B2A9CC60600636CAF;
 			packageReferences = (
+				CFD6A70D2ADE8DE2002B402C /* XCRemoteSwiftPackageReference "atlantis" */,
 			);
 			productRefGroup = CFD720752A9CC60600636CAF /* Products */;
 			projectDirPath = "";
@@ -322,6 +328,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Example/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -361,6 +368,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Example/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -410,6 +418,17 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		CFD6A70D2ADE8DE2002B402C /* XCRemoteSwiftPackageReference "atlantis" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ProxymanApp/atlantis";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.22.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -418,6 +437,11 @@
 		CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Web3ModalUI;
+		};
+		CFD6A70E2ADE8DE2002B402C /* Atlantis */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CFD6A70D2ADE8DE2002B402C /* XCRemoteSwiftPackageReference "atlantis" */;
+			productName = Atlantis;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

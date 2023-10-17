@@ -17,6 +17,10 @@ struct AccountView: View {
         return String(address.prefix(4)) + "..." + String(address.suffix(4))
     }
     
+    var selectedChain: Chain {
+        return store.selectedChain ?? ChainsPresets.ethChains.first!
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             Image.imageNft
@@ -51,7 +55,7 @@ struct AccountView: View {
             if store.balance != nil {
                 let balance = store.balance?.roundedDecimal(to: 4, mode: .down) ?? 0
                     
-                Text(balance == 0 ? "0 \(store.selectedChain.token.symbol)" : "\(balance, specifier: "%.4f") \(store.selectedChain.token.symbol)")
+                Text(balance == 0 ? "0 \(selectedChain.token.symbol)" : "\(balance, specifier: "%.4f") \(selectedChain.token.symbol)")
                     .font(.paragraph500)
                     .foregroundColor(.Foreground200)
             }
@@ -60,7 +64,9 @@ struct AccountView: View {
                 .frame(height: Spacing.s)
             
             Button {
-                router.navigateToExternalLink(URL(string: store.selectedChain.blockExplorerUrl)!)
+                guard let chain = store.selectedChain else { return }
+                
+                router.navigateToExternalLink(URL(string: chain.blockExplorerUrl)!)
             } label: {
                 Text("Block Explorer")
             }
@@ -83,11 +89,11 @@ struct AccountView: View {
             Button {
                 router.setRoute(Router.NetworkSwitchSubpage.selectChain)
             } label: {
-                Text(store.selectedChain.chainName)
+                Text(selectedChain.chainName)
             }
             .buttonStyle(W3MListSelectStyle(imageContent: { _ in
                 Image(
-                    uiImage: store.chainImages[store.selectedChain.imageId] ?? UIImage()
+                    uiImage: store.chainImages[selectedChain.imageId] ?? UIImage()
                 )
                 .resizable()
                 .clipShape(Circle())

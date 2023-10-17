@@ -46,14 +46,12 @@ struct ChainSelectView: View {
 
     private func gridElement(for chain: Chain) -> some View {
         
-        let isSelected = chain.id == store.selectedChain.id
+        let isSelected = chain.id == store.selectedChain?.id
+        let isChainApproved = viewModel.getChains().contains(chain)
         
         return Button(action: {
-            store.selectedChain = chain
-            if store.session != nil {
-                router.setRoute(Router.AccountSubpage.profile)
-            } else {
-                router.setRoute(Router.ConnectingSubpage.connectWallet)
+            Task {
+                await self.viewModel.switchChain(chain)
             }
         }, label: {
             Text(chain.chainName)
@@ -68,7 +66,7 @@ struct ChainSelectView: View {
             },
             isSelected: isSelected
         ))
-        .disabled(isSelected)
+        .disabled(isSelected || !isChainApproved)
     }
     
     private func modalHeader() -> some View {

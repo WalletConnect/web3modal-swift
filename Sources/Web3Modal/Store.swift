@@ -17,6 +17,6 @@ class Store: ObservableObject {
     @Published var totalNumberOfWallets: Int = 0
     @Published var walletImages: [String: UIImage] = [:]
     
-    @Published var selectedChain: Chain = ChainsPresets.ethChains.first!
+    @Published var selectedChain: Chain?
     @Published var chainImages: [String: UIImage] = [:]
 }

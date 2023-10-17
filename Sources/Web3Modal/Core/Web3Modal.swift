@@ -36,14 +36,25 @@ public class Web3Modal {
             pairingClient: Pair.instance as! (PairingClientProtocol & PairingInteracting & PairingRegisterer)
         )
         
-        Store.shared.session = client.getSessions().first
+        if let session = client.getSessions().first {
+            Store.shared.session = session
+            
+            
+            if let blockchain = session.accounts.first?.blockchain {
+                let matchingChain = ChainsPresets.ethChains.first(where: {
+                    $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
+                })
+                
+                Store.shared.selectedChain = matchingChain
+            }
+        }
         
         return client
     }()
     
     struct Config {
         let projectId: String
-        var chainId: String
+        var chainId: Blockchain
         var metadata: AppMetadata
         var sessionParams: SessionParams
         
@@ -61,7 +72,7 @@ public class Web3Modal {
     ///   - metadata: App metadata
     public static func configure(
         projectId: String,
-        chainId: String,
+        chainId: Blockchain,
         metadata: AppMetadata,
         sessionParams: SessionParams = .default,
         recommendedWalletIds: [String] = [],
@@ -84,6 +95,13 @@ public class Web3Modal {
             "x-sdk-version": "ios-3.0.0-alpha.0",
             "x-sdk-type": "w3m"
         ]
+        
+        
+        let matchingChain = ChainsPresets.ethChains.first(where: {
+            $0.chainNamespace == chainId.namespace && $0.chainReference == chainId.reference
+        })
+        
+        Store.shared.selectedChain = matchingChain
         
         Task {
             try? await W3MAPIInteractor().fetchFeaturedWallets()
@@ -184,9 +202,10 @@ public struct SessionParams {
     }
     
     public static let `default`: Self = {
-        let methods: Set<String> = ["eth_sendTransaction", "eth_sign", "personal_sign", "eth_signTypedData"]
+        let methods: Set<String> = Set(EthUtils.ethMethods)
         let events: Set<String> = ["chainChanged", "accountsChanged"]
-        let blockchains: Set<Blockchain> = [Blockchain("eip155:1")!]
+        let blockchains: Set<Blockchain> = Set(ChainsPresets.ethChains.map(\.id).compactMap(Blockchain.init))
+        
         let namespaces: [String: ProposalNamespace] = [
             "eip155": ProposalNamespace(
                 chains: blockchains,
@@ -194,10 +213,22 @@ public struct SessionParams {
                 events: events
             )
         ]
+        
+        let optionalNamespaces: [String: ProposalNamespace] = [
+            "solana": ProposalNamespace(
+                chains: [
+                    Blockchain("solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ")!
+                ],
+                methods: [
+                    "solana_signMessage",
+                    "solana_signTransaction"
+                ], events: []
+            )
+        ]
        
         return SessionParams(
             requiredNamespaces: [:],
-            optionalNamespaces: namespaces,
+            optionalNamespaces: namespaces.merging(optionalNamespaces, uniquingKeysWith: { old, new in  old }),
             sessionProperties: nil
         )
     }()
