@@ -2,9 +2,14 @@ import SwiftUI
 import Web3Modal
 import WalletConnectSign
 
+import Atlantis
+
 @main
 struct ExampleApp: App {
     init() {
+        
+        Atlantis.start()
+        
         let metadata = AppMetadata(
             name: "Web3Modal Swift Dapp",
             description: "Web3Modal DApp sample",
@@ -21,6 +26,7 @@ struct ExampleApp: App {
 
         Web3Modal.configure(
             projectId: projectId,
+            chainId: Blockchain("eip155:1")!,
             metadata: metadata
         )
     }
