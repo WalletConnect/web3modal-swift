@@ -97,11 +97,11 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                 switch variant {
                 case .network:
                     Polygon(count: 6, relativeCornerRadius: 0.25)
-                        .stroke(.Overgray010, lineWidth: 1)
+                        .stroke(isSelected ? .Blue100 : .Overgray010, lineWidth: 1)
                         .background(Polygon(count: 6, relativeCornerRadius: 0.25).fill(.Overgray005).opacity(isLoading ? 1 : 0))
                 case .wallet:
                     RoundedRectangle(cornerRadius: Radius.xs)
-                        .strokeBorder(.Overgray010, lineWidth: 1)
+                        .strokeBorder(isSelected ? .Blue100 : .Overgray010, lineWidth: 1)
                         .background(RoundedRectangle(cornerRadius: Radius.xs).fill(.Overgray005).opacity(isLoading ? 1 : 0))
                 }
             }

@@ -16,7 +16,7 @@ struct GetAWalletView: View {
                     Text(wallet.name)
                 })
                 .buttonStyle(W3MListSelectStyle(
-                    imageContent: {
+                    imageContent: { _ in
                         AsyncImage(url: URL(string: "https://api.web3modal.com/getWalletImage/\(wallet.imageId)")) { image in 
                             image.resizable()
                         } placeholder: {
@@ -32,7 +32,7 @@ struct GetAWalletView: View {
                 Text("Explorer all")
             })
             .buttonStyle(W3MListSelectStyle(
-                imageContent: {
+                imageContent: { _ in
                     W3MAllWalletsImage(images: [
                         .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Metamask"),
                         .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Trust"),
