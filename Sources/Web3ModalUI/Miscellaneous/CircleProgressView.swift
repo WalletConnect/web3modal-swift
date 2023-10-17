@@ -92,23 +92,6 @@ class CircleProgressUIView: UIView {
                 height: self.bounds.width
             )
         ).cgPath
-        
-        
-        
-//        let cornerRadius: CGFloat = 25
-//        let rect = self.bounds
-//        let path = CGMutablePath()
-//
-//        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
-//        path.addLine(to: CGPoint(x: rect.maxX - cornerRadius, y: rect.minY))
-//        path.addArc(tangent1End: CGPoint(x: rect.maxX, y: rect.minY), tangent2End: CGPoint(x: rect.maxX, y: rect.minY + cornerRadius), radius: cornerRadius)
-//        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY - cornerRadius))
-//        path.addArc(tangent1End: CGPoint(x: rect.maxX, y: rect.maxY), tangent2End: CGPoint(x: rect.maxX - cornerRadius, y: rect.maxY), radius: cornerRadius)
-//        path.addLine(to: CGPoint(x: rect.minX + cornerRadius, y: rect.maxY))
-//        path.addArc(tangent1End: CGPoint(x: rect.minX, y: rect.maxY), tangent2End: CGPoint(x: rect.minX, y: rect.maxY - cornerRadius), radius: cornerRadius)
-//        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + cornerRadius))
-//        path.addArc(tangent1End: CGPoint(x: rect.minX, y: rect.minY), tangent2End: CGPoint(x: rect.minX + cornerRadius, y: rect.minY), radius: cornerRadius)
-//        path.closeSubpath()
 
         shapeLayer.path = path
     }
