@@ -4,6 +4,8 @@ import Web3ModalUI
 
 struct ContentView: View {
     
+    @State var showUIComponets: Bool = false
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -20,8 +22,13 @@ struct ContentView: View {
                 .buttonStyle(W3MButtonStyle(variant: .accent, leftIcon: Image(systemName: "network")))
                 
                 Spacer()
-                
-                NavigationLink("UI Components", destination: ComponentLibraryView())
+                    
+                NavigationLink(destination: ComponentLibraryView(), isActive: $showUIComponets) {
+                    Button("UI components") {
+                        showUIComponets = true
+                    }
+                    .buttonStyle(W3MButtonStyle())
+                }
             }
         }
     }
