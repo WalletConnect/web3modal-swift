@@ -8,7 +8,6 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
 
     var imageContent: () -> ImageContent
     var tag: W3MTag?
-    var allWalletsImage: W3MAllWalletsImage?
 
     var isPressedOverride: Bool?
 
