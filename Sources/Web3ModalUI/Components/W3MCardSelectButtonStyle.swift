@@ -12,17 +12,20 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
 
     var imageContent: () -> ImageContent
     var isPressedOverride: Bool?
-
+    var isSelected: Bool
+    
     @Binding var isLoading: Bool
 
     public init(
         variant: Variant,
         @ViewBuilder imageContent: @escaping () -> ImageContent,
-        isLoading: Binding<Bool>
+        isLoading: Binding<Bool> = .constant(false),
+        isSelected: Bool = false
     ) {
         self.variant = variant
         self.imageContent = imageContent
         self._isLoading = isLoading
+        self.isSelected = isSelected
     }
 
     #if DEBUG
@@ -30,22 +33,31 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
             variant: Variant,
             @ViewBuilder imageContent: @escaping () -> ImageContent,
             isPressedOverride: Bool? = nil,
-            isLoading: Binding<Bool>
+            isLoading: Binding<Bool>,
+            isSelected: Bool = false
         ) {
             self.variant = variant
             self.imageContent = imageContent
             self.isPressedOverride = isPressedOverride
             self._isLoading = isLoading
+            self.isSelected = isSelected
         }
     #endif
 
     public func makeBody(configuration: Configuration) -> some View {
-        VStack(spacing: Spacing.xs) {
+        
+        var backgroundColor: Color = (isPressedOverride ?? configuration.isPressed) ? .Overgray010 : .Overgray005
+        backgroundColor = isSelected ? Color.Blue100.opacity(0.2) : backgroundColor
+        
+        var foregroundColor: Color = (isPressedOverride ?? configuration.isPressed) ? .Blue100 : .Foreground100
+        foregroundColor = isSelected ? .Blue100 : foregroundColor
+        
+        return VStack(spacing: Spacing.xs) {
             imageComponent()
 
             configuration.label
                 .font(.tiny500)
-                .foregroundColor((isPressedOverride ?? configuration.isPressed) ? .Blue100 : .Foreground100)
+                .foregroundColor(foregroundColor)
                 .frame(maxWidth: .infinity)
                 .opacity(isLoading ? 0 : 1)
                 .overlay {
@@ -56,17 +68,13 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                 }
                 .padding(.horizontal, Spacing.xs)
         }
-        .transform {
-            if isLoading {
-                $0.modifier(ShimmerBackground())
-            } else {
-                $0
-            }
+        .if(isLoading) {
+            $0.modifier(ShimmerBackground())
         }
-        .opacity(isEnabled ? 1 : 0.5)
+        .opacity(isEnabled || isSelected ? 1 : 0.5)
         .padding(.top, Spacing.xs)
         .padding(.bottom, Spacing.xxs)
-        .background((isPressedOverride ?? configuration.isPressed) ? .Overgray010 : .Overgray005)
+        .background(backgroundColor)
         .cornerRadius(Radius.xs)
         .frame(minWidth: 76, maxWidth: 76, minHeight: 96, maxHeight: 96)
     }
@@ -75,8 +83,8 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
     func imageComponent() -> some View {
         imageContent()
             .frame(width: 56, height: 56)
-            .saturation(isEnabled ? 1 : 0)
-            .opacity(isEnabled ? 1 : 0.5)
+            .saturation(isEnabled || isSelected ? 1 : 0)
+            .opacity(isEnabled || isSelected ? 1 : 0.5)
             .transform {
                 switch variant {
                 case .network:
@@ -89,11 +97,11 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                 switch variant {
                 case .network:
                     Polygon(count: 6, relativeCornerRadius: 0.25)
-                        .stroke(.Overgray010, lineWidth: 1)
+                        .stroke(isSelected ? .Blue100 : .Overgray010, lineWidth: 1)
                         .background(Polygon(count: 6, relativeCornerRadius: 0.25).fill(.Overgray005).opacity(isLoading ? 1 : 0))
                 case .wallet:
                     RoundedRectangle(cornerRadius: Radius.xs)
-                        .strokeBorder(.Overgray010, lineWidth: 1)
+                        .strokeBorder(isSelected ? .Blue100 : .Overgray010, lineWidth: 1)
                         .background(RoundedRectangle(cornerRadius: Radius.xs).fill(.Overgray005).opacity(isLoading ? 1 : 0))
                 }
             }
@@ -126,6 +134,16 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                     ))
                     .disabled(true)
 
+                    Button(action: {}, label: {
+                        Text("Rainbow")
+                    })
+                    .buttonStyle(W3MCardSelectStyle(
+                        variant: .wallet,
+                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
+                        isLoading: .constant(false),
+                        isSelected: true
+                    ))
+                    
                     Button(action: {}, label: {
                         Text("Rainbow")
                     })
@@ -165,6 +183,16 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                         isLoading: .constant(false)
                     ))
                     .disabled(true)
+                    
+                    Button(action: {}, label: {
+                        Text("Polygon")
+                    })
+                    .buttonStyle(W3MCardSelectStyle(
+                        variant: .network,
+                        imageContent: { Image("MockChainImage", bundle: .module).resizable() },
+                        isLoading: .constant(false),
+                        isSelected: true
+                    ))
 
                     Button(action: {}, label: {
                         Text("Polygon")

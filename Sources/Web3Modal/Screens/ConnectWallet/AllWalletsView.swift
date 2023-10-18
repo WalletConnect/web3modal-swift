@@ -142,7 +142,7 @@ struct AllWalletsView: View {
         Button {
             router.subpage = .qr
         } label: {
-            Image.Qrcode
+            Image.optionQrCode
         }
     }
 }
