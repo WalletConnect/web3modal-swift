@@ -49,6 +49,13 @@ public class Web3ModalClient {
         signClient.socketConnectionStatusPublisher.eraseToAnyPublisher()
     }
     
+    /// Publisher that sends session event
+    ///
+    /// Event will be emited on dApp client only
+    public var sessionEventPublisher: AnyPublisher<(event: Session.Event, sessionTopic: String, chainId: Blockchain?), Never> {
+        signClient.sessionEventPublisher.eraseToAnyPublisher()
+    }
+    
     // MARK: - Private Properties
 
     private let signClient: SignClientProtocol

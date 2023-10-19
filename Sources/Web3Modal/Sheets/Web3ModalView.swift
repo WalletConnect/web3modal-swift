@@ -33,9 +33,7 @@ struct Web3ModalView: View {
         case let .walletDetail(wallet):
             WalletDetail(viewModel: .init(wallet: wallet, deeplinkHandler: viewModel))
         case .getWallet:
-            GetAWalletView(
-                wallets: []
-            )
+            GetAWalletView()
         }
     }
     

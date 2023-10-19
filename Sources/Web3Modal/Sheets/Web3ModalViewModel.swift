@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import WalletConnectSign
 import WalletConnectUtils
 
 class Web3ModalViewModel: ObservableObject {
@@ -92,6 +93,28 @@ class Web3ModalViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
         
+        struct ChainChangedEvent: Codable {
+            let chainId: String
+        }
+        
+        signInteractor.sessionEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { (event: Session.Event, _: String, _: Blockchain?) in
+                
+                switch event.name {
+                case "chainChanged":
+                    guard let chainReference = try? event.data.get(Int.self) else {
+                        return
+                    }
+                    
+                    store.selectedChain = ChainsPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
+                    
+                default:
+                    return
+                }
+            }
+            .store(in: &disposeBag)
+        
         fetchFeaturedWallets()
         
         Task {
@@ -131,29 +154,17 @@ class Web3ModalViewModel: ObservableObject {
     
     func switchChain(_ to: Chain) async {
         guard let from = store.selectedChain else { return }
-        let isChainApproved = getChains().contains(to)
         
         do {
             try await switchEthChain(from: from, to: to)
-            DispatchQueue.main.async {
-                self.store.selectedChain = to
-            }
         } catch {
-            
             print(error.localizedDescription)
-            print("Failed to switch chain, trying to add it instead")
             
-//            if !isChainApproved, to.optionalMethods.contains(EthUtils.walletAddEthChain) {
-                do {
-                    try await addEthChain(from: from, to: to)
-                    DispatchQueue.main.async {
-                        self.store.selectedChain = to
-                    }
-                } catch {
-                    print("Failed to add chain")
-                    print(error.localizedDescription)
-                }
-//            }
+            do {
+                try await addEthChain(from: from, to: to)
+            } catch {
+                print(error.localizedDescription)
+            }
         }
         
         DispatchQueue.main.async {
@@ -165,12 +176,13 @@ class Web3ModalViewModel: ObservableObject {
         }
     }
     
+    @discardableResult
     private func switchEthChain(
         from: Chain,
         to: Chain
-    ) async throws {
-        guard let session = store.session else { return }
-        guard let chainIdNumber = Int(to.chainReference) else { return }
+    ) async throws -> String? {
+        guard let session = store.session else { return nil }
+        guard let chainIdNumber = Int(to.chainReference) else { return nil }
         
         let chainHex = String(format: "%X", chainIdNumber)
         
@@ -178,26 +190,77 @@ class Web3ModalViewModel: ObservableObject {
             .init(
                 topic: session.topic,
                 method: EthUtils.walletSwitchEthChain,
-                params: AnyCodable(ChainSwitchParams(chainID: "0x\(chainHex)")),
+                params: AnyCodable([AnyCodable(ChainSwitchParams(chainId: "0x\(chainHex)"))]),
                 chainId: .init(from.id)!
             )
         )
+        
+        let result = try await withCheckedThrowingContinuation { continuation in
+            var cancellable: AnyCancellable?
+            cancellable = Web3Modal.instance.sessionResponsePublisher
+                .sink { response in
+                    defer { cancellable?.cancel() }
+                    switch response.result {
+                    case .response(let value):
+                        do {
+                            let string = try value.get(String.self)
+                            continuation.resume(returning: string)
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    case .error(let error):
+                        continuation.resume(throwing: error)
+                    }
+                }
+        }
+        
+        DispatchQueue.main.async {
+            self.store.selectedChain = to
+        }
+        
+        return result
     }
 
+    @discardableResult
     private func addEthChain(
         from: Chain,
         to: Chain
-    ) async throws {
-        guard let session = store.session else { return }
+    ) async throws -> String? {
+        guard let session = store.session else { return nil }
         
         try await Web3Modal.instance.request(params:
             .init(
                 topic: session.topic,
                 method: EthUtils.walletAddEthChain,
-                params: AnyCodable(createAddEthChainParams(chain: to)),
+                params: AnyCodable([AnyCodable(createAddEthChainParams(chain: to))]),
                 chainId: .init(from.id)!
             )
         )
+        
+        let result = try await withCheckedThrowingContinuation { continuation in
+            var cancellable: AnyCancellable?
+            cancellable = Web3Modal.instance.sessionResponsePublisher
+                .sink { response in
+                    defer { cancellable?.cancel() }
+                    switch response.result {
+                    case .response(let value):
+                        do {
+                            let string = try value.get(String.self)
+                            continuation.resume(returning: string)
+                        } catch {
+                            continuation.resume(throwing: error)
+                        }
+                    case .error(let error):
+                        continuation.resume(throwing: error)
+                    }
+                }
+        }
+        
+        DispatchQueue.main.async {
+            self.store.selectedChain = to
+        }
+        
+        return result
     }
 
     func createAddEthChainParams(chain: Chain) -> ChainAddParams? {
@@ -241,7 +304,7 @@ class Web3ModalViewModel: ObservableObject {
     }
     
     struct ChainSwitchParams: Codable {
-        let chainID: String
+        let chainId: String
     }
     
     func getChains() -> [Chain] {
@@ -249,12 +312,23 @@ class Web3ModalViewModel: ObservableObject {
             return []
         }
         
-        let chains = namespaces
+        var chains = namespaces
             .compactMap { $0.chains }
             .flatMap { $0 }
             .filter { chain in
                 isChainIdCAIP2Compliant(chainId: chain.absoluteString)
             }
+        
+        if let requiredNamespaces = store.session?.requiredNamespaces.values {
+            let requiredChains = requiredNamespaces
+                .compactMap { $0.chains }
+                .flatMap { $0 }
+                .filter { chain in
+                    isChainIdCAIP2Compliant(chainId: chain.absoluteString)
+                }
+            
+            chains.append(contentsOf: requiredChains)
+        }
         
         return chains
             .compactMap { chain in

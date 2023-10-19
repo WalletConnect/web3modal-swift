@@ -2,16 +2,16 @@ import SwiftUI
 import Web3ModalUI
 
 struct GetAWalletView: View {
-    let wallets: [Wallet]
-    
     @EnvironmentObject var router: Router
+    @EnvironmentObject var store: Store
     
     var body: some View {
         VStack {
-            
-            ForEach(wallets, id: \.self) { wallet in
+            ForEach(store.featuredWallets.prefix(4), id: \.self) { wallet in
                 Button(action: {
-                
+                    if let appstoreLink = wallet.appStore {
+                        router.openURL(URL(string: appstoreLink)!)
+                    }
                 }, label: {
                     Text(wallet.name)
                 })
@@ -33,12 +33,7 @@ struct GetAWalletView: View {
             })
             .buttonStyle(W3MListSelectStyle(
                 imageContent: { _ in
-                    W3MAllWalletsImage(images: [
-                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Metamask"),
-                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Trust"),
-                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Safe"),
-                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Rainbow"),
-                    ])
+                    Image.optionAll
                 }
             ))
         }
@@ -51,9 +46,7 @@ struct GetAWalletView: View {
 
 struct GetAWalletView_Previews: PreviewProvider {
     static var previews: some View {
-        GetAWalletView(
-            wallets: Wallet.stubList
-        )
+        GetAWalletView()
     }
 }
 

@@ -94,6 +94,7 @@ struct ModalContainerView: View {
                 self.showModal = true
             }
         }
+        .ignoresSafeArea(.keyboard)
     }
     
     private func dismiss() {
