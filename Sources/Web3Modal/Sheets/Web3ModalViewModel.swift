@@ -3,8 +3,8 @@ import SwiftUI
 import WalletConnectUtils
 
 class Web3ModalViewModel: ObservableObject {
-    private var router: Router
-    private var store: Store
+    private(set) var router: Router
+    private(set) var store: Store
     private var w3mApiInteractor: W3MAPIInteractor
     private var signInteractor: SignInteractor
     private var blockchainApiInteractor: BlockchainAPIInteractor
@@ -44,7 +44,6 @@ class Web3ModalViewModel: ObservableObject {
                 }
                 router.setRoute(Router.AccountSubpage.profile)
                 store.session = session
-                store.uri = nil
                 
                 if
                     let blockchain = session.accounts.first?.blockchain,
@@ -63,7 +62,6 @@ class Web3ModalViewModel: ObservableObject {
                 
                 print(reason)
                 
-                store.uri = nil
                 Task {
                     try? await signInteractor.createPairingAndConnect()
                 }
@@ -95,6 +93,10 @@ class Web3ModalViewModel: ObservableObject {
             .store(in: &disposeBag)
         
         fetchFeaturedWallets()
+        
+        Task {
+            try? await signInteractor.createPairingAndConnect()
+        }
     }
     
     func fetchFeaturedWallets() {

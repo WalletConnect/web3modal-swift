@@ -112,6 +112,15 @@ public class Web3Modal {
     public static func set(sessionParams: SessionParams) {
         Web3Modal.config.sessionParams = sessionParams
     }
+    
+    
+    public static func getSelectedChain() -> Chain? {
+        guard let chain = Store.shared.selectedChain else {
+            return nil
+        }
+        
+        return chain
+    }
 }
 
 #if canImport(UIKit)

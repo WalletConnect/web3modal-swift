@@ -32,5 +32,6 @@ class SignInteractor: ObservableObject {
         }
         
         try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
+        try await createPairingAndConnect()
     }
 }

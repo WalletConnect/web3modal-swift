@@ -12,8 +12,12 @@ class Router: ObservableObject {
         self.uiApplicationWrapper = uiApplicationWrapper
     }
     
-    func navigateToExternalLink(_ url: URL) {
-        uiApplicationWrapper.openURL(url, nil)
+    func openURL(_ url: URL, completionHandler: ((Bool) -> Void)? = nil) {
+        uiApplicationWrapper.openURL(url, completionHandler)
+    }
+    
+    func canOpenURL(_ url: URL) -> Bool {
+        uiApplicationWrapper.canOpenURL(url)
     }
     
     func setRoute(_ route: any SubPage) {
@@ -24,10 +28,9 @@ class Router: ObservableObject {
     }
     
     func goBack() {
-        if let prev = previousRoute {
-            withAnimation {
-                currentRoute = prev
-            }
+        let prev = previousRoute ?? Router.ConnectingSubpage.connectWallet
+        withAnimation {
+            currentRoute = prev
         }
         previousRoute = nil
     }

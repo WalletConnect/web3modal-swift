@@ -30,11 +30,11 @@ struct Web3ModalView: View {
             ConnectWithQRCode()
         case .whatIsAWallet:
             WhatIsWalletView()
-        case .walletDetail:
-            EmptyView()
+        case let .walletDetail(wallet):
+            WalletDetail(viewModel: .init(wallet: wallet, deeplinkHandler: viewModel))
         case .getWallet:
             GetAWalletView(
-                wallets: Wallet.stubList
+                wallets: []
             )
         }
     }

@@ -27,7 +27,7 @@ struct GetAWalletView: View {
             }
                 
             Button(action: {
-                router.navigateToExternalLink(URL(string: "https://walletconnect.com/explorer?type=wallet")!)
+                router.openURL(URL(string: "https://walletconnect.com/explorer?type=wallet")!)
             }, label: {
                 Text("Explorer all")
             })

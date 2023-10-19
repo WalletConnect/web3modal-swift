@@ -5,26 +5,30 @@ struct ConnectWalletView: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var router: Router
     
+    let displayWCConnection = false
+    
     var body: some View {
         VStack {
-            Button(action: {
-                router.setRoute(Router.ConnectingSubpage.qr)
-            }, label: {
-                Text("WalletConnect")
-            })
-            .buttonStyle(W3MListSelectStyle(
-                imageContent: { _ in 
-                    ZStack {
-                        Color.Blue100
-                        
-                        Image.imageLogo
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .foregroundColor(.white)
-                    }
-                },
-                tag: W3MTag(title: "QR Code", variant: .main)
-            ))
+            if displayWCConnection {
+                Button(action: {
+                    router.setRoute(Router.ConnectingSubpage.qr)
+                }, label: {
+                    Text("WalletConnect")
+                })
+                .buttonStyle(W3MListSelectStyle(
+                    imageContent: { _ in 
+                        ZStack {
+                            Color.Blue100
+                            
+                            Image.imageLogo
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .foregroundColor(.white)
+                        }
+                    },
+                    tag: W3MTag(title: "QR Code", variant: .main)
+                ))
+            }
             
             ForEach(store.featuredWallets, id: \.self) { wallet in
                 Button(action: {

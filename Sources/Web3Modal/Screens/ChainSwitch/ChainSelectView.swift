@@ -47,7 +47,8 @@ struct ChainSelectView: View {
     private func gridElement(for chain: Chain) -> some View {
         
         let isSelected = chain.id == store.selectedChain?.id
-        let isChainApproved = viewModel.getChains().contains(chain)
+        let currentChains = viewModel.getChains()
+        let isChainApproved = true // store.session != nil ? currentChains.contains(chain) : true
         
         return Button(action: {
             Task {

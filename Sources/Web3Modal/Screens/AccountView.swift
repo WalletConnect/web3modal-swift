@@ -66,7 +66,7 @@ struct AccountView: View {
             Button {
                 guard let chain = store.selectedChain else { return }
                 
-                router.navigateToExternalLink(URL(string: chain.blockExplorerUrl)!)
+                router.openURL(URL(string: chain.blockExplorerUrl)!)
             } label: {
                 Text("Block Explorer")
             }

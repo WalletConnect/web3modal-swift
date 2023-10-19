@@ -2,13 +2,13 @@ import Combine
 import SwiftUI
 import WalletConnectSign
 
-class Store: ObservableObject {
+public class Store: ObservableObject {
     public static var shared: Store = .init()
     
     @Published var identity: Identity?
     @Published var balance: Double?
     
-    @Published var session: Session?
+    @Published public var session: Session?
     @Published var uri: WalletConnectURI?
     
     @Published var wallets: [Wallet] = []
@@ -17,6 +17,6 @@ class Store: ObservableObject {
     @Published var totalNumberOfWallets: Int = 0
     @Published var walletImages: [String: UIImage] = [:]
     
-    @Published var selectedChain: Chain?
+    @Published public var selectedChain: Chain?
     @Published var chainImages: [String: UIImage] = [:]
 }

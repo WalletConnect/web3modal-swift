@@ -40,7 +40,7 @@ struct WhatIsNetworkView: View {
             }
 
             Button(action: {
-                router.navigateToExternalLink(URL(string: "https://ethereum.org/en/developers/docs/networks/")!)
+                router.openURL(URL(string: "https://ethereum.org/en/developers/docs/networks/")!)
             }) {
                 HStack {
                     Text("Learn More")
