@@ -6,7 +6,6 @@ import XCTest
 final class W3MListSelectSnapshotTests: XCTestCase {
     func test_snapshots() throws {
         let view = W3MListSelectStylePreviewView()
-
         assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone13), traits: .init(userInterfaceStyle: .dark)))
         assertSnapshot(matching: view, as: .image(layout: .device(config: .iPhone13), traits: .init(userInterfaceStyle: .light)))
         

@@ -90,8 +90,6 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
     public struct W3MListSelectStylePreviewView: View {
         public init() {}
         
-        
-
         public var body: some View {
             ScrollView {
                 VStack {
