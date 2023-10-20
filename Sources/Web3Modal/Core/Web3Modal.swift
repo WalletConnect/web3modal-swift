@@ -4,7 +4,6 @@ import SwiftUI
 import WalletConnectSign
 import WalletConnectVerify
 
-
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -29,10 +28,25 @@ public class Web3Modal {
         guard let config = Web3Modal.config else {
             fatalError("Error - you must call Web3Modal.configure(_:) before accessing the shared instance.")
         }
-        return Web3ModalClient(
+        
+        let client = Web3ModalClient(
             signClient: Sign.instance,
             pairingClient: Pair.instance as! (PairingClientProtocol & PairingInteracting & PairingRegisterer)
         )
+        
+        if let session = client.getSessions().first {
+            Store.shared.session = session
+                   
+            if let blockchain = session.accounts.first?.blockchain {
+                let matchingChain = ChainsPresets.ethChains.first(where: {
+                    $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
+                })
+                       
+                Store.shared.selectedChain = matchingChain
+            }
+        }
+        
+        return client
     }()
     
     struct Config {
@@ -68,7 +82,12 @@ public class Web3Modal {
             includeWebWallets: includeWebWallets,
             recommendedWalletIds: recommendedWalletIds,
             excludedWalletIds: excludedWalletIds
-        )        
+        )
+        
+        Task {
+            try? await W3MAPIInteractor().fetchFeaturedWallets()
+            try? await W3MAPIInteractor().prefetchChainImages()
+        }
     }
     
     public static func set(sessionParams: SessionParams) {
@@ -79,7 +98,6 @@ public class Web3Modal {
 #if canImport(UIKit)
 
 extension Web3Modal {
-    
     public static func present(from presentingViewController: UIViewController? = nil) {
         guard let vc = presentingViewController ?? topViewController() else {
             assertionFailure("No controller found for presenting modal")
@@ -91,7 +109,6 @@ extension Web3Modal {
     }
     
     private static func topViewController(_ base: UIViewController? = nil) -> UIViewController? {
-        
         let base = base ?? UIApplication
             .shared
             .connectedScenes
@@ -121,10 +138,8 @@ extension Web3Modal {
 
 import AppKit
 
-extension Web3Modal {
-    
-    public static func present(from presentingViewController: NSViewController? = nil) {
-        
+public extension Web3Modal {
+    static func present(from presentingViewController: NSViewController? = nil) {
         let modal = Web3ModalSheetController()
         presentingViewController!.presentAsModalWindow(modal)
     }
@@ -137,7 +152,7 @@ public struct SessionParams {
     public let optionalNamespaces: [String: ProposalNamespace]?
     public let sessionProperties: [String: String]?
     
-    public init(requiredNamespaces: [String : ProposalNamespace], optionalNamespaces: [String : ProposalNamespace]? = nil, sessionProperties: [String : String]? = nil) {
+    public init(requiredNamespaces: [String: ProposalNamespace], optionalNamespaces: [String: ProposalNamespace]? = nil, sessionProperties: [String: String]? = nil) {
         self.requiredNamespaces = requiredNamespaces
         self.optionalNamespaces = optionalNamespaces
         self.sessionProperties = sessionProperties
@@ -162,4 +177,3 @@ public struct SessionParams {
         )
     }()
 }
-
