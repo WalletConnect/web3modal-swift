@@ -17,6 +17,12 @@ public class Store: ObservableObject {
     @Published var totalNumberOfWallets: Int = 0
     @Published var walletImages: [String: UIImage] = [:]
     
+    var recentWallets: [Wallet] = RecentWalletsStorage().loadRecentWallets() {
+        didSet {
+            RecentWalletsStorage().saveRecentWallets(recentWallets.suffix(3))
+        }
+    }
+    
     @Published public var selectedChain: Chain?
     @Published var chainImages: [String: UIImage] = [:]
 }

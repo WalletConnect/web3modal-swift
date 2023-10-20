@@ -93,10 +93,6 @@ class Web3ModalViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
         
-        struct ChainChangedEvent: Codable {
-            let chainId: String
-        }
-        
         signInteractor.sessionEventPublisher
             .receive(on: DispatchQueue.main)
             .sink { (event: Session.Event, _: String, _: Blockchain?) in
@@ -115,20 +111,8 @@ class Web3ModalViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
         
-        fetchFeaturedWallets()
-        
         Task {
             try? await signInteractor.createPairingAndConnect()
-        }
-    }
-    
-    func fetchFeaturedWallets() {
-        Task {
-            do {
-                try await w3mApiInteractor.fetchFeaturedWallets()
-            } catch {
-                print(error.localizedDescription)
-            }
         }
     }
     
@@ -159,6 +143,8 @@ class Web3ModalViewModel: ObservableObject {
             try await switchEthChain(from: from, to: to)
         } catch {
             print(error.localizedDescription)
+        
+            // TODO: Call addChain only if the error code is 4902
             
             do {
                 try await addEthChain(from: from, to: to)

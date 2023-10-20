@@ -30,6 +30,30 @@ struct ConnectWalletView: View {
                 ))
             }
             
+            ForEach(store.recentWallets, id: \.self) { wallet in
+                Button(action: {
+                    router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+                }, label: {
+                    Text(wallet.name)
+                })
+                .buttonStyle(W3MListSelectStyle(
+                    imageContent: { scale in
+                        Image(
+                            uiImage: store.walletImages[wallet.imageId]
+                            ?? UIImage(named: "Wallet", in: .UIModule, compatibleWith: nil)
+                            ?? UIImage()
+                        
+                        )
+                        .resizable()
+                        .background(.Overgray005)
+                        .overlay {
+                            RoundedRectangle(cornerRadius: Radius.xxxs * scale)
+                                .strokeBorder(.Overgray010, lineWidth: 1 * scale)
+                        }
+                    }
+                ))
+            }
+            
             ForEach(store.featuredWallets, id: \.self) { wallet in
                 Button(action: {
                     router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
