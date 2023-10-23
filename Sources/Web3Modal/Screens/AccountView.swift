@@ -23,11 +23,7 @@ struct AccountView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            Image.imageNft
-                .resizable()
-                .frame(width: 64, height: 64)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(.GrayGlass005, lineWidth: 8))
+            avatar()
             
             Spacer()
                 .frame(height: Spacing.xl)
@@ -146,6 +142,21 @@ struct AccountView: View {
         .cornerRadius(30, corners: [.topLeft, .topRight])
     }
     
+    @ViewBuilder
+    func avatar() -> some View {
+        if let avatarUrlString = store.identity?.avatar, let url = URL(string: avatarUrlString) {
+            AsyncImage(url: url)
+                .frame(width: 64, height: 64)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(.GrayGlass010, lineWidth: 8))
+            
+        } else if let address = store.session?.accounts.first?.address {
+            W3MAvatarGradient(address: address)
+                .frame(width: 64, height: 64)
+                .overlay(Circle().stroke(.GrayGlass010, lineWidth: 8))
+        }
+    }
+    
     func disconnect() {
         Task {
             do {
@@ -176,3 +187,4 @@ extension Double {
         return Double(truncating: result as NSNumber)
     }
 }
+
