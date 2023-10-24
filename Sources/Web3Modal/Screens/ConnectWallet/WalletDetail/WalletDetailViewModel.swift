@@ -21,9 +21,12 @@ final class WalletDetailViewModel: ObservableObject {
     
     @Published var preferredPlatform: Platform = .native
     
-    var showToggle: Bool { true }
-    var showUniversalLink: Bool { preferredPlatform == .native && wallet.webappLink?.isEmpty == false }
-    var hasNativeLink: Bool { wallet.mobileLink?.isEmpty == false }
+    var showToggle: Bool {
+        hasWebAppLink && hasMobileLink
+    }
+    
+    var hasWebAppLink: Bool { wallet.webappLink?.isEmpty == false }
+    var hasMobileLink: Bool { wallet.mobileLink?.isEmpty == false }
     
     init(
         wallet: Wallet,
@@ -40,11 +43,15 @@ final class WalletDetailViewModel: ObservableObject {
         switch event {
         case .didTapCopy:
             UIPasteboard.general.string = store.uri?.absoluteString ?? ""
+            store.toast = .init(style: .info, message: "Link copied")
         case .onAppear:
             navigateToDeepLink(
                 wallet: wallet,
                 preferBrowser: preferredPlatform == .browser
             )
+            
+            var wallet = wallet
+            wallet.lastTimeUsed = Date()
             
             store.recentWallets.append(wallet)
         case .didTapOpen:
@@ -81,7 +88,7 @@ final class WalletDetailViewModel: ObservableObject {
                 throw DeeplinkErrors.noWalletLinkFound
             }
         } catch {
-            print(error.localizedDescription)
+            store.toast = .init(style: .error, message: error.localizedDescription)
         }
     }
 

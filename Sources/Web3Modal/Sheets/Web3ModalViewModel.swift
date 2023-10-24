@@ -121,7 +121,7 @@ class Web3ModalViewModel: ObservableObject {
             do {
                 try await blockchainApiInteractor.getIdentity()
             } catch {
-                print(error.localizedDescription)
+                store.toast = .init(style: .error, message: error.localizedDescription)
             }
         }
     }
@@ -131,7 +131,7 @@ class Web3ModalViewModel: ObservableObject {
             do {
                 try await blockchainApiInteractor.getBalance()
             } catch {
-                print(error.localizedDescription)
+                store.toast = .init(style: .error, message: error.localizedDescription)
             }
         }
     }
@@ -143,13 +143,13 @@ class Web3ModalViewModel: ObservableObject {
             try await switchEthChain(from: from, to: to)
         } catch {
             print(error.localizedDescription)
-        
+            store.toast = .init(style: .error, message: error.localizedDescription)
             // TODO: Call addChain only if the error code is 4902
             
             do {
                 try await addEthChain(from: from, to: to)
             } catch {
-                print(error.localizedDescription)
+                store.toast = .init(style: .error, message: error.localizedDescription)
             }
         }
         
@@ -180,6 +180,8 @@ class Web3ModalViewModel: ObservableObject {
                 chainId: .init(from.id)!
             )
         )
+        
+        // TODO: Nice to have: Somehow open the wallet with switch confirmation dialog
         
         let result = try await withCheckedThrowingContinuation { continuation in
             var cancellable: AnyCancellable?

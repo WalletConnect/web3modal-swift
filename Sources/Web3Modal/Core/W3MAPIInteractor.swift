@@ -6,6 +6,7 @@ final class W3MAPIInteractor: ObservableObject {
     @Published var isLoading: Bool = false
     
     private let store: Store
+    private let uiApplicationWrapper: UIApplicationWrapper
     
     private let entriesPerPage: Int = 40
     
@@ -13,8 +14,12 @@ final class W3MAPIInteractor: ObservableObject {
     var totalPage: Int = .max
     var totalEntries: Int = 0
         
-    init(store: Store = .shared) {
+    init(
+        store: Store = .shared,
+        uiApplicationWrapper: UIApplicationWrapper = .live
+    ) {
         self.store = store
+        self.uiApplicationWrapper = uiApplicationWrapper
     }
     
     func fetchWallets(search: String = "") async throws {
@@ -26,7 +31,7 @@ final class W3MAPIInteractor: ObservableObject {
             page = min(page + 1, totalPage)
         }
         
-        let httpClient = HTTPNetworkClient(host: "api.web3modal.com", session: URLSession(configuration: .ephemeral))
+        let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
         let response = try await httpClient.request(
             GetWalletsResponse.self,
             at: Web3ModalAPI.getWallets(
@@ -42,20 +47,49 @@ final class W3MAPIInteractor: ObservableObject {
             )
         )
     
+        
         try await fetchWalletImages(for: response.data)
         
         DispatchQueue.main.async { [self] in
+            var wallets = response.data
+                
+            for index in wallets.indices {
+                wallets[index].isInstalled = store.installedWalletIds.contains(wallets[index].id)
+            }
+            
             if !search.isEmpty {
-                self.store.searchedWallets = response.data
+                self.store.searchedWallets = wallets
             } else {
                 self.store.searchedWallets = []
-                self.store.wallets.append(contentsOf: response.data)
+                self.store.wallets.append(contentsOf: wallets)
                 self.totalEntries = response.count
                 self.totalPage = Int(ceil(Double(response.count) / Double(entriesPerPage)))
             }
             
             self.isLoading = false
         }
+    }
+    
+    func fetchAllWalletMetadata() async throws {
+        
+        let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
+        let response = try await httpClient.request(
+            GetIosDataResponse.self,
+            at: Web3ModalAPI.getIosData(
+                params: .init(
+                    projectId: Web3Modal.config.projectId,
+                    metadata: Web3Modal.config.metadata
+                )
+            )
+        )
+        
+        let installedWallets = response.data.filter { walletMetadata in
+            guard let nativeUrl = URL(string: walletMetadata.ios_schema) else { return false }
+            
+            return uiApplicationWrapper.canOpenURL(nativeUrl)
+        }
+        
+        store.installedWalletIds = installedWallets.map(\.id)
     }
     
     func fetchFeaturedWallets() async throws {

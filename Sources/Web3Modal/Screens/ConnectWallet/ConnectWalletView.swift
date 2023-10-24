@@ -7,6 +7,18 @@ struct ConnectWalletView: View {
     
     let displayWCConnection = false
     
+    var wallets: [Wallet] {
+        
+        var uniqueValues: [Wallet] = []
+        (store.recentWallets + store.featuredWallets).forEach { item in
+            guard !uniqueValues.contains(where: { wallet in
+                item.id == wallet.id
+            }) else { return }
+            uniqueValues.append(item)
+        }
+        return uniqueValues
+    }
+    
     var body: some View {
         VStack {
             if displayWCConnection {
@@ -30,52 +42,35 @@ struct ConnectWalletView: View {
                 ))
             }
             
-            ForEach(store.recentWallets, id: \.self) { wallet in
-                Button(action: {
-                    router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
-                }, label: {
-                    Text(wallet.name)
-                })
-                .buttonStyle(W3MListSelectStyle(
-                    imageContent: { scale in
-                        Image(
-                            uiImage: store.walletImages[wallet.imageId]
-                            ?? UIImage(named: "Wallet", in: .UIModule, compatibleWith: nil)
-                            ?? UIImage()
-                        
-                        )
-                        .resizable()
-                        .background(.Overgray005)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: Radius.xxxs * scale)
-                                .strokeBorder(.Overgray010, lineWidth: 1 * scale)
-                        }
-                    }
-                ))
-            }
-            
-            ForEach(store.featuredWallets, id: \.self) { wallet in
-                Button(action: {
-                    router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
-                }, label: {
-                    Text(wallet.name)
-                })
-                .buttonStyle(W3MListSelectStyle(
-                    imageContent: { scale in
-                        Image(
-                            uiImage: store.walletImages[wallet.imageId]
-                            ?? UIImage(named: "Wallet", in: .UIModule, compatibleWith: nil)
-                            ?? UIImage()
-                        
-                        )
-                        .resizable()
-                        .background(.Overgray005)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: Radius.xxxs * scale)
-                                .strokeBorder(.Overgray010, lineWidth: 1 * scale)
-                        }
-                    }
-                ))
+            ForEach(wallets, id: \.self) { wallet in
+                Group {
+                    let isWalletInstalled: Bool = wallet.isInstalled ?? false
+                    let isRecent: Bool = wallet.lastTimeUsed != nil
+                    let tagTitle: String? = isWalletInstalled ? "Installed" : isRecent ? "Recent" : nil
+                    
+                    Button(action: {
+                        router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+                    }, label: {
+                        Text(wallet.name)
+                    })
+                    .buttonStyle(W3MListSelectStyle(
+                        imageContent: { scale in
+                            Image(
+                                uiImage: store.walletImages[wallet.imageId]
+                                ?? UIImage(named: "Wallet", in: .UIModule, compatibleWith: nil)
+                                ?? UIImage()
+                                
+                            )
+                            .resizable()
+                            .background(.Overgray005)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: Radius.xxxs * scale)
+                                    .strokeBorder(.Overgray010, lineWidth: 1 * scale)
+                            }
+                        },
+                        tag: tagTitle != nil ? .init(title: tagTitle!, variant: .info) : nil
+                    ))
+                }
             }
                 
             Button(action: {

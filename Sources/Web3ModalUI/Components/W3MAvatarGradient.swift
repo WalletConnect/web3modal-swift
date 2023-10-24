@@ -12,7 +12,6 @@ public struct W3MAvatarGradient: View {
         
         GeometryReader { proxy in
             // Create Orb like gradient
-            
             RadialGradient(
                 gradient: Gradient(stops: [
                     .init(color: .white, location: 0.0052),

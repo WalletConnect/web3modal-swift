@@ -12,7 +12,7 @@ struct Wallet: Codable, Identifiable, Hashable {
     let appStore: String?
     
     var lastTimeUsed: Date?
-    var installed: Bool = false
+    var isInstalled: Bool? = false
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -24,10 +24,12 @@ struct Wallet: Codable, Identifiable, Hashable {
         case desktopLink = "desktop_link"
         case webappLink = "webapp_link"
         case appStore = "app_store"
+        
+        // Decorated
         case lastTimeUsed
+        case isInstalled
     }
 }
-
 
 #if DEBUG
 

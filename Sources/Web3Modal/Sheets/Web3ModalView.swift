@@ -3,6 +3,7 @@ import SwiftUI
 struct Web3ModalView: View {
     @ObservedObject var viewModel: Web3ModalViewModel
     
+    @EnvironmentObject var store: Store
     @EnvironmentObject var router: Router
 
     var body: some View {
@@ -15,6 +16,7 @@ struct Web3ModalView: View {
         }
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
+        .toastView(toast: $store.toast)
     }
     
     @ViewBuilder

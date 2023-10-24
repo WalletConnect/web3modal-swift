@@ -37,6 +37,7 @@ struct AccountView: View {
                 
                 Button {
                     UIPasteboard.general.string = store.session?.accounts.first?.address
+                    store.toast = .init(style: .info, message: "Address copied")
                 } label: {
                     Image.LargeCopy
                         .resizable()
@@ -120,7 +121,7 @@ struct AccountView: View {
                 do {
                     try await blockchainApiInteractor.getBalance()
                 } catch {
-                    print(error.localizedDescription)
+                    store.toast = .init(style: .error, message: error.localizedDescription)
                 }
             }
             
@@ -132,10 +133,11 @@ struct AccountView: View {
                 do {
                     try await blockchainApiInteractor.getIdentity()
                 } catch {
-                    print(error.localizedDescription)
+                    store.toast = .init(style: .error, message: error.localizedDescription)
                 }
             }
         }
+        .toastView(toast: $store.toast)
         .frame(maxWidth: .infinity)
         .background(Color.Background125)
         .overlay(closeButton().padding().foregroundColor(.Foreground100), alignment: .topTrailing)
@@ -149,7 +151,6 @@ struct AccountView: View {
                 .frame(width: 64, height: 64)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(.GrayGlass010, lineWidth: 8))
-            
         } else if let address = store.session?.accounts.first?.address {
             W3MAvatarGradient(address: address)
                 .frame(width: 64, height: 64)
@@ -163,7 +164,7 @@ struct AccountView: View {
                 router.setRoute(Router.ConnectingSubpage.connectWallet)
                 try await signInteractor.disconnect()
             } catch {
-                print(error.localizedDescription)
+                store.toast = .init(style: .error, message: error.localizedDescription)
             }
         }
     }

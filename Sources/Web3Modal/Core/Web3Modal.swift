@@ -90,13 +90,7 @@ public class Web3Modal {
             excludedWalletIds: excludedWalletIds
         )
         
-        Web3ModalUI.ImageLoader.headers = [
-            "x-project-id": projectId,
-            "x-sdk-version": "ios-3.0.0-alpha.0",
-            "x-sdk-type": "w3m"
-        ]
-        
-        
+                
         let matchingChain = ChainsPresets.ethChains.first(where: {
             $0.chainNamespace == chainId.namespace && $0.chainReference == chainId.reference
         })
@@ -104,8 +98,11 @@ public class Web3Modal {
         Store.shared.selectedChain = matchingChain
         
         Task {
-            try? await W3MAPIInteractor().fetchFeaturedWallets()
-            try? await W3MAPIInteractor().prefetchChainImages()
+            let interactor = W3MAPIInteractor()
+            
+            try? await interactor.fetchAllWalletMetadata()
+            try? await interactor.fetchFeaturedWallets()
+            try? await interactor.prefetchChainImages()
         }
     }
     

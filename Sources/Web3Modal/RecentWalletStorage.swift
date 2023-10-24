@@ -31,7 +31,7 @@ class RecentWalletsStorage {
             }
             
             // Consider Recent only for 3 days
-            return abs(lastTimeUsed.timeIntervalSinceNow) > (24 * 60 * 60 * 3)
+            return abs(lastTimeUsed.timeIntervalSinceNow) < (24 * 60 * 60 * 3)
         }
     }
     
@@ -41,8 +41,16 @@ class RecentWalletsStorage {
             $0.lastTimeUsed != nil
         }.prefix(5))
         
+        var uniqueValues: [Wallet] = []
+        subset.forEach { item in
+            guard !uniqueValues.contains(where: { wallet in
+                item.id == wallet.id
+            }) else { return }
+            uniqueValues.append(item)
+        }
+        
         guard
-            let walletsData = try? JSONEncoder().encode(subset)
+            let walletsData = try? JSONEncoder().encode(uniqueValues)
         else {
             return
         }
