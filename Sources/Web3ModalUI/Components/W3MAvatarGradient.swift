@@ -50,7 +50,8 @@ public struct W3MAvatarGradient: View {
     }
 
     func hexToRgb(hex: String) -> (Int, Int, Int) {
-        let bigint = Int64(hex, radix: 16)!
+        guard let bigint = Int64(hex, radix: 16) else { return (0, 0, 0) }
+        
         let r = Int((bigint >> 16) & 255)
         let g = Int((bigint >> 8) & 255)
         let b = Int(bigint & 255)
