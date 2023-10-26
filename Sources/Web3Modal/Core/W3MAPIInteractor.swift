@@ -1,8 +1,7 @@
-import UIKit
 import HTTPClient
+import UIKit
 
 final class W3MAPIInteractor: ObservableObject {
-    
     @Published var isLoading: Bool = false
     
     private let store: Store
@@ -47,14 +46,14 @@ final class W3MAPIInteractor: ObservableObject {
             )
         )
     
-        
         try await fetchWalletImages(for: response.data)
         
         DispatchQueue.main.async { [self] in
             var wallets = response.data
                 
             for index in wallets.indices {
-                wallets[index].isInstalled = store.installedWalletIds.contains(wallets[index].id)
+                let contains = store.installedWalletIds.contains(wallets[index].id)
+                wallets[index].isInstalled = contains
             }
             
             if !search.isEmpty {
@@ -71,7 +70,6 @@ final class W3MAPIInteractor: ObservableObject {
     }
     
     func fetchAllWalletMetadata() async throws {
-        
         let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
         let response = try await httpClient.request(
             GetIosDataResponse.self,
@@ -82,18 +80,23 @@ final class W3MAPIInteractor: ObservableObject {
                 )
             )
         )
-        
-        let installedWallets = response.data.filter { walletMetadata in
-            guard let nativeUrl = URL(string: walletMetadata.ios_schema) else { return false }
-            
-            return uiApplicationWrapper.canOpenURL(nativeUrl)
+    
+        let installedWallets: [String?] = try await response.data.concurrentMap { walletMetadata in
+                
+            guard
+                let nativeUrl = URL(string: walletMetadata.ios_schema),
+                await UIApplication.shared.canOpenURL(nativeUrl)
+            else {
+                return nil
+            }
+                
+            return walletMetadata.id
         }
-        
-        store.installedWalletIds = installedWallets.map(\.id)
+            
+        store.installedWalletIds = installedWallets.compactMap { $0 }
     }
     
     func fetchFeaturedWallets() async throws {
-        
         let httpClient = HTTPNetworkClient(host: "api.web3modal.com", session: URLSession(configuration: .ephemeral))
         let response = try await httpClient.request(
             GetWalletsResponse.self,
@@ -113,8 +116,16 @@ final class W3MAPIInteractor: ObservableObject {
         try await fetchWalletImages(for: response.data)
         
         DispatchQueue.main.async { [self] in
+            
+            var wallets = response.data
+                
+            for index in wallets.indices {
+                let contains = store.installedWalletIds.contains(wallets[index].id)
+                wallets[index].isInstalled = contains
+            }
+            
             self.store.totalNumberOfWallets = response.count
-            self.store.featuredWallets = response.data
+            self.store.featuredWallets = wallets
         }
     }
     
