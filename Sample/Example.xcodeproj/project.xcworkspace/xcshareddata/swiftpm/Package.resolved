@@ -60,7 +60,7 @@
       "location" : "https://github.com/WalletConnect/WalletConnectSwiftV2",
       "state" : {
         "branch" : "remove-wcm",
-        "revision" : "0085250fd993f40a638f8d3e300f4af8cbf9e7a8"
+        "revision" : "04bcc547a61768598286cfa4cb0a06c0475c4d35"
       }
     }
   ],

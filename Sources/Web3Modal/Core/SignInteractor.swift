@@ -31,6 +31,12 @@ class SignInteractor: ObservableObject {
             }
         }
         
-        try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
+        do {
+            try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
+        } catch {
+            print(error.localizedDescription)
+        }
+        try await Web3Modal.instance.cleanup()
+        try await createPairingAndConnect()
     }
 }

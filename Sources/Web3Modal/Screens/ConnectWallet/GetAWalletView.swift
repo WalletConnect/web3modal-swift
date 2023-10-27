@@ -33,12 +33,7 @@ struct GetAWalletView: View {
             })
             .buttonStyle(W3MListSelectStyle(
                 imageContent: { _ in
-                    W3MAllWalletsImage(images: [
-                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Metamask"),
-                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Trust"),
-                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Safe"),
-                        .init(image: Image("MockWalletImage", bundle: .UIModule), walletName: "Rainbow"),
-                    ])
+                    Image.optionAll
                 }
             ))
         }

@@ -40,6 +40,7 @@ enum Web3ModalAPI: HTTPService {
                 "search": params.search ?? "",
                 "recommendedIds": params.recommendedIds.joined(separator: ","),
                 "excludedIds": params.excludedIds.joined(separator: ","),
+                "platform": "ios",
             ]
             .compactMapValues { value in
                 value.isEmpty ? nil : value

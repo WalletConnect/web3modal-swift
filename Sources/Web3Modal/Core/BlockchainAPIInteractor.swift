@@ -1,8 +1,9 @@
 import Foundation
 import HTTPClient
 
+import JSONRPC
+
 final class BlockchainAPIInteractor: ObservableObject {
-    
     private let store: Store
     
     init(store: Store = .shared) {
@@ -10,7 +11,6 @@ final class BlockchainAPIInteractor: ObservableObject {
     }
     
     func getIdentity() async throws {
-        
         let account = store.session?.accounts.first
         let address = account?.address
         let chainId = account?.blockchainIdentifier
@@ -31,10 +31,95 @@ final class BlockchainAPIInteractor: ObservableObject {
             self.store.identity = response
         }
     }
+    
+    func getBalance() async throws {
+        enum GetBalanceError: Error {
+            case noAddress, invalidValue, noChain
+        }
+        
+        guard let address = store.session?.accounts.first?.address else {
+            throw GetBalanceError.noAddress
+        }
+        
+        guard let chain = store.selectedChain else {
+            throw GetBalanceError.noChain
+        }
+        
+        let request = RPCRequest(
+            method: "eth_getBalance", params: [
+                address, "latest"
+            ]
+        )
+                
+        var urlRequest = URLRequest(url: URL(string: chain.rpcUrl)!)
+        urlRequest.httpMethod = "POST"
+        urlRequest.httpBody = try JSONEncoder().encode(request)
+        urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let (data, _) = try await URLSession.shared.data(for: urlRequest)
+        let decodedResponse = try JSONDecoder().decode(RPCResponse.self, from: data)
+        let weiFactor = pow(10, chain.token.decimal)
+        
+        guard let decimalValue = try decodedResponse.result?
+            .get(String.self)
+            .convertBalanceHexToBigDecimal()?
+            .toWei(weiFactor: weiFactor)
+        else {
+            throw GetBalanceError.invalidValue
+        }
+        
+        let doubleValue = Double(truncating: decimalValue as NSNumber)
+        
+        DispatchQueue.main.async {
+            self.store.balance = doubleValue
+        }
+    }
 }
-
 
 struct Identity: Codable {
     let name: String?
     let avatar: String?
+}
+
+struct BalanceRequest: Encodable {
+    init(address: String) {
+        self.address = address
+    
+        self.id = RPCID()
+        self.params = [
+            address, "latest"
+        ]
+    }
+    
+    let address: String
+    let id: RPCID
+    let jsonrpc: String = "2.0"
+    let method: String = "eth_getBalance"
+    let params: [String]
+}
+
+struct BalanceRpcResponse: Codable {
+    let id: RPCID
+    let jsonrpc: String
+    let result: String?
+    let error: RpcError?
+    
+    struct RpcError: Codable {
+        let code: Int
+        let message: String
+    }
+}
+
+private extension String {
+    func convertBalanceHexToBigDecimal() -> Decimal? {
+        let substring = dropFirst(2)
+        guard let longValue = UInt64(substring, radix: 16) else { return nil }
+        return Decimal(string: "\(longValue)")
+    }
+}
+
+extension Decimal {
+    func toWei(weiFactor: Decimal) -> Decimal {
+        return self / weiFactor
+    }
 }

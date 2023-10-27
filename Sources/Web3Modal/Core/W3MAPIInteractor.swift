@@ -103,7 +103,7 @@ final class W3MAPIInteractor: ObservableObject {
             request.setValue("ios-3.0.0-alpha.0", forHTTPHeaderField: "x-sdk-version")
             
             do {
-                let (data, _) = try await URLSession(configuration: .ephemeral).data(for: request)
+                let (data, _) = try await URLSession.shared.data(for: request)
                 return (wallet.imageId, UIImage(data: data))
             } catch {
                 print(error.localizedDescription)
@@ -121,6 +121,42 @@ final class W3MAPIInteractor: ObservableObject {
         
         DispatchQueue.main.async { [walletImages] in
             self.store.walletImages.merge(walletImages) { _, new in
+                new
+            }
+        }
+    }
+    
+    func prefetchChainImages() async throws {
+        var chainImages: [String: UIImage] = [:]
+        
+        try await ChainsPresets.ethChains.concurrentMap { chain in
+            
+            let url = URL(string: "https://api.web3modal.com/public/getAssetImage/\(chain.imageId)")!
+            var request = URLRequest(url: url)
+            
+            request.setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")
+            request.setValue("w3m", forHTTPHeaderField: "x-sdk-type")
+            request.setValue("ios-3.0.0-alpha.0", forHTTPHeaderField: "x-sdk-version")
+            
+            do {
+                let (data, _) = try await URLSession.shared.data(for: request)
+                return (chain.imageId, UIImage(data: data))
+            } catch {
+                print(error.localizedDescription)
+            }
+            
+            return ("", UIImage?.none)
+        }
+        .forEach { key, value in
+            if value == nil {
+                return
+            }
+            
+            chainImages[key] = value
+        }
+        
+        DispatchQueue.main.async { [chainImages] in
+            self.store.chainImages.merge(chainImages) { _, new in
                 new
             }
         }
