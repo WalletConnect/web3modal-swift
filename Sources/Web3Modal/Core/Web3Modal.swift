@@ -1,6 +1,8 @@
 import Foundation
 import SwiftUI
 
+import Web3ModalUI
+
 import WalletConnectSign
 import WalletConnectVerify
 
@@ -28,7 +30,6 @@ public class Web3Modal {
         guard let config = Web3Modal.config else {
             fatalError("Error - you must call Web3Modal.configure(_:) before accessing the shared instance.")
         }
-        
         let client = Web3ModalClient(
             signClient: Sign.instance,
             pairingClient: Pair.instance as! (PairingClientProtocol & PairingInteracting & PairingRegisterer)
@@ -36,12 +37,13 @@ public class Web3Modal {
         
         if let session = client.getSessions().first {
             Store.shared.session = session
-                   
+            
+            
             if let blockchain = session.accounts.first?.blockchain {
                 let matchingChain = ChainsPresets.ethChains.first(where: {
                     $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
                 })
-                       
+                
                 Store.shared.selectedChain = matchingChain
             }
         }
@@ -51,6 +53,7 @@ public class Web3Modal {
     
     struct Config {
         let projectId: String
+        var chainId: Blockchain
         var metadata: AppMetadata
         var sessionParams: SessionParams
         
@@ -68,6 +71,7 @@ public class Web3Modal {
     ///   - metadata: App metadata
     public static func configure(
         projectId: String,
+        chainId: Blockchain,
         metadata: AppMetadata,
         sessionParams: SessionParams = .default,
         recommendedWalletIds: [String] = [],
@@ -77,6 +81,7 @@ public class Web3Modal {
         Pair.configure(metadata: metadata)
         Web3Modal.config = Web3Modal.Config(
             projectId: projectId,
+            chainId: chainId,
             metadata: metadata,
             sessionParams: sessionParams,
             includeWebWallets: includeWebWallets,
@@ -84,27 +89,67 @@ public class Web3Modal {
             excludedWalletIds: excludedWalletIds
         )
         
+                
+        let matchingChain = ChainsPresets.ethChains.first(where: {
+            $0.chainNamespace == chainId.namespace && $0.chainReference == chainId.reference
+        })
+        
+        Store.shared.selectedChain = matchingChain
+        
         Task {
-            try? await W3MAPIInteractor().fetchFeaturedWallets()
-            try? await W3MAPIInteractor().prefetchChainImages()
+            let interactor = W3MAPIInteractor()
+            
+            try? await interactor.fetchAllWalletMetadata()
+            try? await interactor.fetchFeaturedWallets()
+            try? await interactor.prefetchChainImages()
         }
     }
     
     public static func set(sessionParams: SessionParams) {
         Web3Modal.config.sessionParams = sessionParams
     }
+    
+    
+    public static func getSelectedChain() -> Chain? {
+        guard let chain = Store.shared.selectedChain else {
+            return nil
+        }
+        
+        return chain
+    }
 }
 
 #if canImport(UIKit)
 
 extension Web3Modal {
+    
+    public static func selectChain(from presentingViewController: UIViewController? = nil) {
+        guard let vc = presentingViewController ?? topViewController() else {
+            assertionFailure("No controller found for presenting modal")
+            return
+        }
+        
+        _ = Web3Modal.instance
+        
+        let router = Router()
+        router.setRoute(Router.NetworkSwitchSubpage.selectChain)
+        
+        let modal = Web3ModalSheetController(router: router)
+        vc.present(modal, animated: true)
+    }
+    
     public static func present(from presentingViewController: UIViewController? = nil) {
         guard let vc = presentingViewController ?? topViewController() else {
             assertionFailure("No controller found for presenting modal")
             return
         }
         
-        let modal = Web3ModalSheetController()
+        _ = Web3Modal.instance
+        
+        let router = Router()
+        router.setRoute(Store.shared.session != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
+        
+        let modal = Web3ModalSheetController(router: router)
         vc.present(modal, animated: true)
     }
     
@@ -159,9 +204,10 @@ public struct SessionParams {
     }
     
     public static let `default`: Self = {
-        let methods: Set<String> = ["eth_sendTransaction", "eth_sign"]
+        let methods: Set<String> = Set(EthUtils.ethMethods)
         let events: Set<String> = ["chainChanged", "accountsChanged"]
-        let blockchains: Set<Blockchain> = [Blockchain("eip155:1")!]
+        let blockchains: Set<Blockchain> = Set(ChainsPresets.ethChains.map(\.id).compactMap(Blockchain.init))
+        
         let namespaces: [String: ProposalNamespace] = [
             "eip155": ProposalNamespace(
                 chains: blockchains,
@@ -169,10 +215,22 @@ public struct SessionParams {
                 events: events
             )
         ]
+        
+        let optionalNamespaces: [String: ProposalNamespace] = [
+            "solana": ProposalNamespace(
+                chains: [
+                    Blockchain("solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ")!
+                ],
+                methods: [
+                    "solana_signMessage",
+                    "solana_signTransaction"
+                ], events: []
+            )
+        ]
        
         return SessionParams(
-            requiredNamespaces: namespaces,
-            optionalNamespaces: nil,
+            requiredNamespaces: [:],
+            optionalNamespaces: namespaces.merging(optionalNamespaces, uniquingKeysWith: { old, new in  old }),
             sessionProperties: nil
         )
     }()

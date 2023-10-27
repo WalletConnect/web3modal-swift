@@ -3,7 +3,7 @@ import HTTPClient
 import WalletConnectSign
 
 enum Web3ModalAPI: HTTPService {
-    struct GetWalletParams {
+    struct GetWalletsParams {
         let page: Int
         let entries: Int
         let search: String?
@@ -13,17 +13,25 @@ enum Web3ModalAPI: HTTPService {
         let excludedIds: [String]
     }
     
-    case getWallets(params: GetWalletParams)
+    struct GetIosDataParams {
+        let projectId: String
+        let metadata: AppMetadata
+    }
+    
+    case getWallets(params: GetWalletsParams)
+    case getIosData(params: GetIosDataParams)
 
     var path: String {
         switch self {
         case .getWallets: return "/getWallets"
+        case .getIosData: return "/getIosData"
         }
     }
 
     var method: HTTPMethod {
         switch self {
         case .getWallets: return .get
+        case .getIosData: return .get
         }
     }
 
@@ -45,6 +53,11 @@ enum Web3ModalAPI: HTTPService {
             .compactMapValues { value in
                 value.isEmpty ? nil : value
             }
+        case let .getIosData(params):
+            return [
+                "projectId": params.projectId,
+                "metadata": params.metadata.name
+            ]
         }
     }
 
@@ -55,6 +68,13 @@ enum Web3ModalAPI: HTTPService {
     var additionalHeaderFields: [String: String]? {
         switch self {
         case let .getWallets(params):
+            return [
+                "x-project-id": params.projectId,
+                "x-sdk-version": "ios-3.0.0-alpha.0", // EnvironmentInfo.sdkName,
+                "x-sdk-type": "w3m",
+                "Referer": params.metadata.name
+            ]
+        case let .getIosData(params):
             return [
                 "x-project-id": params.projectId,
                 "x-sdk-version": "ios-3.0.0-alpha.0", // EnvironmentInfo.sdkName,

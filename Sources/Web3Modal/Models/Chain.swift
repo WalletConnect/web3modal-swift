@@ -11,7 +11,7 @@ public struct Chain: Identifiable, Hashable {
         "\(chainNamespace):\(chainReference)"
     }
 
-    var chainName: String
+    public var chainName: String
     var chainNamespace: String
     var chainReference: String
     var requiredMethods: [String]

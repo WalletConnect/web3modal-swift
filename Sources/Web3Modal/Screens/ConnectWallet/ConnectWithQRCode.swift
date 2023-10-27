@@ -25,6 +25,7 @@ struct ConnectWithQRCode: View {
             
             Button(action: {
                 UIPasteboard.general.string = store.uri?.absoluteString ?? ""
+                store.toast = .init(style: .info, message: "Link copied")
             }, label: {
                 Text("Copy Link")
             })
@@ -45,7 +46,7 @@ struct ConnectWithQRCode: View {
             do {
                 try await signInteractor.createPairingAndConnect()
             } catch {
-                print(error.localizedDescription)
+                store.toast = .init(style: .error, message: error.localizedDescription)
             }
         }
     }

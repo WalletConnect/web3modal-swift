@@ -2,16 +2,16 @@ import SwiftUI
 import Web3ModalUI
 
 struct GetAWalletView: View {
-    let wallets: [Wallet]
-    
     @EnvironmentObject var router: Router
+    @EnvironmentObject var store: Store
     
     var body: some View {
         VStack {
-            
-            ForEach(wallets, id: \.self) { wallet in
+            ForEach(store.featuredWallets.prefix(4), id: \.self) { wallet in
                 Button(action: {
-                
+                    if let appstoreLink = wallet.appStore {
+                        router.openURL(URL(string: appstoreLink)!)
+                    }
                 }, label: {
                     Text(wallet.name)
                 })
@@ -27,7 +27,7 @@ struct GetAWalletView: View {
             }
                 
             Button(action: {
-                router.navigateToExternalLink(URL(string: "https://walletconnect.com/explorer?type=wallet")!)
+                router.openURL(URL(string: "https://walletconnect.com/explorer?type=wallet")!)
             }, label: {
                 Text("Explorer all")
             })
@@ -46,9 +46,7 @@ struct GetAWalletView: View {
 
 struct GetAWalletView_Previews: PreviewProvider {
     static var previews: some View {
-        GetAWalletView(
-            wallets: Wallet.stubList
-        )
+        GetAWalletView()
     }
 }
 

@@ -1,11 +1,11 @@
-import UIKit
 import HTTPClient
+import UIKit
 
 final class W3MAPIInteractor: ObservableObject {
-    
     @Published var isLoading: Bool = false
     
     private let store: Store
+    private let uiApplicationWrapper: UIApplicationWrapper
     
     private let entriesPerPage: Int = 40
     
@@ -13,8 +13,12 @@ final class W3MAPIInteractor: ObservableObject {
     var totalPage: Int = .max
     var totalEntries: Int = 0
         
-    init(store: Store = .shared) {
+    init(
+        store: Store = .shared,
+        uiApplicationWrapper: UIApplicationWrapper = .live
+    ) {
         self.store = store
+        self.uiApplicationWrapper = uiApplicationWrapper
     }
     
     func fetchWallets(search: String = "") async throws {
@@ -26,7 +30,7 @@ final class W3MAPIInteractor: ObservableObject {
             page = min(page + 1, totalPage)
         }
         
-        let httpClient = HTTPNetworkClient(host: "api.web3modal.com", session: URLSession(configuration: .ephemeral))
+        let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
         let response = try await httpClient.request(
             GetWalletsResponse.self,
             at: Web3ModalAPI.getWallets(
@@ -45,11 +49,18 @@ final class W3MAPIInteractor: ObservableObject {
         try await fetchWalletImages(for: response.data)
         
         DispatchQueue.main.async { [self] in
+            var wallets = response.data
+                
+            for index in wallets.indices {
+                let contains = store.installedWalletIds.contains(wallets[index].id)
+                wallets[index].isInstalled = contains
+            }
+            
             if !search.isEmpty {
-                self.store.searchedWallets = response.data
+                self.store.searchedWallets = wallets
             } else {
                 self.store.searchedWallets = []
-                self.store.wallets.append(contentsOf: response.data)
+                self.store.wallets.append(contentsOf: wallets)
                 self.totalEntries = response.count
                 self.totalPage = Int(ceil(Double(response.count) / Double(entriesPerPage)))
             }
@@ -58,8 +69,34 @@ final class W3MAPIInteractor: ObservableObject {
         }
     }
     
+    func fetchAllWalletMetadata() async throws {
+        let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
+        let response = try await httpClient.request(
+            GetIosDataResponse.self,
+            at: Web3ModalAPI.getIosData(
+                params: .init(
+                    projectId: Web3Modal.config.projectId,
+                    metadata: Web3Modal.config.metadata
+                )
+            )
+        )
+    
+        let installedWallets: [String?] = try await response.data.concurrentMap { walletMetadata in
+                
+            guard
+                let nativeUrl = URL(string: walletMetadata.ios_schema),
+                await UIApplication.shared.canOpenURL(nativeUrl)
+            else {
+                return nil
+            }
+                
+            return walletMetadata.id
+        }
+            
+        store.installedWalletIds = installedWallets.compactMap { $0 }
+    }
+    
     func fetchFeaturedWallets() async throws {
-        
         let httpClient = HTTPNetworkClient(host: "api.web3modal.com", session: URLSession(configuration: .ephemeral))
         let response = try await httpClient.request(
             GetWalletsResponse.self,
@@ -79,8 +116,16 @@ final class W3MAPIInteractor: ObservableObject {
         try await fetchWalletImages(for: response.data)
         
         DispatchQueue.main.async { [self] in
+            
+            var wallets = response.data
+                
+            for index in wallets.indices {
+                let contains = store.installedWalletIds.contains(wallets[index].id)
+                wallets[index].isInstalled = contains
+            }
+            
             self.store.totalNumberOfWallets = response.count
-            self.store.featuredWallets = response.data
+            self.store.featuredWallets = wallets
         }
     }
     

@@ -11,6 +11,7 @@ class SignInteractor: ObservableObject {
     lazy var sessionResponsePublisher: AnyPublisher<Response, Never> = Web3Modal.instance.sessionResponsePublisher
     lazy var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never> = Web3Modal.instance.sessionRejectionPublisher
     lazy var sessionDeletePublisher: AnyPublisher<(String, Reason), Never> = Web3Modal.instance.sessionDeletePublisher
+    lazy var sessionEventPublisher: AnyPublisher<(event: Session.Event, sessionTopic: String, chainId: Blockchain?), Never> = Web3Modal.instance.sessionEventPublisher
     
     init(store: Store = .shared) {
         self.store = store
@@ -34,7 +35,7 @@ class SignInteractor: ObservableObject {
         do {
             try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
         } catch {
-            print(error.localizedDescription)
+            store.toast = .init(style: .error, message: error.localizedDescription)
         }
         try await Web3Modal.instance.cleanup()
         try await createPairingAndConnect()

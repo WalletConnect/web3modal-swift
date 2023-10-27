@@ -30,6 +30,7 @@ struct ExampleApp: App {
 
         Web3Modal.configure(
             projectId: projectId,
+            chainId: Blockchain("eip155:1")!,
             metadata: metadata
         )
     }

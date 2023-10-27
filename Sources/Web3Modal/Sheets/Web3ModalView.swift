@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct Web3ModalView: View {
+    @ObservedObject var viewModel: Web3ModalViewModel
+    
+    @EnvironmentObject var store: Store
     @EnvironmentObject var router: Router
 
     var body: some View {
@@ -13,11 +16,14 @@ struct Web3ModalView: View {
         }
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
+        .toastView(toast: $store.toast)
     }
     
     @ViewBuilder
     private func routes() -> some View {
-        switch router.subpage {
+        switch router.currentRoute as? Router.ConnectingSubpage {
+        case .none:
+            EmptyView()
         case .connectWallet:
             ConnectWalletView()
         case .allWallets:
@@ -26,18 +32,23 @@ struct Web3ModalView: View {
             ConnectWithQRCode()
         case .whatIsAWallet:
             WhatIsWalletView()
-        case .walletDetail:
-            EmptyView()
-        case .getWallet:
-            GetAWalletView(
-                wallets: Wallet.stubList
+        case let .walletDetail(wallet):
+            WalletDetail(
+                viewModel: .init(
+                    wallet: wallet,
+                    router: router
+                )
             )
+        case .getWallet:
+            GetAWalletView()
         }
     }
     
     private func modalHeader() -> some View {
         HStack(spacing: 0) {
-            switch router.subpage {
+            switch router.currentRoute as? Router.ConnectingSubpage {
+            case .none:
+                EmptyView()
             case .connectWallet:
                 helpButton()
             default:
@@ -46,8 +57,10 @@ struct Web3ModalView: View {
             
             Spacer()
             
-            Text(router.subpage.title)
-                .font(.paragraph700)
+            (router.currentRoute as? Router.ConnectingSubpage)?.title.map { title in
+                Text(title)
+                    .font(.paragraph700)
+            }
             
             Spacer()
             
@@ -66,7 +79,7 @@ struct Web3ModalView: View {
     
     private func helpButton() -> some View {
         Button(action: {
-            router.subpage = .whatIsAWallet
+            router.setRoute(Router.ConnectingSubpage.whatIsAWallet)
         }, label: {
             Image.QuestionMarkCircle
         })
@@ -74,21 +87,25 @@ struct Web3ModalView: View {
     
     private func backButton() -> some View {
         Button {
-            router.resetRoute()
+            router.goBack()
         } label: {
             Image.LargeBackward
         }
     }
     
     private func closeButton() -> some View {
-        Button {} label: {
+        Button {
+            withAnimation {
+                viewModel.isShown.wrappedValue = false
+            }
+        } label: {
             Image.LargeClose
         }
     }
 }
 
-extension Route.Subpage {
-    var title: String {
+extension Router.ConnectingSubpage {
+    var title: String? {
         switch self {
         case .connectWallet:
             return "Connect Wallet"
@@ -108,7 +125,15 @@ extension Route.Subpage {
 
 struct Web3ModalView_Previews: PreviewProvider {
     static var previews: some View {
-        Web3ModalView()
+        Web3ModalView(
+            viewModel: .init(
+                router: Router(),
+                store: Store(),
+                w3mApiInteractor: W3MAPIInteractor(store: Store()),
+                signInteractor: SignInteractor(store: Store()),
+                blockchainApiInteractor: BlockchainAPIInteractor(store: Store()),
+                isShown: .constant(true)
+            ))
             .previewLayout(.sizeThatFits)
     }
 }

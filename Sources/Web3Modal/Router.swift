@@ -1,57 +1,52 @@
-import Foundation
 import Combine
+import Foundation
 import SwiftUI
 
-@dynamicMemberLookup
 class Router: ObservableObject {
-    
-    @Published var currentRoute: Route = .init()
+    @Published private(set) var currentRoute: any SubPage = Router.ConnectingSubpage.connectWallet
+    private(set) var previousRoute: (any SubPage)?
     
     private let uiApplicationWrapper: UIApplicationWrapper
     
     init(uiApplicationWrapper: UIApplicationWrapper = .live) {
         self.uiApplicationWrapper = uiApplicationWrapper
-        
-        $currentRoute
-            .receive(on: DispatchQueue.main)
-            .removeDuplicates()
-            .sink { [weak self] _ in
-                self?.objectWillChange.send()
-            }
-            .store(in: &subscriptions)
     }
     
-    subscript<V: Equatable>(dynamicMember path: WritableKeyPath<Route, V>) -> V {
-        get {
-            currentRoute[keyPath: path]
-        }
-        set {
-            if currentRoute[keyPath: path] == newValue {
-                return
-            }
-            withAnimation {
-                currentRoute[keyPath: path] = newValue
-            }
+    func openURL(_ url: URL, completionHandler: ((Bool) -> Void)? = nil) {
+        uiApplicationWrapper.openURL(url, completionHandler)
+    }
+    
+    func canOpenURL(_ url: URL) -> Bool {
+        uiApplicationWrapper.canOpenURL(url)
+    }
+    
+    func setRoute(_ route: any SubPage) {
+        previousRoute = currentRoute
+        withAnimation {
+            currentRoute = route
         }
     }
     
-    func navigateToExternalLink(_ url: URL) {
-        uiApplicationWrapper.openURL(url, nil)
+    func goBack() {
+        let prev = previousRoute ?? Router.ConnectingSubpage.connectWallet
+        withAnimation {
+            currentRoute = prev
+        }
+        previousRoute = nil
     }
-    
+
     func resetRoute() {
         withAnimation {
-            currentRoute = Route()
+            currentRoute = ConnectingSubpage.connectWallet
         }
     }
     
-    private var subscriptions = Set<AnyCancellable>()
-}
+    enum AccountSubpage: SubPage {
+        case transactions
+        case profile
+    }
 
-struct Route: Equatable {
-
-    var subpage: Subpage = .connectWallet
-    enum Subpage: Equatable {
+    enum ConnectingSubpage: SubPage {
         case connectWallet
         case qr
         case allWallets
@@ -59,15 +54,11 @@ struct Route: Equatable {
         case walletDetail(Wallet)
         case getWallet
     }
-}
 
-// MARK: Router for previews
-
-extension Router {
-    static func forPreview(with modifications: (Router) -> Void) -> Router {
-        let router = Router()
-        router.resetRoute()
-        modifications(router)
-        return router
+    enum NetworkSwitchSubpage: SubPage {
+        case selectChain
+        case whatIsANetwork
     }
 }
+
+protocol SubPage: Equatable {}

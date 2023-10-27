@@ -41,16 +41,16 @@ final class BlockchainAPIInteractor: ObservableObject {
             throw GetBalanceError.noAddress
         }
         
-        guard let chain = store.selectedChain else {
-            throw GetBalanceError.noChain
-        }
-        
         let request = RPCRequest(
             method: "eth_getBalance", params: [
                 address, "latest"
             ]
         )
-                
+        
+        guard let chain = store.selectedChain else {
+            throw GetBalanceError.noChain
+        }
+        
         var urlRequest = URLRequest(url: URL(string: chain.rpcUrl)!)
         urlRequest.httpMethod = "POST"
         urlRequest.httpBody = try JSONEncoder().encode(request)
@@ -110,7 +110,7 @@ struct BalanceRpcResponse: Codable {
     }
 }
 
-private extension String {
+extension String {
     func convertBalanceHexToBigDecimal() -> Decimal? {
         let substring = dropFirst(2)
         guard let longValue = UInt64(substring, radix: 16) else { return nil }
