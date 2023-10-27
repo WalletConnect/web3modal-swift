@@ -6,7 +6,6 @@ import Web3ModalUI
 import WalletConnectSign
 import WalletConnectVerify
 
-
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -155,7 +154,6 @@ extension Web3Modal {
     }
     
     private static func topViewController(_ base: UIViewController? = nil) -> UIViewController? {
-        
         let base = base ?? UIApplication
             .shared
             .connectedScenes
@@ -185,10 +183,8 @@ extension Web3Modal {
 
 import AppKit
 
-extension Web3Modal {
-    
-    public static func present(from presentingViewController: NSViewController? = nil) {
-        
+public extension Web3Modal {
+    static func present(from presentingViewController: NSViewController? = nil) {
         let modal = Web3ModalSheetController()
         presentingViewController!.presentAsModalWindow(modal)
     }
@@ -201,7 +197,7 @@ public struct SessionParams {
     public let optionalNamespaces: [String: ProposalNamespace]?
     public let sessionProperties: [String: String]?
     
-    public init(requiredNamespaces: [String : ProposalNamespace], optionalNamespaces: [String : ProposalNamespace]? = nil, sessionProperties: [String : String]? = nil) {
+    public init(requiredNamespaces: [String: ProposalNamespace], optionalNamespaces: [String: ProposalNamespace]? = nil, sessionProperties: [String: String]? = nil) {
         self.requiredNamespaces = requiredNamespaces
         self.optionalNamespaces = optionalNamespaces
         self.sessionProperties = sessionProperties
@@ -239,4 +235,3 @@ public struct SessionParams {
         )
     }()
 }
-
