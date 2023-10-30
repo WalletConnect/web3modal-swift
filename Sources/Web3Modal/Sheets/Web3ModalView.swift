@@ -108,13 +108,13 @@ extension Router.ConnectingSubpage {
     var title: String? {
         switch self {
         case .connectWallet:
-            return "Connect Wallet"
+            return "Connect wallet"
         case .qr:
-            return "Scan QR Code"
+            return "WalletConnect"
         case .allWallets:
             return "All wallets"
         case .whatIsAWallet:
-            return "What is a Wallet?"
+            return "What is a wallet?"
         case let .walletDetail(wallet):
             return "\(wallet.name)"
         case .getWallet:

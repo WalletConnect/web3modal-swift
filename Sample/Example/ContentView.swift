@@ -23,7 +23,7 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 
-                Button(addressFormatted ?? "Connect Wallet") {
+                Button(addressFormatted ?? "Connect wallet") {
                     Web3Modal.present()
                 }
                 .buttonStyle(W3MButtonStyle())
