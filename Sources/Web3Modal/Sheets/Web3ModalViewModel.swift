@@ -114,10 +114,12 @@ class Web3ModalViewModel: ObservableObject {
         Task {
             try? await signInteractor.createPairingAndConnect()
         }
+        
+        
     }
     
     func fetchIdentity() {
-        Task {
+        Task { @MainActor in
             do {
                 try await blockchainApiInteractor.getIdentity()
             } catch {

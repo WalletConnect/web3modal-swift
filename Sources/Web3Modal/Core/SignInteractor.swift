@@ -35,7 +35,9 @@ class SignInteractor: ObservableObject {
         do {
             try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
         } catch {
-            store.toast = .init(style: .error, message: error.localizedDescription)
+            DispatchQueue.main.async {
+                self.store.toast = .init(style: .error, message: error.localizedDescription)
+            }
         }
         try await Web3Modal.instance.cleanup()
         try await createPairingAndConnect()

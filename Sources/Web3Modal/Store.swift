@@ -21,10 +21,10 @@ public class Store: ObservableObject {
     
     var recentWallets: [Wallet] {
         get {
-            RecentWalletsStorage().loadRecentWallets()
+            RecentWalletsStorage.loadRecentWallets()
         }
-        set {
-            RecentWalletsStorage().saveRecentWallets(newValue)
+        set(newValue) {
+            RecentWalletsStorage.saveRecentWallets(newValue)
         }
     }
     
