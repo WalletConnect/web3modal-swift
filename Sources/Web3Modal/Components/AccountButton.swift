@@ -56,12 +56,8 @@ struct AccountButtonStyle: ButtonStyle {
             }
             
             HStack(spacing: Spacing.xxs) {
-                avatarImage()
-                    .clipShape(Circle())
-                    .saturation(isEnabled ? 1 : 0)
-                    .opacity(isEnabled ? 1 : 0.5)
-                    .frame(width: 20, height: 20)
-                
+                avatar()
+                    
                 Text(addressFormatted ?? "")
                     .font(.paragraph500)
                     .foregroundColor(textColorInner)
@@ -91,14 +87,27 @@ struct AccountButtonStyle: ButtonStyle {
             .resizable()
     }
     
-    func avatarImage() -> some View {
-        Image.imageNft
-            .resizable()
+    @ViewBuilder
+    func avatar() -> some View {
+        Group {
+            if let avatarUrlString = store.identity?.avatar, let url = URL(string: avatarUrlString) {
+                AsyncImage(url: url)
+            } else if let address = store.session?.accounts.first?.address {
+                W3MAvatarGradient(address: address)
+            }
+        }
+        .saturation(isEnabled ? 1 : 0)
+        .opacity(isEnabled ? 1 : 0.5)
+        .frame(width: 20, height: 20)
+        .clipShape(Circle())
+        .overlay(Circle().stroke(.GrayGlass010, lineWidth: 3))
     }
 }
 
-struct AccountButton: View {
-    var body: some View {
+public struct AccountButton: View {
+    public init() {}
+    
+    public var body: some View {
         Button(action: {}, label: {
             Text("Foo")
         })
@@ -120,35 +129,52 @@ struct AccountButton_Preview: PreviewProvider {
             .buttonStyle(AccountButtonStyle(isPressedOverride: true))
         }
         .environmentObject({ () -> Store in
-            var store = Store()
+            let store = Store()
             store.balance = 1.23
-//            store.session = Session
+            store.session = try? JSONDecoder().decode(Session.self, from: Session.stubJson)
             return store
         }())
     }
 }
 
-extension Session {
-    static let stub = Session(
-        topic: "topic",
-        pairingTopic: "pairingTopic",
-        peer: AppMetadata(
-            name: "name",
-            description: "description",
-            url: "url",
-            icons: ["icons"]
-        ),
-        requiredNamespaces: ["requiredNamespaces": ProposalNamespace(
-            description: "description",
-            methods: ["methods"]
-        )],
-        namespaces: ["namespaces": SessionNamespace(
-            description: "description",
-            methods: ["methods"]
-        )],
-        sessionProperties: ["sessionProperties": "sessionProperties"],
-        expiryDate: Date()
-    )
-    
-    
+private extension Session {
+    static let stubJson: Data = """
+    {
+      "peer": {
+        "name": "MetaMask Wallet",
+        "url": "https://metamask.io/",
+        "icons": [],
+        "redirect": {
+          "native": "metamask://",
+          "universal": "https://metamask.app.link/"
+        },
+        "description": "MetaMask Wallet Integration"
+      },
+      "namespaces": {
+        "eip155": {
+          "chains": [
+            "eip155:56"
+          ],
+          "accounts": [
+            "eip155:56:0x5c8877144d858e41d8c33f5baa7e67a5e0027e37"
+          ],
+          "events": [
+            "chainChanged",
+            "accountsChanged"
+          ],
+          "methods": [
+            "wallet_addEthereumChain",
+            "personal_sign",
+            "eth_sendTransaction",
+            "eth_signTypedData",
+            "wallet_switchEthereumChain"
+          ]
+        }
+      },
+      "pairingTopic": "08698f505aa6f677823953cbe3d5f34e4f098635f2444096d88977c1850267bb",
+      "requiredNamespaces": {},
+      "expiryDate": 720702756,
+      "topic": "34afbcab97c8b9105f66ea3770cb540d59085c6f0996b4170cb163fee2558f59"
+    }
+    """.data(using: .utf8)!
 }
