@@ -16,7 +16,6 @@ struct Web3ModalView: View {
         }
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
-        .toastView(toast: $store.toast)
     }
     
     @ViewBuilder

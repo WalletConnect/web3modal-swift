@@ -97,7 +97,7 @@ final class W3MAPIInteractor: ObservableObject {
     }
     
     func fetchFeaturedWallets() async throws {
-        let httpClient = HTTPNetworkClient(host: "api.web3modal.com", session: URLSession(configuration: .ephemeral))
+        let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
         let response = try await httpClient.request(
             GetWalletsResponse.self,
             at: Web3ModalAPI.getWallets(

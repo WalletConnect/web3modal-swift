@@ -5,7 +5,7 @@ struct ModalContainerView: View {
     
     @State var showModal: Bool = false
     
-    var store: Store
+    @ObservedObject var store: Store
     @StateObject var router: Router
     @StateObject var w3mApiInteractor: W3MAPIInteractor
     @StateObject var signInteractor: SignInteractor
@@ -61,6 +61,7 @@ struct ModalContainerView: View {
                             EmptyView()
                     }
                 }
+                .toastView(toast: $store.toast)
                 .transition(.move(edge: .bottom))
                 .animation(.spring(), value: self.showModal)
                 .environmentObject(router)

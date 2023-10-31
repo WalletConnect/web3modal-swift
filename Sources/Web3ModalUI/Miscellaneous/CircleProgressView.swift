@@ -1,14 +1,20 @@
 import UIKit
 import SwiftUI
 
-struct CircleProgressView: UIViewRepresentable {
+public struct CircleProgressView: UIViewRepresentable {
     
     var color: Color
     var lineWidth: CGFloat
     
     @Binding var isAnimating: Bool
+    
+    public init(color: Color, lineWidth: CGFloat, isAnimating: Binding<Bool>) {
+        self.color = color
+        self.lineWidth = lineWidth
+        self._isAnimating = isAnimating
+    }
 
-    func makeUIView(context: Context) -> CircleProgressUIView {
+    public func makeUIView(context: Context) -> CircleProgressUIView {
         let view = CircleProgressUIView(
             colors: [UIColor(color)],
             lineWidth: lineWidth
@@ -19,7 +25,7 @@ struct CircleProgressView: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_ uiView: CircleProgressUIView, context: Context) {
+    public func updateUIView(_ uiView: CircleProgressUIView, context: Context) {
 
     }
 }
@@ -35,7 +41,7 @@ struct CircleProgressView_Preview: PreviewProvider {
     }
 }
 
-class CircleProgressUIView: UIView {
+public class CircleProgressUIView: UIView {
 
     // MARK: - Properties
     let colors: [UIColor]
@@ -79,7 +85,7 @@ class CircleProgressUIView: UIView {
         fatalError("init(coder:) is not supported")
     }
 
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         self.layer.cornerRadius = self.frame.width / 2

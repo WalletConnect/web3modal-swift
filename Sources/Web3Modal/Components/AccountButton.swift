@@ -3,7 +3,19 @@ import WalletConnectSign
 import Web3ModalUI
 
 struct AccountButtonStyle: ButtonStyle {
-    @EnvironmentObject var store: Store
+    @ObservedObject var store: Store
+    
+    public init() {
+        self.store = .shared
+    }
+    
+    init(
+        store: Store = .shared,
+        isPressedOverride: Bool? = nil
+    ) {
+        self.store = store
+        self.isPressedOverride = isPressedOverride
+    }
     
     @Environment(\.isEnabled) var isEnabled
     
@@ -22,12 +34,6 @@ struct AccountButtonStyle: ButtonStyle {
     }
     
     func makeBody(configuration: Configuration) -> some View {
-        var textColor: Color = .Foreground100
-        textColor = isEnabled ? textColor : .Overgray015
-        
-        var textColorInner: Color = .Foreground200
-        textColorInner = isEnabled ? textColorInner : .Overgray010
-        
         var backgroundColor: Color = .GrayGlass002
         let pressedColor: Color = .GrayGlass010
         backgroundColor = (isPressedOverride ?? configuration.isPressed) ? pressedColor : backgroundColor
@@ -37,6 +43,46 @@ struct AccountButtonStyle: ButtonStyle {
         let leadingPadding = Spacing.xxs
         let trailingPadding = Spacing.xxxs
         
+        return Group {
+            if store.balance != nil {
+                mixedVariant()
+            } else {
+                accountVariant()
+            }
+        }
+        .padding(.vertical, verticalPadding)
+        .padding(.leading, leadingPadding)
+        .padding(.trailing, trailingPadding)
+        .background(backgroundColor)
+        .cornerRadius(Radius.m)
+        .overlay(
+            RoundedRectangle(cornerRadius: Radius.m)
+                .stroke(Color.Overgray010, lineWidth: 1)
+        )
+    }
+    
+    func accountVariant() -> some View {
+        var textColor: Color = .Foreground100
+        textColor = isEnabled ? textColor : .Overgray015
+        
+        return HStack(spacing: Spacing.xxs) {
+            avatar()
+                
+            Text(addressFormatted ?? "")
+                .font(.paragraph500)
+                .foregroundColor(textColor)
+        }
+        .padding(Spacing.xs)
+        .cornerRadius(Radius.m)
+    }
+    
+    func mixedVariant() -> some View {
+        var textColor: Color = .Foreground100
+        textColor = isEnabled ? textColor : .Overgray015
+        
+        var textColorInner: Color = .Foreground200
+        textColorInner = isEnabled ? textColorInner : .Overgray010
+        
         return HStack(spacing: Spacing.xs) {
             HStack(spacing: Spacing.xxs) {
                 networkImage()
@@ -45,19 +91,17 @@ struct AccountButtonStyle: ButtonStyle {
                     .opacity(isEnabled ? 1 : 0.5)
                     .frame(width: 24, height: 24)
                 
-                if store.balance != nil {
-                    let balance = store.balance?.roundedDecimal(to: 4, mode: .down) ?? 0
-                        
-                    Text(balance == 0 ? "0 \(selectedChain.token.symbol)" : "\(balance, specifier: "%.3f") \(selectedChain.token.symbol)")
-                        .font(.paragraph600)
-                        .foregroundColor(textColor)
-                        .lineLimit(1)
-                }
+                let balance = store.balance?.roundedDecimal(to: 4, mode: .down) ?? 0
+                
+                Text(balance == 0 ? "0 \(selectedChain.token.symbol)" : "\(balance, specifier: "%.3f") \(selectedChain.token.symbol)")
+                    .font(.paragraph600)
+                    .foregroundColor(textColor)
+                    .lineLimit(1)
             }
             
             HStack(spacing: Spacing.xxs) {
                 avatar()
-                    
+                
                 Text(addressFormatted ?? "")
                     .font(.paragraph500)
                     .foregroundColor(textColorInner)
@@ -70,20 +114,15 @@ struct AccountButtonStyle: ButtonStyle {
                     .stroke(Color.Overgray010, lineWidth: 1)
             )
         }
-        
-        .padding(.vertical, verticalPadding)
-        .padding(.leading, leadingPadding)
-        .padding(.trailing, trailingPadding)
-        .background(backgroundColor)
-        .cornerRadius(Radius.m)
-        .overlay(
-            RoundedRectangle(cornerRadius: Radius.m)
-                .stroke(Color.Overgray010, lineWidth: 1)
-        )
     }
     
     func networkImage() -> some View {
-        Image.imageEth
+        let storedImage = store.chainImages[selectedChain.imageId]
+        let chainImage = Image(
+            uiImage: storedImage ?? UIImage()
+        )
+        
+        return chainImage
             .resizable()
     }
     
@@ -105,76 +144,87 @@ struct AccountButtonStyle: ButtonStyle {
 }
 
 public struct AccountButton: View {
-    public init() {}
+    var store: Store
+    
+    public init() {
+        self.store = .shared
+    }
+    
+    init(store: Store = .shared) {
+        self.store = store
+    }
     
     public var body: some View {
-        Button(action: {}, label: {
-            Text("Foo")
-        })
-        .buttonStyle(AccountButtonStyle())
+        Button(action: {
+            Web3Modal.present()
+        }, label: {})
+        .buttonStyle(AccountButtonStyle(store: store))
+        .onAppear {
+            fetchIdentity()
+            fetchBalance()
+        }
+    }
+    
+    func fetchIdentity() {
+        Task { @MainActor in
+            do {
+                try await BlockchainAPIInteractor(store: store).getIdentity()
+            } catch {
+                store.toast = .init(style: .error, message: "Failed to fetch identity")
+            }
+        }
+    }
+    
+    func fetchBalance() {
+        Task { @MainActor in
+            do {
+                try await BlockchainAPIInteractor(store: store).getBalance()
+            } catch {
+                store.toast = .init(style: .error, message: "Failed to fetch balance")
+            }
+        }
     }
 }
 
 struct AccountButton_Preview: PreviewProvider {
+    static let store = { (balance: Double?) -> Store in
+        let store = Store()
+        store.balance = balance
+        store.session = .stub
+        return store
+    }
+    
     static var previews: some View {
         VStack {
-            AccountButton()
+            AccountButton(store: AccountButton_Preview.store(1.23))
             
-            AccountButton()
+            AccountButton(store: AccountButton_Preview.store(nil))
+            
+            AccountButton(store: AccountButton_Preview.store(1.23))
+                .disabled(true)
+            
+            AccountButton(store: AccountButton_Preview.store(nil))
                 .disabled(true)
             
             Button(action: {}, label: {
-                Text("Foo")
+//                Text("Foo")
             })
-            .buttonStyle(AccountButtonStyle(isPressedOverride: true))
+            .buttonStyle(
+                AccountButtonStyle(
+                    store: AccountButton_Preview.store(1.23),
+                    isPressedOverride: true
+                )
+            )
+            
+            Button(action: {}, label: {
+//                Text("Foo")
+            })
+            .buttonStyle(
+                AccountButtonStyle(
+                    store: AccountButton_Preview.store(nil),
+                    isPressedOverride: true
+                )
+            )
         }
-        .environmentObject({ () -> Store in
-            let store = Store()
-            store.balance = 1.23
-            store.session = try? JSONDecoder().decode(Session.self, from: Session.stubJson)
-            return store
-        }())
     }
-}
-
-private extension Session {
-    static let stubJson: Data = """
-    {
-      "peer": {
-        "name": "MetaMask Wallet",
-        "url": "https://metamask.io/",
-        "icons": [],
-        "redirect": {
-          "native": "metamask://",
-          "universal": "https://metamask.app.link/"
-        },
-        "description": "MetaMask Wallet Integration"
-      },
-      "namespaces": {
-        "eip155": {
-          "chains": [
-            "eip155:56"
-          ],
-          "accounts": [
-            "eip155:56:0x5c8877144d858e41d8c33f5baa7e67a5e0027e37"
-          ],
-          "events": [
-            "chainChanged",
-            "accountsChanged"
-          ],
-          "methods": [
-            "wallet_addEthereumChain",
-            "personal_sign",
-            "eth_sendTransaction",
-            "eth_signTypedData",
-            "wallet_switchEthereumChain"
-          ]
-        }
-      },
-      "pairingTopic": "08698f505aa6f677823953cbe3d5f34e4f098635f2444096d88977c1850267bb",
-      "requiredNamespaces": {},
-      "expiryDate": 720702756,
-      "topic": "34afbcab97c8b9105f66ea3770cb540d59085c6f0996b4170cb163fee2558f59"
-    }
-    """.data(using: .utf8)!
 }

@@ -15,7 +15,7 @@ final class BlockchainAPIInteractor: ObservableObject {
         let address = account?.address
         let chainId = account?.blockchainIdentifier
                 
-        let httpClient = HTTPNetworkClient(host: "rpc.walletconnect.com", session: URLSession(configuration: .ephemeral))
+        let httpClient = HTTPNetworkClient(host: "rpc.walletconnect.com")
         let response = try await httpClient.request(
             Identity.self,
             at: BlockchainAPI.getIdentity(
