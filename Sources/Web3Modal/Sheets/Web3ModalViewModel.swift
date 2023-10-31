@@ -114,8 +114,6 @@ class Web3ModalViewModel: ObservableObject {
         Task {
             try? await signInteractor.createPairingAndConnect()
         }
-        
-        
     }
     
     func fetchIdentity() {
