@@ -96,9 +96,11 @@ public class Web3Modal {
         
         Store.shared.selectedChain = matchingChain
         
+        
         Task {
             let interactor = W3MAPIInteractor()
-            
+        
+            try? await interactor.fetchWalletImages(for: Store.shared.recentWallets)
             try? await interactor.fetchAllWalletMetadata()
             try? await interactor.fetchFeaturedWallets()
             try? await interactor.prefetchChainImages()

@@ -138,9 +138,9 @@ extension Router.NetworkSwitchSubpage {
     var title: String? {
         switch self {
         case .selectChain:
-            return "Choose Network"
+            return "Select network"
         case .whatIsANetwork:
-            return "What is a Network?"
+            return "What is a network?"
         }
     }
 }

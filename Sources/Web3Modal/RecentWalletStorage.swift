@@ -1,22 +1,8 @@
 import Foundation
 
 class RecentWalletsStorage {
-    private let defaults: UserDefaults
-
-    init(defaults: UserDefaults = .standard) {
-        self.defaults = defaults
-    }
-
-    var recentWallets: [Wallet] {
-        get {
-            loadRecentWallets()
-        }
-        set {
-            saveRecentWallets(newValue)
-        }
-    }
     
-    func loadRecentWallets() -> [Wallet] {
+    static func loadRecentWallets(defaults: UserDefaults = .standard) -> [Wallet] {
         guard
             let data = defaults.data(forKey: "recentWallets"),
             let wallets = try? JSONDecoder().decode([Wallet].self, from: data)
@@ -35,11 +21,18 @@ class RecentWalletsStorage {
         }
     }
     
-    func saveRecentWallets(_ wallets: [Wallet])  {
+    static func saveRecentWallets(defaults: UserDefaults = .standard, _ wallets: [Wallet])  {
         
-        let subset = Array(wallets.filter {
-            $0.lastTimeUsed != nil
-        }.prefix(5))
+        let subset = Array(
+            wallets
+                .filter {
+                    $0.lastTimeUsed != nil
+                }
+                .sorted(by: { lhs, rhs in
+                    lhs.lastTimeUsed! > rhs.lastTimeUsed!
+                })
+                .prefix(2)
+        )
         
         var uniqueValues: [Wallet] = []
         subset.forEach { item in

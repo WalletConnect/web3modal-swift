@@ -21,7 +21,7 @@ public struct ConnectButton: View {
                 CircleProgressView(color: .white, lineWidth: 2, isAnimating: .constant(true))
                     .frame(width: 20, height: 20)
             } else {
-                Text("Connect Wallet")
+                Text("Connect wallet")
             }
         }
         .buttonStyle(W3MButtonStyle())
