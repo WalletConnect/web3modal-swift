@@ -22,9 +22,13 @@ let package = Package(
     ],
     dependencies: [
         .package(
-            url: "https://github.com/WalletConnect/WalletConnectSwiftV2", branch: "remove-wcm"
+            url: "https://github.com/WalletConnect/WalletConnectSwiftV2",
+            from: "1.9.2"
         ),
-        .package(url: "https://github.com/WalletConnect/QRCode", from: "14.3.1"),
+        .package(
+            url: "https://github.com/WalletConnect/QRCode",
+            from: "14.3.1"
+        ),
         .package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.10.0"
