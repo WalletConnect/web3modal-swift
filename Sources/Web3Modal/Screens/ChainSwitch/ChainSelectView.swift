@@ -26,6 +26,8 @@ struct ChainSelectView: View {
             grid()
         case .whatIsANetwork:
             WhatIsNetworkView()
+        case let .networkDetail(chain):
+            NetworkDetailView(viewModel: .init(chain: chain, router: router))
         }
     }
     
@@ -48,11 +50,18 @@ struct ChainSelectView: View {
         
         let isSelected = chain.id == store.selectedChain?.id
         let currentChains = viewModel.getChains()
-        let isChainApproved = true // store.session != nil ? currentChains.contains(chain) : true
+        let currentMethods = viewModel.getMethods()
+        let isChainApproved = store.session != nil ? currentChains.contains(chain) : true
         
         return Button(action: {
-            Task {
-                await self.viewModel.switchChain(chain)
+            if store.session == nil  {
+                store.selectedChain = chain
+                router.setRoute(Router.ConnectingSubpage.connectWallet)
+            } else if isChainApproved {
+                store.selectedChain = chain
+                router.setRoute(Router.AccountSubpage.profile)
+            } else {
+                router.setRoute(Router.NetworkSwitchSubpage.networkDetail(chain))
             }
         }, label: {
             Text(chain.chainName)
@@ -67,7 +76,21 @@ struct ChainSelectView: View {
             },
             isSelected: isSelected
         ))
-        .disabled(isSelected || !isChainApproved)
+        .disabled({
+            if isSelected {
+                return true
+            }
+            
+            if currentMethods.contains("wallet_switchEthereumChain") {
+                return false
+            }
+            
+            if !currentChains.contains(chain) {
+                return true
+            }
+            
+            return false
+        }())
     }
     
     private func modalHeader() -> some View {
@@ -141,6 +164,8 @@ extension Router.NetworkSwitchSubpage {
             return "Select network"
         case .whatIsANetwork:
             return "What is a network?"
+        case let .networkDetail(chain):
+            return chain.chainName
         }
     }
 }
