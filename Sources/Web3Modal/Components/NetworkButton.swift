@@ -19,6 +19,8 @@ public struct NetworkButton: View {
             let chainImage = Image(
                 uiImage: storedImage ?? UIImage()
             )
+            .resizable()
+            .frame(width: 24, height: 24)
             
             Button(selectedChain.chainName) {
                 Web3Modal.selectChain()
@@ -26,11 +28,11 @@ public struct NetworkButton: View {
             .buttonStyle(
                 W3MChipButtonStyle(
                     variant: .shade,
-                    leadingImage: { chainImage.resizable() }
+                    leadingImage: { chainImage }
                 )
             )
         } else {
-            Button("Select Network") {
+            Button("Select network") {
                 Web3Modal.selectChain()
             }
             .buttonStyle(
@@ -55,6 +57,8 @@ struct NetworkButton_Preview: PreviewProvider {
     static var previews: some View {
         VStack {
             NetworkButton(store: NetworkButton_Preview.store(nil))
+            
+            ConnectButton()
             
             NetworkButton(store: NetworkButton_Preview.store(ChainsPresets.ethChains[0]))
             

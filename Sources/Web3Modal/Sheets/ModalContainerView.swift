@@ -3,8 +3,6 @@ import SwiftUI
 struct ModalContainerView: View {
     @Environment(\.presentationMode) var presentationMode
     
-    @Binding var showModal: Bool
-    
     @ObservedObject var store: Store
     @StateObject var router: Router
     @StateObject var w3mApiInteractor: W3MAPIInteractor
@@ -12,8 +10,7 @@ struct ModalContainerView: View {
     @StateObject var blockchainApiInteractor: BlockchainAPIInteractor
     @StateObject var web3modalViewModel: Web3ModalViewModel
     
-    init(store: Store = .shared, router: Router, showModal: Binding<Bool>) {
-        _showModal = showModal
+    init(store: Store = .shared, router: Router) {
         self.store = store
         _router = StateObject(wrappedValue: router)
         let w3mApiInteractor = W3MAPIInteractor(store: store)
@@ -33,8 +30,7 @@ struct ModalContainerView: View {
             store: store,
             w3mApiInteractor: w3mApiInteractor,
             signInteractor: signInteractor,
-            blockchainApiInteractor: blockchainApiInteractor,
-            isShown: showModal
+            blockchainApiInteractor: blockchainApiInteractor
         )
         _web3modalViewModel = StateObject(
             wrappedValue: web3modalViewModel
@@ -44,12 +40,12 @@ struct ModalContainerView: View {
     var body: some View {
         VStack(spacing: 0) {
             Color.clear
-            
-            if self.showModal {
+
+            if store.isModalShown {
                 Group {
                     switch router.currentRoute {
                         case _ where router.currentRoute as? Router.AccountSubpage != nil:
-                            AccountView(isModalShown: $showModal)
+                            AccountView()
                         case _ where router.currentRoute as? Router.ConnectingSubpage != nil:
                             Web3ModalView(
                                 viewModel: web3modalViewModel
@@ -64,7 +60,7 @@ struct ModalContainerView: View {
                 }
                 .toastView(toast: $store.toast)
                 .transition(.move(edge: .bottom))
-                .animation(.spring(), value: self.showModal)
+                .animation(.spring(), value: store.isModalShown)
                 .environmentObject(router)
                 .environmentObject(store)
                 .environmentObject(w3mApiInteractor)
@@ -75,19 +71,19 @@ struct ModalContainerView: View {
         .background(
             Color.Overgray020
                 .colorScheme(.light)
-                .opacity(self.showModal ? 1 : 0)
+                .opacity(store.isModalShown ? 1 : 0)
                 .transform {
                     #if os(iOS)
                         $0.onTapGesture {
                             withAnimation {
-                                self.showModal = false
+                                store.isModalShown = false
                             }
                         }
                     #endif
                 }
         )
         .edgesIgnoringSafeArea(.all)
-        .onChange(of: self.showModal, perform: { newValue in
+        .onChange(of: store.isModalShown, perform: { newValue in
             if newValue == false {
                 withAnimation {
                     self.dismiss()
@@ -96,7 +92,7 @@ struct ModalContainerView: View {
         })
         .onAppear {
             withAnimation {
-                self.showModal = true
+                store.isModalShown = true
             }
         }
         .ignoresSafeArea(.keyboard)
@@ -112,6 +108,6 @@ struct ModalContainerView: View {
 
 struct ModalContainerView_Previews: PreviewProvider {
     static var previews: some View {
-        ModalContainerView(router: Router(), showModal: .constant(true))
+        ModalContainerView(router: Router())
     }
 }

@@ -95,7 +95,7 @@ struct Web3ModalView: View {
     private func closeButton() -> some View {
         Button {
             withAnimation {
-                viewModel.isShown.wrappedValue = false
+                store.isModalShown = false
             }
         } label: {
             Image.LargeClose
@@ -130,8 +130,7 @@ struct Web3ModalView_Previews: PreviewProvider {
                 store: Store(),
                 w3mApiInteractor: W3MAPIInteractor(store: Store()),
                 signInteractor: SignInteractor(store: Store()),
-                blockchainApiInteractor: BlockchainAPIInteractor(store: Store()),
-                isShown: .constant(true)
+                blockchainApiInteractor: BlockchainAPIInteractor(store: Store())
             ))
             .previewLayout(.sizeThatFits)
     }

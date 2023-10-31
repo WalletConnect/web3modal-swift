@@ -90,8 +90,8 @@ public struct W3MChipButtonStyle<LeadingImageContent: View, TrailingImageContent
         
         let verticalPadding = size == .m ? Spacing.xxs : Spacing.xxs // 6
         let horizontalPadding = size == .m ? Spacing.xs : Spacing.xxs // 10
-        let leadingPadding = horizontalPadding + (leadingImage != nil ? 0 : Spacing.xs)
-        let trailingPadding = horizontalPadding + (trailingImage != nil ? 0 : Spacing.xs)
+        let leadingPadding = horizontalPadding + (LeadingImageContent.self != EmptyView.self ? 0 : Spacing.xs)
+        let trailingPadding = horizontalPadding + (TrailingImageContent.self != EmptyView.self ? 0 : Spacing.xs)
         
         return HStack(spacing: Spacing.xxs) {
             leadingImage()
@@ -111,6 +111,7 @@ public struct W3MChipButtonStyle<LeadingImageContent: View, TrailingImageContent
         .padding(.vertical, verticalPadding)
         .padding(.leading, leadingPadding)
         .padding(.trailing, trailingPadding)
+        .frame(minHeight: size == .m ? 36 : 32)
         .background(backgroundColor)
         .cornerRadius(Radius.m)
         .overlay(
@@ -174,6 +175,20 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 Text("Button")
                             }
                             .buttonStyle(
+                               W3MChipButtonStyle()
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                               W3MChipButtonStyle(leadingImage: { Image.imageEth.resizable() })
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
                                 W3MChipButtonStyle(
                                     variant: .fill,
                                     leadingImage: { Image.imageEth.resizable() },
@@ -216,6 +231,20 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 Text("Button")
                             }
                             .buttonStyle(
+                                W3MChipButtonStyle(variant: .shade)
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                               W3MChipButtonStyle(variant: .shade, leadingImage: { Image.imageEth.resizable() })
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
                                 W3MChipButtonStyle(
                                     variant: .shade,
                                     leadingImage: { Image.imageEth.resizable() },
@@ -254,6 +283,21 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                             .font(.large600)
                         
                         HStack {
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(variant: .transparent)
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                               W3MChipButtonStyle(variant: .transparent, leadingImage: { Image.imageEth.resizable() })
+                            )
+                            
                             Button(action: {}) {
                                 Text("Button")
                             }
@@ -306,6 +350,20 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 Text("Button")
                             }
                             .buttonStyle(
+                                W3MChipButtonStyle(size: .s)
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(size: .s, leadingImage: { Image.imageEth.resizable() })
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
                                 W3MChipButtonStyle(
                                     variant: .fill,
                                     size: .s,
@@ -347,6 +405,21 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                             .font(.large600)
                         
                         HStack {
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(variant: .shade, size: .s)
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(variant: .shade, size: .s, leadingImage: { Image.imageEth.resizable() })
+                            )
+                            
                             Button(action: {}) {
                                 Text("Button")
                             }
@@ -392,6 +465,20 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                             .font(.large600)
                         
                         HStack {
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(variant: .transparent, size: .s)
+                            )
+                            
+                            Button(action: {}) {
+                                Text("Button")
+                            }
+                            .buttonStyle(
+                                W3MChipButtonStyle(variant: .transparent, size: .s, leadingImage: { Image.imageEth.resizable() })
+                            )
+                            
                             Button(action: {}) {
                                 Text("Button")
                             }

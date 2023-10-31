@@ -6,6 +6,8 @@ import Web3ModalUI
 class Store: ObservableObject {
     static var shared: Store = .init()
     
+    @Published var isModalShown: Bool = false
+    
     @Published var identity: Identity?
     @Published var balance: Double?
     

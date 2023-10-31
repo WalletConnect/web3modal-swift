@@ -9,8 +9,6 @@ class Web3ModalViewModel: ObservableObject {
     private var w3mApiInteractor: W3MAPIInteractor
     private var signInteractor: SignInteractor
     private var blockchainApiInteractor: BlockchainAPIInteractor
-
-    var isShown: Binding<Bool>
     
     private var disposeBag = Set<AnyCancellable>()
     
@@ -19,11 +17,9 @@ class Web3ModalViewModel: ObservableObject {
         store: Store,
         w3mApiInteractor: W3MAPIInteractor,
         signInteractor: SignInteractor,
-        blockchainApiInteractor: BlockchainAPIInteractor,
-        isShown: Binding<Bool>
+        blockchainApiInteractor: BlockchainAPIInteractor
     ) {
         self.router = router
-        self.isShown = isShown
         self.store = store
         self.w3mApiInteractor = w3mApiInteractor
         self.signInteractor = signInteractor
@@ -41,7 +37,7 @@ class Web3ModalViewModel: ObservableObject {
             .sink { session in
                 print(session)
                 withAnimation {
-                    isShown.wrappedValue = false
+                    store.isModalShown = false
                 }
                 router.setRoute(Router.AccountSubpage.profile)
                 store.session = session

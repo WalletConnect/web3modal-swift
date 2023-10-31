@@ -7,8 +7,6 @@ struct AccountView: View {
     @EnvironmentObject var signInteractor: SignInteractor
     @EnvironmentObject var store: Store
     
-    @Binding var isModalShown: Bool
-    
     var addressFormatted: String? {
         guard let address = store.session?.accounts.first?.address else {
             return nil
@@ -174,7 +172,7 @@ struct AccountView: View {
     private func closeButton() -> some View {
         Button {
             withAnimation {
-                $isModalShown.wrappedValue = false
+                store.isModalShown = false
             }
         } label: {
             Image.LargeClose

@@ -24,19 +24,11 @@ public struct ConnectButton: View {
                 Text("Connect wallet")
             }
         }
-        .buttonStyle(W3MButtonStyle())
+        .buttonStyle(W3MChipButtonStyle())
     }
 }
 
-
 struct ConnectButton_Preview: PreviewProvider {
-    
-    static let store = { () -> Store in
-        let store = Store()
-        store.balance = 1.23
-        store.session = .stub
-        return store
-    }()
     
     static var previews: some View {
         VStack {
@@ -45,6 +37,5 @@ struct ConnectButton_Preview: PreviewProvider {
             ConnectButton()
                 .disabled(true)
         }
-        .environmentObject(ConnectButton_Preview.store)
     }
 }

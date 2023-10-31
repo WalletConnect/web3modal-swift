@@ -126,7 +126,7 @@ struct ChainSelectView: View {
     private func closeButton() -> some View {
         Button {
             withAnimation {
-                viewModel.isShown.wrappedValue = false
+                store.isModalShown = false
             }
         } label: {
             Image.LargeClose
