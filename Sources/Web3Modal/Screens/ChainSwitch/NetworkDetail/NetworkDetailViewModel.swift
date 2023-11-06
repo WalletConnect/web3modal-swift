@@ -10,10 +10,13 @@ final class NetworkDetailViewModel: ObservableObject {
     }
     
     @Published var switchFailed: Bool = false
+    var triedAddingChain: Bool = false
     
     let chain: Chain
     let router: Router
     let store: Store
+    
+    private var disposeBag = Set<AnyCancellable>()
     
     init(
         chain: Chain,
@@ -23,19 +26,71 @@ final class NetworkDetailViewModel: ObservableObject {
         self.chain = chain
         self.router = router
         self.store = store
+        
+        Web3Modal.instance.sessionEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { (event: Session.Event, _: String, _: Blockchain?) in
+                if event.name == "chainChanged" {
+                    
+                    guard let chainReference = try? event.data.get(Int.self) else {
+                        return
+                    }
+                    
+                    DispatchQueue.main.async {
+                        self.store.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
+                        self.router.setRoute(Router.AccountSubpage.profile)
+                    }
+                }
+            }
+            .store(in: &disposeBag)
+        
+        Web3Modal.instance.sessionResponsePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { response in
+                switch response.result {
+                case let .response(value):
+                    let stringResponse = try? value.get(String.self)
+                    
+                    DispatchQueue.main.async {
+                        self.store.selectedChain = chain
+                        self.router.setRoute(Router.AccountSubpage.profile)
+                    }
+                case let .error(error):
+                    
+                    if !self.triedAddingChain {
+                        guard let from = store.selectedChain else {
+                            return
+                        }
+                        
+                        self.triedAddingChain = true
+                        
+                        Task {
+                            try? await self.addEthChain(from: from, to: chain)
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.switchFailed = true
+                            self.objectWillChange.send()
+                        }
+                    }
+                }
+            }
+        
+            .store(in: &disposeBag)
     }
     
     func handle(_ event: Event) {
         switch event {
         case .onAppear:
-            Task {
+            Task { @MainActor in
                 // Switch chain
                 await switchChain(chain)
             }
         case .didTapRetry:
             
+            self.triedAddingChain = false
             self.switchFailed = false
-            Task {
+            Task { @MainActor in
                 // Retry switch chain
                 await switchChain(chain)
             }
@@ -48,33 +103,18 @@ final class NetworkDetailViewModel: ObservableObject {
         do {
             try await switchEthChain(from: from, to: to)
         } catch {
-            print(error.localizedDescription)
-            DispatchQueue.main.async {
-                self.store.toast = .init(style: .error, message: "Failed to switchEthChain trying addEthChain instead")
-            }
-            // TODO: Call addChain only if the error code is 4902
-            
-            do {
-                try await addEthChain(from: from, to: to)
-            } catch {
-                DispatchQueue.main.async {
-                    self.store.toast = .init(style: .error, message: "Failed to addEthChain")
-                    self.switchFailed = true
-                }
-            }
+            print(error)
         }
     }
     
-    @discardableResult
     private func switchEthChain(
         from: Chain,
         to: Chain
-    ) async throws -> String? {
-        guard let session = store.session else { return nil }
-        guard let chainIdNumber = Int(to.chainReference) else { return nil }
+    ) async throws {
+        guard let session = store.session else { return }
+        guard let chainIdNumber = Int(to.chainReference) else { return }
         
         let chainHex = String(format: "%X", chainIdNumber)
-        
         try await Web3Modal.instance.request(params:
             .init(
                 topic: session.topic,
@@ -85,38 +125,14 @@ final class NetworkDetailViewModel: ObservableObject {
         )
         
         // TODO: Nice to have: Somehow open the wallet with switch confirmation dialog
-        
-        let event = try await Web3Modal.instance.sessionEventPublisher.async().event
-        if event.name == "chainChanged" {
-            DispatchQueue.main.async {
-                self.store.selectedChain = to
-                self.router.setRoute(Router.AccountSubpage.profile)
-            }
-        }
-        
-        let result = try await Web3Modal.instance.sessionResponsePublisher.async().result
-        
-        if case .response(let value) = result {
-            let stringResponse = try value.get(String.self)
-            
-            DispatchQueue.main.async {
-                self.store.selectedChain = to
-                self.router.setRoute(Router.AccountSubpage.profile)
-            }
-            
-            return stringResponse
-        } else {
-            return nil
-        }
     }
 
-    @discardableResult
     private func addEthChain(
         from: Chain,
         to: Chain
-    ) async throws -> String? {
-        guard let session = store.session else { return nil }
-        
+    ) async throws {
+        guard let session = store.session else { return }
+                
         try await Web3Modal.instance.request(params:
             .init(
                 topic: session.topic,
@@ -125,29 +141,6 @@ final class NetworkDetailViewModel: ObservableObject {
                 chainId: .init(from.id)!
             )
         )
-        
-        let event = try await Web3Modal.instance.sessionEventPublisher.async().event
-        if event.name == "chainChanged" {
-            DispatchQueue.main.async {
-                self.store.selectedChain = to
-                self.router.setRoute(Router.AccountSubpage.profile)
-            }
-        }
-        
-        let result = try await Web3Modal.instance.sessionResponsePublisher.async().result
-        
-        if case .response(let value) = result {
-            let stringResponse = try value.get(String.self)
-            
-            DispatchQueue.main.async {
-                self.store.selectedChain = to
-                self.router.setRoute(Router.AccountSubpage.profile)
-            }
-            
-            return stringResponse
-        } else {
-            return nil
-        }
     }
 
     func createAddEthChainParams(chain: Chain) -> ChainAddParams? {
@@ -205,6 +198,7 @@ private extension AnyPublisher {
             var cancellable: AnyCancellable?
             var finishedWithoutValue = true
             cancellable = first()
+                .receive(on: DispatchQueue.main)
                 .sink { result in
                     switch result {
                     case .finished:

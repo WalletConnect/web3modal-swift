@@ -12,6 +12,12 @@ struct ComponentLibraryView: View {
         Group {
 #if DEBUG
             List {
+                NavigationLink(destination: AccountButtonPreviewView()) {
+                    Text("AccountButton")
+                }
+                NavigationLink(destination: NetworkButtonPreviewView()) {
+                    Text("NetworkButton")
+                }
                 NavigationLink(destination: W3MButtonStylePreviewView()) {
                     Text("W3MButton")
                 }

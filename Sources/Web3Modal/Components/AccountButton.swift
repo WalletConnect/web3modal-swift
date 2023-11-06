@@ -30,7 +30,7 @@ struct AccountButtonStyle: ButtonStyle {
     }
     
     var selectedChain: Chain {
-        return store.selectedChain ?? ChainsPresets.ethChains.first!
+        return store.selectedChain ?? ChainPresets.ethChains.first!
     }
     
     func makeBody(configuration: Configuration) -> some View {
@@ -158,11 +158,11 @@ public struct AccountButton: View {
         Button(action: {
             Web3Modal.present()
         }, label: {})
-        .buttonStyle(AccountButtonStyle(store: store))
-        .onAppear {
-            fetchIdentity()
-            fetchBalance()
-        }
+            .buttonStyle(AccountButtonStyle(store: store))
+            .onAppear {
+                fetchIdentity()
+                fetchBalance()
+            }
     }
     
     func fetchIdentity() {
@@ -186,45 +186,56 @@ public struct AccountButton: View {
     }
 }
 
-struct AccountButton_Preview: PreviewProvider {
+#if DEBUG
+
+public struct AccountButtonPreviewView: View {
+    public init() {}
+    
     static let store = { (balance: Double?) -> Store in
         let store = Store()
         store.balance = balance
         store.session = .stub
+        
+        Web3Modal.configure(projectId: "", metadata: .init(name: "", description: "", url: "", icons: []))
+        
         return store
     }
     
-    static var previews: some View {
+    public var body: some View {
         VStack {
-            AccountButton(store: AccountButton_Preview.store(1.23))
+            AccountButton(store: AccountButtonPreviewView.store(1.23))
             
-            AccountButton(store: AccountButton_Preview.store(nil))
+            AccountButton(store: AccountButtonPreviewView.store(nil))
             
-            AccountButton(store: AccountButton_Preview.store(1.23))
+            AccountButton(store: AccountButtonPreviewView.store(1.23))
                 .disabled(true)
             
-            AccountButton(store: AccountButton_Preview.store(nil))
+            AccountButton(store: AccountButtonPreviewView.store(nil))
                 .disabled(true)
             
-            Button(action: {}, label: {
-//                Text("Foo")
-            })
-            .buttonStyle(
-                AccountButtonStyle(
-                    store: AccountButton_Preview.store(1.23),
-                    isPressedOverride: true
+            Button(action: {}, label: {})
+                .buttonStyle(
+                    AccountButtonStyle(
+                        store: AccountButtonPreviewView.store(1.23),
+                        isPressedOverride: true
+                    )
                 )
-            )
             
-            Button(action: {}, label: {
-//                Text("Foo")
-            })
-            .buttonStyle(
-                AccountButtonStyle(
-                    store: AccountButton_Preview.store(nil),
-                    isPressedOverride: true
+            Button(action: {}, label: {})
+                .buttonStyle(
+                    AccountButtonStyle(
+                        store: AccountButtonPreviewView.store(nil),
+                        isPressedOverride: true
+                    )
                 )
-            )
         }
     }
 }
+
+struct AccountButton_Preview: PreviewProvider {
+    static var previews: some View {
+        AccountButtonPreviewView()
+    }
+}
+
+#endif

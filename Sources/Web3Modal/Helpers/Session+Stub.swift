@@ -1,6 +1,7 @@
 import WalletConnectSign
 import Foundation
 
+#if DEBUG
 extension Session {
     static let stubJson: Data = """
     {
@@ -46,3 +47,5 @@ extension Session {
         try! JSONDecoder().decode(Session.self, from: Session.stubJson)
     }()
 }
+
+#endif

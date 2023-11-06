@@ -10,7 +10,6 @@ struct ChainSelectView: View {
     var body: some View {
         VStack(spacing: 0) {
             modalHeader()
-            Divider()
             routes()
         }
         .background(Color.Background125)
@@ -35,14 +34,48 @@ struct ChainSelectView: View {
     private func grid() -> some View {
         let collumns = Array(repeating: GridItem(.flexible()), count: 4)
 
-        ScrollView {
-            LazyVGrid(columns: collumns) {
-                ForEach(ChainsPresets.ethChains, id: \.self) { chain in
-                    gridElement(for: chain)
+        VStack {
+            VStack {
+                LazyVGrid(columns: collumns) {
+                    ForEach(ChainPresets.ethChains, id: \.self) { chain in
+                        gridElement(for: chain)
+                    }
                 }
+                .padding(.horizontal)
+                .padding(.vertical)
+            }
+            
+         
+            Divider()
+            
+            VStack(spacing: 0) {
+                
+                Text("Your connected wallet may not support some of the networks available for this dApp")
+                    .fixedSize(horizontal: false, vertical: true)
+                    .font(.small500)
+                    .foregroundColor(.Foreground300)
+                    .multilineTextAlignment(.center)
+                
+                Button {
+                    router.setRoute(Router.NetworkSwitchSubpage.whatIsANetwork)
+                } label: {
+                    HStack {
+                        Image.QuestionMarkCircle
+                            .resizable()
+                            .frame(width: 12, height: 12)
+                        
+                        Text("What is a network")
+                    }
+                    .foregroundColor(.Blue100)
+                    .font(.small500)
+                }
+                .padding(.vertical, Spacing.xs)
+                .background(Color.clear)
+                .contentShape(Rectangle())
             }
             .padding(.horizontal)
-            .padding(.vertical)
+            .padding(.top, Spacing.xs)
+            .padding(.bottom, Spacing.xl)
         }
     }
 
@@ -51,13 +84,14 @@ struct ChainSelectView: View {
         let isSelected = chain.id == store.selectedChain?.id
         let currentChains = viewModel.getChains()
         let currentMethods = viewModel.getMethods()
+        let needToSendSwitchRequest = currentMethods.contains("wallet_switchEthereumChain")
         let isChainApproved = store.session != nil ? currentChains.contains(chain) : true
         
         return Button(action: {
             if store.session == nil  {
                 store.selectedChain = chain
                 router.setRoute(Router.ConnectingSubpage.connectWallet)
-            } else if isChainApproved {
+            } else if isChainApproved && !needToSendSwitchRequest {
                 store.selectedChain = chain
                 router.setRoute(Router.AccountSubpage.profile)
             } else {
@@ -81,7 +115,11 @@ struct ChainSelectView: View {
                 return true
             }
             
-            if currentMethods.contains("wallet_switchEthereumChain") {
+            if store.session == nil {
+                return false
+            }
+            
+            if needToSendSwitchRequest {
                 return false
             }
             
@@ -101,8 +139,6 @@ struct ChainSelectView: View {
             case .selectChain:
                 if router.previousRoute as? Router.AccountSubpage == .profile {
                     backButton()
-                } else {
-                    helpButton()
                 }
             default:
                 backButton()
@@ -128,14 +164,6 @@ struct ChainSelectView: View {
                 .stroke(Color.GrayGlass005, lineWidth: 1)
         )
         .cornerRadius(30, corners: [.topLeft, .topRight])
-    }
-    
-    private func helpButton() -> some View {
-        Button(action: {
-            router.setRoute(Router.NetworkSwitchSubpage.whatIsANetwork)
-        }, label: {
-            Image.QuestionMarkCircle
-        })
     }
     
     private func backButton() -> some View {

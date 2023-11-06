@@ -6,12 +6,14 @@ struct NetworkDetailView: View {
     
     @ObservedObject var viewModel: NetworkDetailViewModel
     
+    
     var body: some View {
         VStack {
             content()
                 .onAppear {
                     viewModel.handle(.onAppear)
                 }
+
         }
     }
     
@@ -44,6 +46,7 @@ struct NetworkDetailView: View {
             Text(!viewModel.switchFailed ? "Accept connection request in your wallet" : "Switch can be declined if chain is not supported by a wallet or previous request is still active")
                 .font(.small500)
                 .foregroundColor(.Foreground200)
+                .multilineTextAlignment(.center)
             
             if viewModel.switchFailed {
                 Button {

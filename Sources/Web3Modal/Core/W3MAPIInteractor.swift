@@ -66,6 +66,7 @@ final class W3MAPIInteractor: ObservableObject {
             }
             
             self.isLoading = false
+            self.objectWillChange.send()
         }
     }
     
@@ -174,7 +175,7 @@ final class W3MAPIInteractor: ObservableObject {
     func prefetchChainImages() async throws {
         var chainImages: [String: UIImage] = [:]
         
-        try await ChainsPresets.ethChains.concurrentMap { chain in
+        try await ChainPresets.ethChains.concurrentMap { chain in
             
             let url = URL(string: "https://api.web3modal.com/public/getAssetImage/\(chain.imageId)")!
             var request = URLRequest(url: url)

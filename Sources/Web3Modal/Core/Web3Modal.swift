@@ -40,7 +40,7 @@ public class Web3Modal {
             
             
             if let blockchain = session.accounts.first?.blockchain {
-                let matchingChain = ChainsPresets.ethChains.first(where: {
+                let matchingChain = ChainPresets.ethChains.first(where: {
                     $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
                 })
                 
@@ -53,7 +53,6 @@ public class Web3Modal {
     
     struct Config {
         let projectId: String
-        var chainId: Blockchain
         var metadata: AppMetadata
         var sessionParams: SessionParams
         
@@ -71,7 +70,6 @@ public class Web3Modal {
     ///   - metadata: App metadata
     public static func configure(
         projectId: String,
-        chainId: Blockchain,
         metadata: AppMetadata,
         sessionParams: SessionParams = .default,
         recommendedWalletIds: [String] = [],
@@ -81,22 +79,13 @@ public class Web3Modal {
         Pair.configure(metadata: metadata)
         Web3Modal.config = Web3Modal.Config(
             projectId: projectId,
-            chainId: chainId,
             metadata: metadata,
             sessionParams: sessionParams,
             includeWebWallets: includeWebWallets,
             recommendedWalletIds: recommendedWalletIds,
             excludedWalletIds: excludedWalletIds
         )
-        
                 
-        let matchingChain = ChainsPresets.ethChains.first(where: {
-            $0.chainNamespace == chainId.namespace && $0.chainReference == chainId.reference
-        })
-        
-        Store.shared.selectedChain = matchingChain
-        
-        
         Task {
             let interactor = W3MAPIInteractor()
         
@@ -111,7 +100,6 @@ public class Web3Modal {
         Web3Modal.config.sessionParams = sessionParams
     }
     
-    
     public static func getSelectedChain() -> Chain? {
         guard let chain = Store.shared.selectedChain else {
             return nil
@@ -124,6 +112,14 @@ public class Web3Modal {
 #if canImport(UIKit)
 
 extension Web3Modal {
+    
+    public static func addChainPreset(_ chain: Chain) {
+        ChainPresets.ethChains.append(chain)
+    }
+    
+    public static func selectChain(_ chain: Chain) {
+        Store.shared.selectedChain = chain
+    }
     
     public static func selectChain(from presentingViewController: UIViewController? = nil) {
         guard let vc = presentingViewController ?? topViewController() else {
@@ -208,7 +204,7 @@ public struct SessionParams {
     public static let `default`: Self = {
         let methods: Set<String> = Set(EthUtils.ethMethods)
         let events: Set<String> = ["chainChanged", "accountsChanged"]
-        let blockchains: Set<Blockchain> = Set(ChainsPresets.ethChains.map(\.id).compactMap(Blockchain.init))
+        let blockchains: Set<Blockchain> = Set(ChainPresets.ethChains.map(\.id).compactMap(Blockchain.init))
         
         let namespaces: [String: ProposalNamespace] = [
             "eip155": ProposalNamespace(

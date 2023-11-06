@@ -16,7 +16,7 @@ struct AccountView: View {
     }
     
     var selectedChain: Chain {
-        return store.selectedChain ?? ChainsPresets.ethChains.first!
+        return store.selectedChain ?? ChainPresets.ethChains.first!
     }
     
     var body: some View {

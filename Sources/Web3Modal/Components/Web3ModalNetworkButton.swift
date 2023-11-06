@@ -1,7 +1,7 @@
 import SwiftUI
 import Web3ModalUI
 
-public struct NetworkButton: View {
+public struct Web3ModalNetworkButton: View {
     @ObservedObject var store: Store
     
     public init() {
@@ -14,7 +14,6 @@ public struct NetworkButton: View {
     
     public var body: some View {
         if let selectedChain = store.selectedChain {
-            
             let storedImage = store.chainImages[selectedChain.imageId]
             let chainImage = Image(
                 uiImage: storedImage ?? UIImage()
@@ -45,7 +44,11 @@ public struct NetworkButton: View {
     }
 }
 
-struct NetworkButton_Preview: PreviewProvider {
+#if DEBUG
+
+public struct NetworkButtonPreviewView: View {
+    public init() {}
+    
     static let store = { (chain: Chain?) -> Store in
         let store = Store()
         store.balance = 1.23
@@ -54,21 +57,27 @@ struct NetworkButton_Preview: PreviewProvider {
         return store
     }
     
-    static var previews: some View {
+    public var body: some View {
         VStack {
-            NetworkButton(store: NetworkButton_Preview.store(nil))
+            Web3ModalNetworkButton(store: NetworkButtonPreviewView.store(nil))
             
-            ConnectButton()
+            Web3ModalNetworkButton(store: NetworkButtonPreviewView.store(ChainPresets.ethChains[0]))
             
-            NetworkButton(store: NetworkButton_Preview.store(ChainsPresets.ethChains[0]))
+            Web3ModalNetworkButton(store: NetworkButtonPreviewView.store(ChainPresets.ethChains[1]))
             
-            NetworkButton(store: NetworkButton_Preview.store(ChainsPresets.ethChains[1]))
-            
-            NetworkButton(store: NetworkButton_Preview.store(ChainsPresets.ethChains[0]))
+            Web3ModalNetworkButton(store: NetworkButtonPreviewView.store(ChainPresets.ethChains[0]))
                 .disabled(true)
             
-            NetworkButton(store: NetworkButton_Preview.store(nil))
+            Web3ModalNetworkButton(store: NetworkButtonPreviewView.store(nil))
                 .disabled(true)
         }
     }
 }
+
+struct NetworkButton_Preview: PreviewProvider {
+    static var previews: some View {
+        NetworkButtonPreviewView()
+    }
+}
+
+#endif

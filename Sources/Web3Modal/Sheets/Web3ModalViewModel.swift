@@ -24,14 +24,7 @@ class Web3ModalViewModel: ObservableObject {
         self.w3mApiInteractor = w3mApiInteractor
         self.signInteractor = signInteractor
         self.blockchainApiInteractor = blockchainApiInteractor
-        
-        signInteractor.sessionResponsePublisher
-            .receive(on: DispatchQueue.main)
-            .sink { response in
-                print(response)
-            }
-            .store(in: &disposeBag)
-        
+    
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
             .sink { session in
@@ -44,7 +37,7 @@ class Web3ModalViewModel: ObservableObject {
                 
                 if
                     let blockchain = session.accounts.first?.blockchain,
-                    let matchingChain = ChainsPresets.ethChains.first(where: { $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference })
+                    let matchingChain = ChainPresets.ethChains.first(where: { $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference })
                 {
                     store.selectedChain = matchingChain
                 }
@@ -99,8 +92,7 @@ class Web3ModalViewModel: ObservableObject {
                         return
                     }
                     
-                    store.selectedChain = ChainsPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
-                    
+                    store.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
                 default:
                     return
                 }
@@ -157,7 +149,7 @@ class Web3ModalViewModel: ObservableObject {
         
         return chains
             .compactMap { chain in
-                ChainsPresets.ethChains.first(where: { chain.reference == $0.chainReference && chain.namespace == $0.chainNamespace })
+                ChainPresets.ethChains.first(where: { chain.reference == $0.chainReference && chain.namespace == $0.chainNamespace })
             }
     }
     
