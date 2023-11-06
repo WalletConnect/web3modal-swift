@@ -46,7 +46,7 @@ struct ConnectWithQRCode: View {
             do {
                 try await signInteractor.createPairingAndConnect()
             } catch {
-                store.toast = .init(style: .error, message: error.localizedDescription)
+                store.toast = .init(style: .error, message: "Failed to create connection URI.")
             }
         }
     }

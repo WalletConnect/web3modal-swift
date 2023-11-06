@@ -9,8 +9,6 @@ class Web3ModalViewModel: ObservableObject {
     private var w3mApiInteractor: W3MAPIInteractor
     private var signInteractor: SignInteractor
     private var blockchainApiInteractor: BlockchainAPIInteractor
-
-    var isShown: Binding<Bool>
     
     private var disposeBag = Set<AnyCancellable>()
     
@@ -19,11 +17,9 @@ class Web3ModalViewModel: ObservableObject {
         store: Store,
         w3mApiInteractor: W3MAPIInteractor,
         signInteractor: SignInteractor,
-        blockchainApiInteractor: BlockchainAPIInteractor,
-        isShown: Binding<Bool>
+        blockchainApiInteractor: BlockchainAPIInteractor
     ) {
         self.router = router
-        self.isShown = isShown
         self.store = store
         self.w3mApiInteractor = w3mApiInteractor
         self.signInteractor = signInteractor
@@ -41,7 +37,7 @@ class Web3ModalViewModel: ObservableObject {
             .sink { session in
                 print(session)
                 withAnimation {
-                    isShown.wrappedValue = false
+                    store.isModalShown = false
                 }
                 router.setRoute(Router.AccountSubpage.profile)
                 store.session = session
@@ -117,21 +113,21 @@ class Web3ModalViewModel: ObservableObject {
     }
     
     func fetchIdentity() {
-        Task {
+        Task { @MainActor in
             do {
                 try await blockchainApiInteractor.getIdentity()
             } catch {
-                store.toast = .init(style: .error, message: error.localizedDescription)
+                store.toast = .init(style: .error, message: "Failed to fetch identity.")
             }
         }
     }
     
     func fetchBalance() {
-        Task {
+        Task { @MainActor in
             do {
                 try await blockchainApiInteractor.getBalance()
             } catch {
-                store.toast = .init(style: .error, message: error.localizedDescription)
+                store.toast = .init(style: .error, message: "Failed to fetch balance.")
             }
         }
     }
@@ -139,17 +135,28 @@ class Web3ModalViewModel: ObservableObject {
     func switchChain(_ to: Chain) async {
         guard let from = store.selectedChain else { return }
         
+        if self.store.session == nil {
+            DispatchQueue.main.async {
+                self.store.selectedChain = to
+                self.router.setRoute(Router.ConnectingSubpage.connectWallet)
+            }
+        }
+        
         do {
             try await switchEthChain(from: from, to: to)
         } catch {
             print(error.localizedDescription)
-            store.toast = .init(style: .error, message: error.localizedDescription)
+            DispatchQueue.main.async {
+                self.store.toast = .init(style: .error, message: "Failed to switchEthChain trying addEthChain instead")
+            }
             // TODO: Call addChain only if the error code is 4902
             
             do {
                 try await addEthChain(from: from, to: to)
             } catch {
-                store.toast = .init(style: .error, message: error.localizedDescription)
+                DispatchQueue.main.async {
+                    self.store.toast = .init(style: .error, message: "Failed to addEthChain")
+                }
             }
         }
         
@@ -204,6 +211,7 @@ class Web3ModalViewModel: ObservableObject {
         
         DispatchQueue.main.async {
             self.store.selectedChain = to
+            self.fetchBalance()
         }
         
         return result
@@ -246,6 +254,7 @@ class Web3ModalViewModel: ObservableObject {
         
         DispatchQueue.main.async {
             self.store.selectedChain = to
+            self.fetchBalance()
         }
         
         return result

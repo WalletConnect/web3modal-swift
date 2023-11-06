@@ -3,13 +3,16 @@ import SwiftUI
 import WalletConnectSign
 import Web3ModalUI
 
-public class Store: ObservableObject {
-    public static var shared: Store = .init()
+class Store: ObservableObject {
+    static var shared: Store = .init()
+    
+    @Published var isModalShown: Bool = false
     
     @Published var identity: Identity?
     @Published var balance: Double?
     
-    @Published public var session: Session?
+    @Published var connecting: Bool = false
+    @Published var session: Session?
     @Published var uri: WalletConnectURI?
     
     @Published var wallets: [Wallet] = []
@@ -21,15 +24,15 @@ public class Store: ObservableObject {
     
     var recentWallets: [Wallet] {
         get {
-            RecentWalletsStorage().loadRecentWallets()
+            RecentWalletsStorage.loadRecentWallets()
         }
-        set {
-            RecentWalletsStorage().saveRecentWallets(newValue)
+        set(newValue) {
+            RecentWalletsStorage.saveRecentWallets(newValue)
         }
     }
     
     @Published public var selectedChain: Chain?
-    var chainImages: [String: UIImage] = [:]
+    @Published var chainImages: [String: UIImage] = [:]
     
     @Published var toast: Toast? = nil
 }

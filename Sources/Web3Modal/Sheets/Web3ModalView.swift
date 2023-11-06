@@ -16,7 +16,6 @@ struct Web3ModalView: View {
         }
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
-        .toastView(toast: $store.toast)
     }
     
     @ViewBuilder
@@ -96,7 +95,7 @@ struct Web3ModalView: View {
     private func closeButton() -> some View {
         Button {
             withAnimation {
-                viewModel.isShown.wrappedValue = false
+                store.isModalShown = false
             }
         } label: {
             Image.LargeClose
@@ -108,13 +107,13 @@ extension Router.ConnectingSubpage {
     var title: String? {
         switch self {
         case .connectWallet:
-            return "Connect Wallet"
+            return "Connect wallet"
         case .qr:
-            return "Scan QR Code"
+            return "WalletConnect"
         case .allWallets:
             return "All wallets"
         case .whatIsAWallet:
-            return "What is a Wallet?"
+            return "What is a wallet?"
         case let .walletDetail(wallet):
             return "\(wallet.name)"
         case .getWallet:
@@ -131,8 +130,7 @@ struct Web3ModalView_Previews: PreviewProvider {
                 store: Store(),
                 w3mApiInteractor: W3MAPIInteractor(store: Store()),
                 signInteractor: SignInteractor(store: Store()),
-                blockchainApiInteractor: BlockchainAPIInteractor(store: Store()),
-                isShown: .constant(true)
+                blockchainApiInteractor: BlockchainAPIInteractor(store: Store())
             ))
             .previewLayout(.sizeThatFits)
     }

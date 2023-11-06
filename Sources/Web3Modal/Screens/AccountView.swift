@@ -7,8 +7,6 @@ struct AccountView: View {
     @EnvironmentObject var signInteractor: SignInteractor
     @EnvironmentObject var store: Store
     
-    @Binding var isModalShown: Bool
-    
     var addressFormatted: String? {
         guard let address = store.session?.accounts.first?.address else {
             return nil
@@ -23,62 +21,65 @@ struct AccountView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            avatar()
-            
-            Spacer()
-                .frame(height: Spacing.xl)
-            
-            HStack {
-                (store.identity?.name ?? addressFormatted).map {
-                    Text($0)
-                        .font(.title600)
-                        .foregroundColor(.Foreground100)
+            VStack(spacing: 0) {
+                avatar()
+                
+                Spacer()
+                    .frame(height: Spacing.xl)
+                
+                HStack {
+                    (store.identity?.name ?? addressFormatted).map {
+                        Text($0)
+                            .font(.title600)
+                            .foregroundColor(.Foreground100)
+                    }
+                    
+                    Button {
+                        UIPasteboard.general.string = store.session?.accounts.first?.address
+                        store.toast = .init(style: .info, message: "Address copied")
+                    } label: {
+                        Image.LargeCopy
+                            .resizable()
+                            .frame(width: 12, height: 12)
+                            .foregroundColor(.Foreground250)
+                    }
                 }
+                
+                Spacer()
+                    .frame(height: Spacing.xxxxs)
+                
+                if store.balance != nil {
+                    let balance = store.balance?.roundedDecimal(to: 4, mode: .down) ?? 0
+                    
+                    Text(balance == 0 ? "0 \(selectedChain.token.symbol)" : "\(balance, specifier: "%.4f") \(selectedChain.token.symbol)")
+                        .font(.paragraph500)
+                        .foregroundColor(.Foreground200)
+                }
+                
+                Spacer()
+                    .frame(height: Spacing.s)
                 
                 Button {
-                    UIPasteboard.general.string = store.session?.accounts.first?.address
-                    store.toast = .init(style: .info, message: "Address copied")
-                } label: {
-                    Image.LargeCopy
-                        .resizable()
-                        .frame(width: 12, height: 12)
-                        .foregroundColor(.Foreground250)
-                }
-            }
-            
-            Spacer()
-                .frame(height: Spacing.xxxxs)
-            
-            if store.balance != nil {
-                let balance = store.balance?.roundedDecimal(to: 4, mode: .down) ?? 0
+                    guard let chain = store.selectedChain else { return }
                     
-                Text(balance == 0 ? "0 \(selectedChain.token.symbol)" : "\(balance, specifier: "%.4f") \(selectedChain.token.symbol)")
-                    .font(.paragraph500)
-                    .foregroundColor(.Foreground200)
-            }
-            
-            Spacer()
-                .frame(height: Spacing.s)
-            
-            Button {
-                guard let chain = store.selectedChain else { return }
-                
-                router.openURL(URL(string: chain.blockExplorerUrl)!)
-            } label: {
-                Text("Block Explorer")
-            }
-            .buttonStyle(W3MChipButtonStyle(
-                variant: .transparent,
-                size: .s,
-                leadingImage: {
-                    Image.Compass
-                        .resizable()
-                },
-                trailingImage: {
-                    Image.ExternalLink
-                        .resizable()
+                    router.openURL(URL(string: chain.blockExplorerUrl)!)
+                } label: {
+                    Text("Block Explorer")
                 }
-            ))
+                .buttonStyle(W3MChipButtonStyle(
+                    variant: .transparent,
+                    size: .s,
+                    leadingImage: {
+                        Image.Compass
+                            .resizable()
+                    },
+                    trailingImage: {
+                        Image.ExternalLink
+                            .resizable()
+                    }
+                ))
+                
+            }
             
             Spacer()
                 .frame(height: Spacing.xl)
@@ -121,7 +122,7 @@ struct AccountView: View {
                 do {
                     try await blockchainApiInteractor.getBalance()
                 } catch {
-                    store.toast = .init(style: .error, message: error.localizedDescription)
+                    store.toast = .init(style: .error, message: "Failed to fetch balance")
                 }
             }
             
@@ -133,11 +134,10 @@ struct AccountView: View {
                 do {
                     try await blockchainApiInteractor.getIdentity()
                 } catch {
-                    store.toast = .init(style: .error, message: error.localizedDescription)
+                    store.toast = .init(style: .error, message: "Failed to fetch identity")
                 }
             }
         }
-        .toastView(toast: $store.toast)
         .frame(maxWidth: .infinity)
         .background(Color.Background125)
         .overlay(closeButton().padding().foregroundColor(.Foreground100), alignment: .topTrailing)
@@ -164,7 +164,7 @@ struct AccountView: View {
                 router.setRoute(Router.ConnectingSubpage.connectWallet)
                 try await signInteractor.disconnect()
             } catch {
-                store.toast = .init(style: .error, message: error.localizedDescription)
+                store.toast = .init(style: .error, message: "Failed to disconnect")
             }
         }
     }
@@ -172,7 +172,7 @@ struct AccountView: View {
     private func closeButton() -> some View {
         Button {
             withAnimation {
-                $isModalShown.wrappedValue = false
+                store.isModalShown = false
             }
         } label: {
             Image.LargeClose

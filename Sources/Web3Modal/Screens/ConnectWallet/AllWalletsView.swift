@@ -134,7 +134,7 @@ struct AllWalletsView: View {
             do {
                 try await interactor.fetchWallets(search: search)
             } catch {
-                store.toast = .init(style: .error, message: error.localizedDescription)
+                store.toast = .init(style: .error, message: "Failed to fetch wallets.")
             }
         }
     }

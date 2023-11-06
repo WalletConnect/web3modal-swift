@@ -15,7 +15,6 @@ struct ChainSelectView: View {
         }
         .background(Color.Background125)
         .cornerRadius(30, corners: [.topLeft, .topRight])
-        .toastView(toast: $store.toast)
     }
 
     @ViewBuilder
@@ -127,7 +126,7 @@ struct ChainSelectView: View {
     private func closeButton() -> some View {
         Button {
             withAnimation {
-                viewModel.isShown.wrappedValue = false
+                store.isModalShown = false
             }
         } label: {
             Image.LargeClose
@@ -139,9 +138,9 @@ extension Router.NetworkSwitchSubpage {
     var title: String? {
         switch self {
         case .selectChain:
-            return "Choose Network"
+            return "Select network"
         case .whatIsANetwork:
-            return "What is a Network?"
+            return "What is a network?"
         }
     }
 }

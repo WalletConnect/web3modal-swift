@@ -44,9 +44,8 @@ struct ConnectWalletView: View {
             
             ForEach(wallets, id: \.self) { wallet in
                 Group {
-                    let isWalletInstalled: Bool = wallet.isInstalled ?? false
                     let isRecent: Bool = wallet.lastTimeUsed != nil
-                    let tagTitle: String? = isWalletInstalled ? "Installed" : isRecent ? "Recent" : nil
+                    let tagTitle: String? = isRecent ? "Recent" : nil
                     
                     Button(action: {
                         router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))

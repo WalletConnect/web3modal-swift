@@ -3,66 +3,64 @@ import SwiftUI
 struct ModalContainerView: View {
     @Environment(\.presentationMode) var presentationMode
     
-    @State var showModal: Bool = false
-    
-    var store: Store
+    @ObservedObject var store: Store
     @StateObject var router: Router
     @StateObject var w3mApiInteractor: W3MAPIInteractor
     @StateObject var signInteractor: SignInteractor
     @StateObject var blockchainApiInteractor: BlockchainAPIInteractor
+    @StateObject var web3modalViewModel: Web3ModalViewModel
     
     init(store: Store = .shared, router: Router) {
         self.store = store
         _router = StateObject(wrappedValue: router)
+        let w3mApiInteractor = W3MAPIInteractor(store: store)
         _w3mApiInteractor = StateObject(
-            wrappedValue: W3MAPIInteractor(store: store)
+            wrappedValue: w3mApiInteractor
         )
+        let signInteractor = SignInteractor(store: store)
         _signInteractor = StateObject(
-            wrappedValue: SignInteractor(store: store)
+            wrappedValue: signInteractor
         )
+        let blockchainApiInteractor = BlockchainAPIInteractor(store: store)
         _blockchainApiInteractor = StateObject(
             wrappedValue: BlockchainAPIInteractor(store: store)
+        )
+        let web3modalViewModel = Web3ModalViewModel(
+            router: router,
+            store: store,
+            w3mApiInteractor: w3mApiInteractor,
+            signInteractor: signInteractor,
+            blockchainApiInteractor: blockchainApiInteractor
+        )
+        _web3modalViewModel = StateObject(
+            wrappedValue: web3modalViewModel
         )
     }
     
     var body: some View {
         VStack(spacing: 0) {
             Color.clear
-            
-            if self.showModal {
+
+            if store.isModalShown {
                 Group {
                     switch router.currentRoute {
                         case _ where router.currentRoute as? Router.AccountSubpage != nil:
-                            AccountView(isModalShown: $showModal)
+                            AccountView()
                         case _ where router.currentRoute as? Router.ConnectingSubpage != nil:
-                            
                             Web3ModalView(
-                                viewModel: .init(
-                                    router: router,
-                                    store: store,
-                                    w3mApiInteractor: w3mApiInteractor,
-                                    signInteractor: signInteractor,
-                                    blockchainApiInteractor: blockchainApiInteractor,
-                                    isShown: $showModal
-                                )
+                                viewModel: web3modalViewModel
                             )
                         case _ where router.currentRoute as? Router.NetworkSwitchSubpage != nil:
                             ChainSelectView(
-                                viewModel: .init(
-                                    router: router,
-                                    store: store,
-                                    w3mApiInteractor: w3mApiInteractor,
-                                    signInteractor: signInteractor,
-                                    blockchainApiInteractor: blockchainApiInteractor,
-                                    isShown: $showModal
-                                )
+                                viewModel: web3modalViewModel
                             )
                         default:
                             EmptyView()
                     }
                 }
+                .toastView(toast: $store.toast)
                 .transition(.move(edge: .bottom))
-                .animation(.spring(), value: self.showModal)
+                .animation(.spring(), value: store.isModalShown)
                 .environmentObject(router)
                 .environmentObject(store)
                 .environmentObject(w3mApiInteractor)
@@ -73,19 +71,19 @@ struct ModalContainerView: View {
         .background(
             Color.Overgray020
                 .colorScheme(.light)
-                .opacity(self.showModal ? 1 : 0)
+                .opacity(store.isModalShown ? 1 : 0)
                 .transform {
                     #if os(iOS)
                         $0.onTapGesture {
                             withAnimation {
-                                self.showModal = false
+                                store.isModalShown = false
                             }
                         }
                     #endif
                 }
         )
         .edgesIgnoringSafeArea(.all)
-        .onChange(of: self.showModal, perform: { newValue in
+        .onChange(of: store.isModalShown, perform: { newValue in
             if newValue == false {
                 withAnimation {
                     self.dismiss()
@@ -94,7 +92,7 @@ struct ModalContainerView: View {
         })
         .onAppear {
             withAnimation {
-                self.showModal = true
+                store.isModalShown = true
             }
         }
         .ignoresSafeArea(.keyboard)
