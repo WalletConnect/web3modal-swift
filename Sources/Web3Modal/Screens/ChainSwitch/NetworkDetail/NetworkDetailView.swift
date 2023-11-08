@@ -30,13 +30,20 @@ struct NetworkDetailView: View {
     
     func chainImage() -> some View {
         VStack(spacing: Spacing.xs) {
-            Image(
-                uiImage: store.chainImages[viewModel.chain.imageId] ?? UIImage()
-            )
-            .resizable()
-            .frame(width: 80, height: 80)
-            .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
-            .cornerRadius(Radius.m)
+            ZStack {
+                Image(
+                    uiImage: store.chainImages[viewModel.chain.imageId] ?? UIImage()
+                )
+                .resizable()
+                .frame(width: 80, height: 80)
+                .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
+                .cornerRadius(Radius.m)
+                
+                if !viewModel.switchFailed {
+                    DrawingProgressView(shape: .hexagon, color: .Blue100, lineWidth: 3, isAnimating: .constant(true))
+                        .frame(width: 100, height: 100)
+                }
+            }
             .padding(.bottom, Spacing.s)
             
             Text(!viewModel.switchFailed ? "Approve in wallet" : "Switch declined")

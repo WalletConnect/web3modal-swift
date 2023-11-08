@@ -93,6 +93,8 @@ class Web3ModalViewModel: ObservableObject {
                     }
                     
                     store.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
+                    self.fetchBalance()
+                    self.fetchIdentity()
                 default:
                     return
                 }

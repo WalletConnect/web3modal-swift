@@ -1,61 +1,110 @@
-import UIKit
 import SwiftUI
+import UIKit
 
-public struct CircleProgressView: UIViewRepresentable {
-    
+public struct DrawingProgressView: UIViewRepresentable {
+    var shape: DrawingProgressUIView.ShapePath
     var color: Color
     var lineWidth: CGFloat
-    
+    var duration: Double
+
     @Binding var isAnimating: Bool
-    
-    public init(color: Color, lineWidth: CGFloat, isAnimating: Binding<Bool>) {
+
+    public init(
+        shape: DrawingProgressUIView.ShapePath,
+        color: Color,
+        lineWidth: CGFloat,
+        duration: Double = 1.5,
+        isAnimating: Binding<Bool>
+    ) {
+        self.shape = shape
         self.color = color
         self.lineWidth = lineWidth
+        self.duration = duration
         self._isAnimating = isAnimating
     }
 
-    public func makeUIView(context: Context) -> CircleProgressUIView {
-        let view = CircleProgressUIView(
+    public func makeUIView(context: Context) -> DrawingProgressUIView {
+        let view = DrawingProgressUIView(
+            shape: shape,
             colors: [UIColor(color)],
-            lineWidth: lineWidth
+            lineWidth: lineWidth,
+            duration: duration
         )
-        
+
         view.isAnimating = true
         
+        switch shape {
+        case .circle, .roundedRectangleRelative, .roundedRectangleAbsolute:
+            view.transform = .identity.rotated(by: -CGFloat.pi / 2)
+        case .hexagon:
+            break
+        }
+
         return view
     }
 
-    public func updateUIView(_ uiView: CircleProgressUIView, context: Context) {
-
-    }
+    public func updateUIView(_ uiView: DrawingProgressUIView, context: Context) {}
 }
 
-struct CircleProgressView_Preview: PreviewProvider {
+struct DrawingProgressView_Preview: PreviewProvider {
     static var previews: some View {
-        CircleProgressView(
-            color: .blue,
-            lineWidth: 10,
-            isAnimating: .constant(true)
-        )
-        .frame(width: 100, height: 100)
+        VStack {
+            DrawingProgressView(
+                shape: .circle,
+                color: .blue,
+                lineWidth: 5,
+                isAnimating: .constant(true)
+            )
+            .frame(width: 100, height: 100)
+            
+            DrawingProgressView(
+                shape: .roundedRectangleAbsolute(cornerRadius: 5),
+                color: .blue,
+                lineWidth: 5,
+                isAnimating: .constant(true)
+            )
+            .frame(width: 100, height: 100)
+            
+            DrawingProgressView(
+                shape: .roundedRectangleRelative(relativeCornerRadius: 0.25),
+                color: .blue,
+                lineWidth: 5,
+                isAnimating: .constant(true)
+            )
+            .frame(width: 100, height: 100)
+            
+            DrawingProgressView(
+                shape: .hexagon,
+                color: .blue,
+                lineWidth: 5,
+                isAnimating: .constant(true)
+            )
+            .frame(width: 100, height: 100)
+        }
     }
 }
 
-public class CircleProgressUIView: UIView {
+public class DrawingProgressUIView: UIView {
+    public enum ShapePath {
+        case circle
+        case roundedRectangleRelative(relativeCornerRadius: Double)
+        case roundedRectangleAbsolute(cornerRadius: Double)
+        case hexagon
+    }
 
     // MARK: - Properties
+
+    let shape: ShapePath
     let colors: [UIColor]
     let lineWidth: CGFloat
+    let duration: Double
 
-    private lazy var shapeLayer: ProgressShapeLayer = {
-        return ProgressShapeLayer(strokeColor: colors.first!, lineWidth: lineWidth)
-    }()
+    private lazy var shapeLayer: ProgressShapeLayer = .init(strokeColor: colors.first!, lineWidth: lineWidth)
 
     var isAnimating: Bool = false {
         didSet {
-            if isAnimating {
+            if self.isAnimating {
                 self.animateStroke()
-                self.animateRotation()
             } else {
                 self.shapeLayer.removeFromSuperlayer()
                 self.layer.removeAllAnimations()
@@ -63,78 +112,111 @@ public class CircleProgressUIView: UIView {
             }
         }
     }
-    
+
     // MARK: - Initialization
-    init(frame: CGRect,
-         colors: [UIColor],
-         lineWidth: CGFloat
+
+    init(
+        shape: ShapePath,
+        frame: CGRect,
+        colors: [UIColor],
+        lineWidth: CGFloat,
+        duration: Double
     ) {
+        self.shape = shape
         self.colors = colors
         self.lineWidth = lineWidth
+        self.duration = duration
 
         super.init(frame: frame)
 
         self.backgroundColor = .clear
     }
-    
-    convenience init(colors: [UIColor], lineWidth: CGFloat) {
-        self.init(frame: .zero, colors: colors, lineWidth: lineWidth)
+
+    convenience init(
+        shape: ShapePath,
+        colors: [UIColor],
+        lineWidth: CGFloat,
+        duration: Double
+    ) {
+        self.init(
+            shape: shape,
+            frame: .zero,
+            colors: colors,
+            lineWidth: lineWidth,
+            duration: duration
+        )
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) is not supported")
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
 
-        self.layer.cornerRadius = self.frame.width / 2
+        
+        let path: CGPath
 
-        let path = UIBezierPath(ovalIn:
-            CGRect(
-                x: 0,
-                y: 0,
-                width: self.bounds.width,
-                height: self.bounds.width
+        switch self.shape {
+        case .circle:
+            path = UIBezierPath(ovalIn: frame).cgPath
+        case let .roundedRectangleRelative(relativeCornerRadius):
+            path = CGPath(
+                roundedRect: self.frame,
+                cornerWidth: self.frame.width * relativeCornerRadius,
+                cornerHeight: self.frame.height * relativeCornerRadius,
+                transform: nil
             )
-        ).cgPath
+        case let .roundedRectangleAbsolute(cornerRadius):
+            path = CGPath(
+                roundedRect: self.frame,
+                cornerWidth: cornerRadius,
+                cornerHeight: cornerRadius,
+                transform: nil
+            )
+        case .hexagon:
+            path = Polygon(count: 6, relativeCornerRadius: 0.25).path(in: frame).cgPath
+        }
 
-        shapeLayer.path = path
+        self.shapeLayer.path = path
     }
 
     // MARK: - Animations
+
     func animateStroke() {
+        let beginTime = 0.25
 
         let startAnimation = StrokeAnimation(
             type: .start,
-            beginTime: 0.25,
+            beginTime: beginTime,
             fromValue: 0.0,
             toValue: 1.0,
-            duration: 0.75
+            duration: duration - beginTime
         )
 
         let endAnimation = StrokeAnimation(
             type: .end,
             fromValue: 0.0,
             toValue: 1.0,
-            duration: 0.75
+            duration: duration - beginTime
         )
 
         let strokeAnimationGroup = CAAnimationGroup()
-        strokeAnimationGroup.duration = 1
+        strokeAnimationGroup.duration = duration
         strokeAnimationGroup.repeatDuration = .infinity
         strokeAnimationGroup.animations = [startAnimation, endAnimation]
 
-        shapeLayer.add(strokeAnimationGroup, forKey: nil)
+        self.shapeLayer.add(strokeAnimationGroup, forKey: nil)
 
         let colorAnimation = StrokeColorAnimation(
             colors: colors.map { $0.cgColor },
-            duration: strokeAnimationGroup.duration * Double(colors.count)
+            duration: strokeAnimationGroup.duration * Double(self.colors.count)
         )
 
-        shapeLayer.add(colorAnimation, forKey: nil)
+        self.shapeLayer.add(colorAnimation, forKey: nil)
 
-        self.layer.addSublayer(shapeLayer)
+        self.layer.addSublayer(self.shapeLayer)
     }
 
     func animateRotation() {
@@ -151,23 +233,22 @@ public class CircleProgressUIView: UIView {
 }
 
 class ProgressShapeLayer: CAShapeLayer {
-
     public init(strokeColor: UIColor, lineWidth: CGFloat) {
         super.init()
 
         self.strokeColor = strokeColor.cgColor
         self.lineWidth = lineWidth
         self.fillColor = UIColor.clear.cgColor
-        self.lineCap = .round
+        self.lineCap = .square
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
 
 class RotationAnimation: CABasicAnimation {
-
     enum Direction: String {
         case x, y, z
     }
@@ -183,7 +264,6 @@ class RotationAnimation: CABasicAnimation {
         duration: Double,
         repeatCount: Float
     ) {
-
         super.init()
 
         self.keyPath = "transform.rotation.\(direction.rawValue)"
@@ -196,14 +276,13 @@ class RotationAnimation: CABasicAnimation {
         self.repeatCount = repeatCount
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
 }
 
 class StrokeAnimation: CABasicAnimation {
-
     override init() {
         super.init()
     }
@@ -212,8 +291,8 @@ class StrokeAnimation: CABasicAnimation {
          beginTime: Double = 0.0,
          fromValue: CGFloat,
          toValue: CGFloat,
-         duration: Double) {
-
+         duration: Double)
+    {
         super.init()
 
         self.keyPath = type == .start ? "strokeStart" : "strokeEnd"
@@ -225,6 +304,7 @@ class StrokeAnimation: CABasicAnimation {
         self.timingFunction = .init(name: .easeInEaseOut)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -236,7 +316,6 @@ class StrokeAnimation: CABasicAnimation {
 }
 
 class StrokeColorAnimation: CAKeyframeAnimation {
-
     override init() {
         super.init()
     }
@@ -251,6 +330,7 @@ class StrokeColorAnimation: CAKeyframeAnimation {
         self.timingFunction = .init(name: .easeInEaseOut)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

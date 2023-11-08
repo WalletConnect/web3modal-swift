@@ -43,9 +43,11 @@ public struct W3MListItemButtonStyle<ImageContent: View>: ButtonStyle {
 
             Group {
                 if isLoading {
-                    CircleProgressView(
+                    DrawingProgressView(
+                        shape: .circle,
                         color: .Blue100,
                         lineWidth: 2 * scale,
+                        duration: 1,
                         isAnimating: $isLoading
                     )
                     .frame(width: 15 * scale, height: 15 * scale)
