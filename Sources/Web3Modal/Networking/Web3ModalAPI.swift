@@ -70,15 +70,15 @@ enum Web3ModalAPI: HTTPService {
         case let .getWallets(params):
             return [
                 "x-project-id": params.projectId,
-                "x-sdk-version": "ios-3.0.0-alpha.0", // EnvironmentInfo.sdkName,
-                "x-sdk-type": "w3m",
+                "x-sdk-version": Web3Modal.Config.sdkVersion,
+                "x-sdk-type": Web3Modal.Config.sdkType,
                 "Referer": params.metadata.name
             ]
         case let .getIosData(params):
             return [
                 "x-project-id": params.projectId,
-                "x-sdk-version": "ios-3.0.0-alpha.0", // EnvironmentInfo.sdkName,
-                "x-sdk-type": "w3m",
+                "x-sdk-version": Web3Modal.Config.sdkVersion,
+                "x-sdk-type": Web3Modal.Config.sdkType,
                 "Referer": params.metadata.name
             ]
         }
