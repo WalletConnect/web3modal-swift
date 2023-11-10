@@ -36,7 +36,7 @@ struct AccountView: View {
                     
                     Button {
                         UIPasteboard.general.string = store.session?.accounts.first?.address
-                        store.toast = .init(style: .info, message: "Address copied")
+                        store.toast = .init(style: .success, message: "Address copied")
                     } label: {
                         Image.LargeCopy
                             .resizable()
