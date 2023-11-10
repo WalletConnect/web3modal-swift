@@ -26,57 +26,58 @@ final class NetworkDetailViewModel: ObservableObject {
         self.chain = chain
         self.router = router
         self.store = store
-        
-        Web3Modal.instance.sessionEventPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { (event: Session.Event, _: String, _: Blockchain?) in
-                if event.name == "chainChanged" {
-                    
+    
+        Task { @MainActor [weak self] in
+            for await (event, _, _) in Web3Modal.instance.sessionEventPublisher.values {
+                guard let self = self else { return }
+                
+                switch event.name {
+                case "chainChanged":
                     guard let chainReference = try? event.data.get(Int.self) else {
                         return
                     }
                     
-                    DispatchQueue.main.async {
-                        self.store.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
-                        self.router.setRoute(Router.AccountSubpage.profile)
+                    self.store.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
+                    self.router.setRoute(Router.AccountSubpage.profile)
+                
+                case "accountsChanged":
+                    
+                    guard let account = try? event.data.get([String].self) else {
+                        return
                     }
+                    
+                    let chainReference = account[0].split(separator: ":")[1]
+                    
+                    self.store.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
+                    self.router.setRoute(Router.AccountSubpage.profile)
+                default:
+                    break
                 }
             }
-            .store(in: &disposeBag)
-        
-        Web3Modal.instance.sessionResponsePublisher
-            .receive(on: DispatchQueue.main)
-            .sink { response in
+            
+            for await response in Web3Modal.instance.sessionResponsePublisher.values {
+                guard let self = self else { return }
+                
                 switch response.result {
-                case let .response(value):
-                    let stringResponse = try? value.get(String.self)
+                case .response:
+                    self.store.selectedChain = chain
+                    self.router.setRoute(Router.AccountSubpage.profile)
+                case .error:
                     
-                    DispatchQueue.main.async {
-                        self.store.selectedChain = chain
-                        self.router.setRoute(Router.AccountSubpage.profile)
-                    }
-                case let .error(error):
-                    
-                    if !self.triedAddingChain {
+                    if self.triedAddingChain == false {
                         guard let from = store.selectedChain else {
                             return
                         }
                         
                         self.triedAddingChain = true
-                        
-                        Task {
-                            try? await self.addEthChain(from: from, to: chain)
-                        }
+                        try? await self.addEthChain(from: from, to: chain)
                     } else {
-                        DispatchQueue.main.async {
-                            self.switchFailed = true
-                            self.objectWillChange.send()
-                        }
+                        self.switchFailed = true
+                        self.objectWillChange.send()
                     }
                 }
             }
-        
-            .store(in: &disposeBag)
+        }
     }
     
     func handle(_ event: Event) {
@@ -88,8 +89,8 @@ final class NetworkDetailViewModel: ObservableObject {
             }
         case .didTapRetry:
             
-            self.triedAddingChain = false
-            self.switchFailed = false
+            triedAddingChain = false
+            switchFailed = false
             Task { @MainActor in
                 // Retry switch chain
                 await switchChain(chain)
@@ -97,6 +98,7 @@ final class NetworkDetailViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     func switchChain(_ to: Chain) async {
         guard let from = store.selectedChain else { return }
         
@@ -107,6 +109,7 @@ final class NetworkDetailViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     private func switchEthChain(
         from: Chain,
         to: Chain
@@ -127,6 +130,7 @@ final class NetworkDetailViewModel: ObservableObject {
         // TODO: Nice to have: Somehow open the wallet with switch confirmation dialog
     }
 
+    @MainActor
     private func addEthChain(
         from: Chain,
         to: Chain

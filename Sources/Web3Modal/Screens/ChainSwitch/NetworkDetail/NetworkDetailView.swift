@@ -13,7 +13,6 @@ struct NetworkDetailView: View {
                 .onAppear {
                     viewModel.handle(.onAppear)
                 }
-
         }
     }
     
@@ -41,7 +40,7 @@ struct NetworkDetailView: View {
                 
                 if !viewModel.switchFailed {
                     DrawingProgressView(shape: .hexagon, color: .Blue100, lineWidth: 3, isAnimating: .constant(true))
-                        .frame(width: 100, height: 100)
+                        .frame(width: 90, height: 90)
                 }
             }
             .padding(.bottom, Spacing.s)
