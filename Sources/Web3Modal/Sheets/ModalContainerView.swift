@@ -40,6 +40,7 @@ struct ModalContainerView: View {
     var body: some View {
         VStack(spacing: 0) {
             Color.clear
+                .frame(minHeight: 120)
 
             if store.isModalShown {
                 Group {

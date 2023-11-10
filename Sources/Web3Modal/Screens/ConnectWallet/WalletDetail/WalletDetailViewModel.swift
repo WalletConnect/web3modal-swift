@@ -20,6 +20,7 @@ final class WalletDetailViewModel: ObservableObject {
     let store: Store
     
     @Published var preferredPlatform: Platform = .native
+    @Published var retryShown = false
     
     var showToggle: Bool {
         hasWebAppLink && hasMobileLink

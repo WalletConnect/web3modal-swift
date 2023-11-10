@@ -35,7 +35,7 @@ struct WhatIsWalletView: View {
             } else {
                 ForEach(sections(), id: \.title) { section in
                     section
-                        .padding(.bottom, Spacing.s)
+                        .padding(.bottom, Spacing.xxl)
                 }
             }
 
@@ -51,7 +51,7 @@ struct WhatIsWalletView: View {
             }
             .buttonStyle(W3MButtonStyle(size: .m))
         }
-        .padding(.vertical, Spacing.xxl)
+        .padding(.vertical, 40)
         .padding(.horizontal, Spacing.xl)
     }
 

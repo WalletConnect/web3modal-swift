@@ -8,9 +8,6 @@ struct WalletDetail: View {
     
     @ObservedObject var viewModel: WalletDetailViewModel
     
-    @State var retryShown: Bool = false
-    @State var showCopyLink: Bool = false
-    
     var body: some View {
         VStack {
             if viewModel.showToggle {
@@ -52,19 +49,6 @@ struct WalletDetail: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         viewModel.handle(.onAppear)
                     }
-                    
-                    if verticalSizeClass == .compact {
-                        retryShown = true
-                    } else {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            withAnimation {
-                                retryShown = true
-                            }
-                        }
-                    }
-                }
-                .onDisappear {
-                    retryShown = false
                 }
                 .animation(.easeInOut, value: viewModel.preferredPlatform)
         }
@@ -74,12 +58,28 @@ struct WalletDetail: View {
     func content() -> some View {
         VStack(spacing: 0) {
             
-                walletImage()
+            walletImage()
                 .padding(.top, 40)
                 .padding(.bottom, Spacing.l)
             
-            appStoreRow()
-                .opacity(viewModel.preferredPlatform != .native ? 0 : 1)
+            Button {
+                viewModel.handle(.didTapCopy)
+            } label: {
+                HStack {
+                    Image.LargeCopy
+                        .resizable()
+                        .frame(width: 12, height: 12)
+                    Text("Copy link")
+                }
+                .font(.small600)
+                .foregroundColor(.Foreground200)
+                .padding(Spacing.xs)
+            }
+            .padding(.bottom, Spacing.xl)
+            
+            if viewModel.preferredPlatform == .native {
+                appStoreRow()
+            }
         }
         .padding(.horizontal)
         .padding(.bottom, Spacing.xl * 2)
@@ -95,8 +95,8 @@ struct WalletDetail: View {
                 .frame(width: 80, height: 80)
                 .cornerRadius(Radius.m)
                 
-                DrawingProgressView(shape: .roundedRectangleAbsolute(cornerRadius: 20), color: .Blue100, lineWidth: 3, isAnimating: .constant(true))
-                    .frame(width: 100, height: 100)
+                DrawingProgressView(shape: .roundedRectangleAbsolute(cornerRadius: Radius.m), color: .Blue100, lineWidth: 3, isAnimating: .constant(true))
+                    .frame(width: 90, height: 90)
             }
             .padding(.bottom, Spacing.s)
             
@@ -108,32 +108,17 @@ struct WalletDetail: View {
                 .font(.small500)
                 .foregroundColor(.Foreground200)
             
-            Button {
-                viewModel.handle(.didTapOpen)
-            } label: {
-                HStack {
-                    Text(viewModel.preferredPlatform == .browser ? "Open" : "Try again")
-                }
-                .font(.small600)
-                .foregroundColor(.Blue100)
-            }
-            .padding(Spacing.xl)
-            .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Retry))
-            
-            if showCopyLink {
+            if viewModel.retryShown || viewModel.preferredPlatform == .browser {
                 Button {
-                    viewModel.handle(.didTapCopy)
+                    viewModel.handle(.didTapOpen)
                 } label: {
                     HStack {
-                        Image.LargeCopy
-                            .resizable()
-                            .frame(width: 12, height: 12)
-                        Text("Copy link")
+                        Text(viewModel.preferredPlatform == .browser ? "Open" : "Try again")
                     }
                     .font(.small600)
-                    .foregroundColor(.Foreground200)
-                    .padding(Spacing.xs)
+                    .foregroundColor(.Blue100)
                 }
+                .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Retry))
             }
         }
     }
@@ -165,7 +150,7 @@ struct WalletDetail: View {
         }
         .padding()
         .frame(height: 56)
-        .background(.GrayGlass005)
+        .background(.GrayGlass002)
         .cornerRadius(Radius.xs)
     }
 }
