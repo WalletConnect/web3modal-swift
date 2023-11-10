@@ -42,6 +42,9 @@ struct ComponentLibraryView: View {
                 NavigationLink(destination: W3MListItemButtonStylePreviewView()) {
                     Text("W3MListItemButtonStyle")
                 }
+                NavigationLink(destination: ToastViewPreviewView()) {
+                    Text("ToastView")
+                }
             }
             .listStyle(.plain)
 #endif

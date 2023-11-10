@@ -130,19 +130,24 @@ public extension View {
 
 #if DEBUG
 
-struct ToastViewPreviewView: View {
-    var body: some View {
+public struct ToastViewPreviewView: View {
+    public init() {}
+    
+    public var body: some View {
         VStack {
             ToastView(style: .info, message: "Hello World", onCancelTapped: {})
             ToastView(style: .error, message: "Hello World", onCancelTapped: {})
             ToastView(style: .success, message: "Address copied", onCancelTapped: {})
         }
+        .padding()
+        .background(.Overgray002)
     }
 }
 
 struct ToastView_Preview: PreviewProvider {
     static var previews: some View {
         ToastViewPreviewView()
+            .previewLayout(.sizeThatFits)
     }
 }
 
