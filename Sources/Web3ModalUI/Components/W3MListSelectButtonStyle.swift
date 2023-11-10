@@ -71,7 +71,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
         .padding(.vertical, Spacing.xs * scale)
         .padding(.leading, Spacing.xs * scale)
         .padding(.trailing, Spacing.xs * scale)
-        .background((isPressedOverride ?? configuration.isPressed) ? .Overgray010 : .Overgray005)
+        .background((isPressedOverride ?? configuration.isPressed) ? .Overgray010 : .Overgray002)
         .cornerRadius(Radius.xs * scale)
     }
 

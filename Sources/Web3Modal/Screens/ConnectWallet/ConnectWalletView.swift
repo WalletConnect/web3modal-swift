@@ -84,7 +84,7 @@ struct ConnectWalletView: View {
                 tag: store.totalNumberOfWallets != 0 ? W3MTag(title: "\(store.totalNumberOfWallets)+", variant: .info) : nil
             ))
         }
-        .padding(Spacing.s)
+        .padding(Spacing.l)
         .padding(.bottom)
     }
 }

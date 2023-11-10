@@ -15,10 +15,12 @@ class Store: ObservableObject {
     @Published var session: Session?
     @Published var uri: WalletConnectURI?
     
-    @Published var wallets: [Wallet] = []
+    @Published var wallets: Set<Wallet> = []
     @Published var featuredWallets: [Wallet] = []
     @Published var searchedWallets: [Wallet] = []
     var totalNumberOfWallets: Int = 0
+    var currentPage: Int = 0
+    var totalPages: Int = .max
     var walletImages: [String: UIImage] = [:]
     var installedWalletIds: [String] = []
     
