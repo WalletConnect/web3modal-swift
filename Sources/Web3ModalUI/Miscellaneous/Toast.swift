@@ -16,25 +16,14 @@ public struct Toast: Equatable {
 
 public enum ToastStyle {
     case error
-    case warning
     case success
     case info
-
-    var themeColor: Color {
-        switch self {
-        case .error: return Color.Error100
-        case .warning: return Color.orange
-        case .info: return Color.Indigo100
-        case .success: return Color.green
-        }
-    }
   
     var icon: Image {
         switch self {
-        case .info: return Image(systemName: "info.circle.fill")
-        case .warning: return Image(systemName: "exclamationmark.triangle.fill")
-        case .success: return Image(systemName: "checkmark.circle.fill")
-        case .error: return Image(systemName: "xmark.circle.fill")
+        case .info: return Image.ToastInfo
+        case .success: return Image.ToastSuccess
+        case .error: return Image.ToastError
         }
     }
 }
@@ -48,20 +37,24 @@ struct ToastView: View {
     public var body: some View {
         HStack(alignment: .center, spacing: Spacing.xs) {
             style.icon
-                .foregroundColor(style.themeColor)
-            Text(message)
-                .font(.paragraph500)
+                
+            Text(message.prefix(100))
+                .font(.paragraph600)
                 .foregroundColor(.Foreground100)
       
         }
-        .padding()
-        .background(Color.Background175)
+        .onTapGesture {
+            onCancelTapped()
+        }
+        .padding(.leading, Spacing.xs)
+        .padding(.trailing, Spacing.l)
+        .padding(.vertical, Spacing.xs)
+        .background(Color.Background125)
         .cornerRadius(Radius.l)
         .overlay {
             RoundedRectangle(cornerRadius: Radius.l)
                 .stroke(.GrayGlass005, lineWidth: 1)
         }
-        .padding(.horizontal, 16)
     }
 }
 
@@ -74,7 +67,7 @@ public struct ToastModifier: ViewModifier {
             .overlay(
                 ZStack {
                     mainToastView()
-                        .padding()
+                        .padding(Spacing.s)
                 }
                 .animation(.spring(), value: toast)
             )
@@ -138,14 +131,9 @@ public extension View {
 struct ToastView_Preview: PreviewProvider {
     static var previews: some View {
         VStack {
-            Spacer()
-                .frame(maxWidth: .infinity)
-            Text("Hello World").foregroundColor(.Foreground100)
-            Spacer()
-                .frame(maxWidth: .infinity)
+            ToastView(style: .info, message: "Hello World", onCancelTapped: {})
+            ToastView(style: .error, message: "Hello World", onCancelTapped: {})
+            ToastView(style: .success, message: "Address copied", onCancelTapped: {})
         }
-        .background(Color.Overgray015)
-        .frame(width: 300, height: 250)
-        .toastView(toast: .constant(Toast(style: .info, message: "Hello World")))
     }
 }

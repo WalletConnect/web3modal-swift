@@ -44,7 +44,7 @@ final class WalletDetailViewModel: ObservableObject {
         switch event {
         case .didTapCopy:
             UIPasteboard.general.string = store.uri?.absoluteString ?? ""
-            store.toast = .init(style: .info, message: "Link copied")
+            store.toast = .init(style: .success, message: "Link copied")
         case .onAppear:
             navigateToDeepLink(
                 wallet: wallet,
