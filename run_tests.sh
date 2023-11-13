@@ -18,7 +18,7 @@ if [ -z "$SCHEME" ]; then
 fi
 
 # Create ephemeral simulator
-DEVICE_ID=$(xcrun simctl create "EphemeralSim$SCHEME" "iPhone 14")
+DEVICE_ID=$(xcrun simctl create "EphemeralSim$SCHEME" "iPhone 15 Pro")
 echo "Created ephemeral simulator with id: $DEVICE_ID"
 
 # Set XCBuild defaults
