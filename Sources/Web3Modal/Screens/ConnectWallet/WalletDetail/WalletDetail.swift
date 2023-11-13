@@ -6,7 +6,7 @@ struct WalletDetail: View {
     
     @EnvironmentObject var store: Store
     
-    @ObservedObject var viewModel: WalletDetailViewModel
+    @StateObject var viewModel: WalletDetailViewModel
     
     var body: some View {
         VStack {
@@ -18,7 +18,7 @@ struct WalletDetail: View {
                         
                     HStack {
                         switch item {
-                        case .native:
+                        case .mobile:
                             Image(systemName: "iphone")
                         case .browser:
                             Image(systemName: "safari")
@@ -77,7 +77,7 @@ struct WalletDetail: View {
             }
             .padding(.bottom, Spacing.xl)
             
-            if viewModel.preferredPlatform == .native {
+            if viewModel.preferredPlatform == .mobile {
                 appStoreRow()
             }
         }
@@ -95,16 +95,26 @@ struct WalletDetail: View {
                 .frame(width: 80, height: 80)
                 .cornerRadius(Radius.m)
                 
-                DrawingProgressView(shape: .roundedRectangleAbsolute(cornerRadius: Radius.m), color: .Blue100, lineWidth: 3, isAnimating: .constant(true))
+                if !viewModel.retryShown {
+                    DrawingProgressView(
+                        shape: .roundedRectangleRelative(relativeCornerRadius: Radius.m / 80),
+                        color: .Blue100,
+                        lineWidth: 3,
+                        isAnimating: .constant(true)
+                    )
                     .frame(width: 90, height: 90)
+                }
             }
             .padding(.bottom, Spacing.s)
             
-            Text("Continue in \(viewModel.wallet.name)")
+            Text(viewModel.retryShown ? "Connection declined" : "Continue in \(viewModel.wallet.name)")
                 .font(.paragraph500)
                 .foregroundColor(.Foreground100)
             
-            Text(viewModel.preferredPlatform == .browser ? "Open and continue in a new browser tab" : "Accept connection request in the wallet")
+            Text(
+                viewModel.retryShown
+                ? "Connection can be declined if a previous request is still active"
+                : viewModel.preferredPlatform == .browser ? "Open and continue in a new browser tab" : "Accept connection request in the wallet")
                 .font(.small500)
                 .foregroundColor(.Foreground200)
             

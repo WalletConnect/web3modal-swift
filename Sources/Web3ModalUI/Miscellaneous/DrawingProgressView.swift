@@ -32,8 +32,8 @@ public struct DrawingProgressView: UIViewRepresentable {
         )
 
         view.isAnimating = true
-        
-        switch shape {
+
+        switch self.shape {
         case .circle, .roundedRectangleRelative, .roundedRectangleAbsolute:
             view.transform = .identity.rotated(by: -CGFloat.pi / 2)
         case .hexagon:
@@ -43,7 +43,9 @@ public struct DrawingProgressView: UIViewRepresentable {
         return view
     }
 
-    public func updateUIView(_ uiView: DrawingProgressUIView, context: Context) {}
+    public func updateUIView(_ uiView: DrawingProgressUIView, context: Context) {
+        uiView.isAnimating = true
+    }
 }
 
 struct DrawingProgressView_Preview: PreviewProvider {
@@ -56,7 +58,7 @@ struct DrawingProgressView_Preview: PreviewProvider {
                 isAnimating: .constant(true)
             )
             .frame(width: 100, height: 100)
-            
+
             DrawingProgressView(
                 shape: .roundedRectangleAbsolute(cornerRadius: 5),
                 color: .blue,
@@ -64,7 +66,7 @@ struct DrawingProgressView_Preview: PreviewProvider {
                 isAnimating: .constant(true)
             )
             .frame(width: 100, height: 100)
-            
+
             DrawingProgressView(
                 shape: .roundedRectangleRelative(relativeCornerRadius: 0.25),
                 color: .blue,
@@ -72,7 +74,7 @@ struct DrawingProgressView_Preview: PreviewProvider {
                 isAnimating: .constant(true)
             )
             .frame(width: 100, height: 100)
-            
+
             DrawingProgressView(
                 shape: .hexagon,
                 color: .blue,
@@ -155,7 +157,6 @@ public class DrawingProgressUIView: UIView {
     override public func layoutSubviews() {
         super.layoutSubviews()
 
-        
         let path: CGPath
 
         switch self.shape {
@@ -203,20 +204,22 @@ public class DrawingProgressUIView: UIView {
         )
 
         let strokeAnimationGroup = CAAnimationGroup()
-        strokeAnimationGroup.duration = duration
+        strokeAnimationGroup.duration = self.duration
         strokeAnimationGroup.repeatDuration = .infinity
         strokeAnimationGroup.animations = [startAnimation, endAnimation]
 
-        self.shapeLayer.add(strokeAnimationGroup, forKey: nil)
+        self.shapeLayer.add(strokeAnimationGroup, forKey: "stroke")
 
         let colorAnimation = StrokeColorAnimation(
             colors: colors.map { $0.cgColor },
             duration: strokeAnimationGroup.duration * Double(self.colors.count)
         )
 
-        self.shapeLayer.add(colorAnimation, forKey: nil)
+        self.shapeLayer.add(colorAnimation, forKey: "color")
 
         self.layer.addSublayer(self.shapeLayer)
+
+        self.shapeLayer.makeAnimationsPersistent()
     }
 
     func animateRotation() {
@@ -287,12 +290,13 @@ class StrokeAnimation: CABasicAnimation {
         super.init()
     }
 
-    init(type: StrokeType,
-         beginTime: Double = 0.0,
-         fromValue: CGFloat,
-         toValue: CGFloat,
-         duration: Double)
-    {
+    init(
+        type: StrokeType,
+        beginTime: Double = 0.0,
+        fromValue: CGFloat,
+        toValue: CGFloat,
+        duration: Double
+    ) {
         super.init()
 
         self.keyPath = type == .start ? "strokeStart" : "strokeEnd"
@@ -333,5 +337,110 @@ class StrokeColorAnimation: CAKeyframeAnimation {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+public extension CALayer {
+    var isAnimationsPaused: Bool {
+        return speed == 0.0
+    }
+
+    func pauseAnimations() {
+        if !self.isAnimationsPaused {
+            let currentTime = CACurrentMediaTime()
+            let pausedTime = convertTime(currentTime, from: nil)
+            speed = 0.0
+            timeOffset = pausedTime
+        }
+    }
+
+    func resumeAnimations() {
+        let pausedTime = timeOffset
+        speed = 1.0
+        timeOffset = 0.0
+        beginTime = 0.0
+        let currentTime = CACurrentMediaTime()
+        let timeSincePause = convertTime(currentTime, from: nil) - pausedTime
+        beginTime = timeSincePause
+    }
+}
+
+public extension CALayer {
+    private static var persistentHelperKey = "CALayer.LayerPersistentHelper"
+
+    func makeAnimationsPersistent() {
+        var object = objc_getAssociatedObject(self, &CALayer.persistentHelperKey)
+        if object == nil {
+            object = LayerPersistentHelper(with: self)
+            let nonatomic = objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            objc_setAssociatedObject(self, &CALayer.persistentHelperKey, object, nonatomic)
+        }
+    }
+}
+
+public class LayerPersistentHelper {
+    private var persistentAnimations: [String: CAAnimation] = [:]
+    private var persistentSpeed: Float = 0.0
+    private weak var layer: CALayer?
+
+    public init(with layer: CALayer) {
+        self.layer = layer
+        addNotificationObservers()
+    }
+
+    deinit {
+        removeNotificationObservers()
+    }
+}
+
+private extension LayerPersistentHelper {
+    func addNotificationObservers() {
+        let center = NotificationCenter.default
+        let enterForeground = UIApplication.willEnterForegroundNotification
+        let enterBackground = UIApplication.didEnterBackgroundNotification
+        center.addObserver(self, selector: #selector(didBecomeActive), name: enterForeground, object: nil)
+        center.addObserver(self, selector: #selector(willResignActive), name: enterBackground, object: nil)
+    }
+
+    func removeNotificationObservers() {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    func persistAnimations(with keys: [String]?) {
+        guard let layer = self.layer else { return }
+        keys?.forEach { key in
+            if let animation = layer.animation(forKey: key) {
+                self.persistentAnimations[key] = animation
+            }
+        }
+    }
+
+    func restoreAnimations(with keys: [String]?) {
+        guard let layer = self.layer else { return }
+        keys?.forEach { key in
+            if let animation = persistentAnimations[key] {
+                layer.add(animation, forKey: key)
+            }
+        }
+    }
+}
+
+@objc extension LayerPersistentHelper {
+    func didBecomeActive() {
+        guard let layer = self.layer else { return }
+        self.restoreAnimations(with: Array(self.persistentAnimations.keys))
+        self.persistentAnimations.removeAll()
+        if self.persistentSpeed == 1.0 { // if layer was playing before background, resume it
+            layer.resumeAnimations()
+        }
+    }
+
+    func willResignActive() {
+        guard let layer = self.layer else { return }
+        self.persistentSpeed = layer.speed
+        layer.speed = 1.0 // in case layer was paused from outside, set speed to 1.0 to get all animations
+        self.persistAnimations(with: layer.animationKeys())
+        layer.speed = self.persistentSpeed // restore original speed
+        layer.pauseAnimations()
     }
 }
