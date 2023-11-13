@@ -38,7 +38,6 @@ public class Web3Modal {
         if let session = client.getSessions().first {
             Store.shared.session = session
             
-            
             if let blockchain = session.accounts.first?.blockchain {
                 let matchingChain = ChainPresets.ethChains.first(where: {
                     $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
@@ -65,6 +64,8 @@ public class Web3Modal {
     }
     
     private(set) static var config: Config!
+    
+    private(set) static var viewModel: Web3ModalViewModel!
 
     private init() {}
 
@@ -88,10 +89,23 @@ public class Web3Modal {
             recommendedWalletIds: recommendedWalletIds,
             excludedWalletIds: excludedWalletIds
         )
-                
-        Task {
-            let interactor = W3MAPIInteractor()
         
+        let store = Store.shared
+        let router = Router()
+        let w3mApiInteractor = W3MAPIInteractor(store: store)
+        let signInteractor = SignInteractor(store: store)
+        let blockchainApiInteractor = BlockchainAPIInteractor(store: store)
+        let interactor = W3MAPIInteractor()
+        
+        Web3Modal.viewModel = Web3ModalViewModel(
+            router: router,
+            store: store,
+            w3mApiInteractor: w3mApiInteractor,
+            signInteractor: signInteractor,
+            blockchainApiInteractor: blockchainApiInteractor
+        )
+        
+        Task {
             try? await interactor.fetchWalletImages(for: Store.shared.recentWallets)
             try? await interactor.fetchAllWalletMetadata()
             try? await interactor.fetchFeaturedWallets()
@@ -114,17 +128,16 @@ public class Web3Modal {
 
 #if canImport(UIKit)
 
-extension Web3Modal {
-    
-    public static func addChainPreset(_ chain: Chain) {
+public extension Web3Modal {
+    static func addChainPreset(_ chain: Chain) {
         ChainPresets.ethChains.append(chain)
     }
     
-    public static func selectChain(_ chain: Chain) {
+    static func selectChain(_ chain: Chain) {
         Store.shared.selectedChain = chain
     }
     
-    public static func selectChain(from presentingViewController: UIViewController? = nil) {
+    static func selectChain(from presentingViewController: UIViewController? = nil) {
         guard let vc = presentingViewController ?? topViewController() else {
             assertionFailure("No controller found for presenting modal")
             return
@@ -132,14 +145,14 @@ extension Web3Modal {
         
         _ = Web3Modal.instance
         
-        let router = Router()
-        router.setRoute(Router.NetworkSwitchSubpage.selectChain)
         
-        let modal = Web3ModalSheetController(router: router)
+        Web3Modal.viewModel.router.setRoute(Router.NetworkSwitchSubpage.selectChain)
+        
+        let modal = Web3ModalSheetController(router: Web3Modal.viewModel.router)
         vc.present(modal, animated: true)
     }
     
-    public static func present(from presentingViewController: UIViewController? = nil) {
+    static func present(from presentingViewController: UIViewController? = nil) {
         guard let vc = presentingViewController ?? topViewController() else {
             assertionFailure("No controller found for presenting modal")
             return
@@ -147,10 +160,9 @@ extension Web3Modal {
         
         _ = Web3Modal.instance
         
-        let router = Router()
-        router.setRoute(Store.shared.session != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
+        Web3Modal.viewModel.router.setRoute(Store.shared.session != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
         
-        let modal = Web3ModalSheetController(router: router)
+        let modal = Web3ModalSheetController(router: Web3Modal.viewModel.router)
         vc.present(modal, animated: true)
     }
     
@@ -231,7 +243,7 @@ public struct SessionParams {
        
         return SessionParams(
             requiredNamespaces: [:],
-            optionalNamespaces: namespaces.merging(optionalNamespaces, uniquingKeysWith: { old, new in  old }),
+            optionalNamespaces: namespaces.merging(optionalNamespaces, uniquingKeysWith: { old, _ in old }),
             sessionProperties: nil
         )
     }()

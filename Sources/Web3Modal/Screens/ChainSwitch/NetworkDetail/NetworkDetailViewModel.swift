@@ -101,11 +101,21 @@ final class NetworkDetailViewModel: ObservableObject {
     @MainActor
     func switchChain(_ to: Chain) async {
         guard let from = store.selectedChain else { return }
+        guard let session = store.session else { return }
         
         do {
             try await switchEthChain(from: from, to: to)
         } catch {
             print(error)
+        }
+        
+        if
+            let urlString = session.peer.redirect?.native ?? session.peer.redirect?.universal,
+            let url = URL(string: urlString)
+        {
+            DispatchQueue.main.async {
+                self.router.openURL(url)
+            }
         }
     }
     
@@ -126,8 +136,6 @@ final class NetworkDetailViewModel: ObservableObject {
                 chainId: .init(from.id)!
             )
         )
-        
-        // TODO: Nice to have: Somehow open the wallet with switch confirmation dialog
     }
 
     @MainActor

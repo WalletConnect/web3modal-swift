@@ -19,7 +19,7 @@ struct ExampleApp: App {
             description: "Web3Modal DApp sample",
             url: "wallet.connect",
             icons: ["https://avatars.githubusercontent.com/u/37784886"],
-            redirect: .init(native: "", universal: "")
+            redirect: .init(native: "w3mdapp://", universal: nil)
         )
         
         let projectId = Secrets.load().projectID

@@ -6,9 +6,9 @@ import WalletConnectUtils
 class Web3ModalViewModel: ObservableObject {
     private(set) var router: Router
     private(set) var store: Store
-    private var w3mApiInteractor: W3MAPIInteractor
-    private var signInteractor: SignInteractor
-    private var blockchainApiInteractor: BlockchainAPIInteractor
+    private(set) var w3mApiInteractor: W3MAPIInteractor
+    private(set) var signInteractor: SignInteractor
+    private(set) var blockchainApiInteractor: BlockchainAPIInteractor
     
     private var disposeBag = Set<AnyCancellable>()
     
@@ -24,11 +24,35 @@ class Web3ModalViewModel: ObservableObject {
         self.w3mApiInteractor = w3mApiInteractor
         self.signInteractor = signInteractor
         self.blockchainApiInteractor = blockchainApiInteractor
+        
+        Task { @MainActor in
+            for await (event, _, _) in Web3Modal.instance.sessionEventPublisher.values {
+                switch event.name {
+                case "chainChanged":
+                    guard let chainReference = try? event.data.get(Int.self) else {
+                        return
+                    }
+
+                    Store.shared.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
+
+                case "accountsChanged":
+
+                    guard let account = try? event.data.get([String].self) else {
+                        return
+                    }
+
+                    let chainReference = account[0].split(separator: ":")[1]
+
+                    Store.shared.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
+                default:
+                    break
+                }
+            }
+        }
     
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
             .sink { session in
-                print(session)
                 withAnimation {
                     store.isModalShown = false
                 }
@@ -46,17 +70,6 @@ class Web3ModalViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
         
-        signInteractor.sessionRejectionPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { _, reason in
-                
-                print(reason)
-                
-                Task {
-                    try? await signInteractor.createPairingAndConnect()
-                }
-            }
-            .store(in: &disposeBag)
         
         signInteractor.sessionDeletePublisher
             .receive(on: DispatchQueue.main)
@@ -82,24 +95,7 @@ class Web3ModalViewModel: ObservableObject {
             }
             .store(in: &disposeBag)
         
-        signInteractor.sessionEventPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { (event: Session.Event, _: String, _: Blockchain?) in
-                
-                switch event.name {
-                case "chainChanged":
-                    guard let chainReference = try? event.data.get(Int.self) else {
-                        return
-                    }
-                    
-                    store.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
-                    self.fetchBalance()
-                    self.fetchIdentity()
-                default:
-                    return
-                }
-            }
-            .store(in: &disposeBag)
+        
         
         Task {
             try? await signInteractor.createPairingAndConnect()

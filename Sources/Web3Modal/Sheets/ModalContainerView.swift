@@ -5,35 +5,13 @@ struct ModalContainerView: View {
     
     @ObservedObject var store: Store
     @StateObject var router: Router
-    @StateObject var w3mApiInteractor: W3MAPIInteractor
-    @StateObject var signInteractor: SignInteractor
-    @StateObject var blockchainApiInteractor: BlockchainAPIInteractor
     @StateObject var web3modalViewModel: Web3ModalViewModel
     
     init(store: Store = .shared, router: Router) {
         self.store = store
         _router = StateObject(wrappedValue: router)
-        let w3mApiInteractor = W3MAPIInteractor(store: store)
-        _w3mApiInteractor = StateObject(
-            wrappedValue: w3mApiInteractor
-        )
-        let signInteractor = SignInteractor(store: store)
-        _signInteractor = StateObject(
-            wrappedValue: signInteractor
-        )
-        let blockchainApiInteractor = BlockchainAPIInteractor(store: store)
-        _blockchainApiInteractor = StateObject(
-            wrappedValue: BlockchainAPIInteractor(store: store)
-        )
-        let web3modalViewModel = Web3ModalViewModel(
-            router: router,
-            store: store,
-            w3mApiInteractor: w3mApiInteractor,
-            signInteractor: signInteractor,
-            blockchainApiInteractor: blockchainApiInteractor
-        )
         _web3modalViewModel = StateObject(
-            wrappedValue: web3modalViewModel
+            wrappedValue: Web3Modal.viewModel
         )
     }
     
@@ -62,11 +40,11 @@ struct ModalContainerView: View {
                 .toastView(toast: $store.toast)
                 .transition(.move(edge: .bottom))
                 .animation(.spring(), value: store.isModalShown)
-                .environmentObject(router)
-                .environmentObject(store)
-                .environmentObject(w3mApiInteractor)
-                .environmentObject(signInteractor)
-                .environmentObject(blockchainApiInteractor)
+                .environmentObject(web3modalViewModel.router)
+                .environmentObject(web3modalViewModel.store)
+                .environmentObject(web3modalViewModel.w3mApiInteractor)
+                .environmentObject(web3modalViewModel.signInteractor)
+                .environmentObject(web3modalViewModel.blockchainApiInteractor)
             }
         }
         .background(
