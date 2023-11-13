@@ -2,7 +2,7 @@ import SwiftUI
 
 final class WalletDetailViewModel: ObservableObject {
     enum Platform: String, CaseIterable, Identifiable {
-        case native
+        case mobile
         case browser
         
         var id: Self { self }
@@ -19,7 +19,7 @@ final class WalletDetailViewModel: ObservableObject {
     let router: Router
     let store: Store
     
-    @Published var preferredPlatform: Platform = .native
+    @Published var preferredPlatform: Platform = .mobile
     @Published var retryShown = false
     
     var showToggle: Bool {
@@ -32,12 +32,20 @@ final class WalletDetailViewModel: ObservableObject {
     init(
         wallet: Wallet,
         router: Router,
+        signInteractor: SignInteractor,
         store: Store = .shared
     ) {
         self.wallet = wallet
         self.router = router
         self.store = store
-        preferredPlatform = wallet.mobileLink != nil ? .native : .browser
+        preferredPlatform = wallet.mobileLink != nil ? .mobile : .browser
+                
+        Task { @MainActor in
+            for await (_, _) in Web3Modal.instance.sessionRejectionPublisher.values {
+                retryShown = true
+                try await signInteractor.createPairingAndConnect()
+            }
+        }
     }
     
     func handle(_ event: Event) {
@@ -56,6 +64,8 @@ final class WalletDetailViewModel: ObservableObject {
             
             store.recentWallets.append(wallet)
         case .didTapOpen:
+            retryShown = false
+            
             navigateToDeepLink(
                 wallet: wallet,
                 preferBrowser: preferredPlatform == .browser
@@ -81,10 +91,7 @@ final class WalletDetailViewModel: ObservableObject {
             
             let urlString = try formatNativeUrlString(link)
             if let url = urlString?.toURL() {
-                router.openURL(url) { success in
-                    
-                    print(success)
-                }
+                router.openURL(url)
             } else {
                 throw DeeplinkErrors.noWalletLinkFound
             }
