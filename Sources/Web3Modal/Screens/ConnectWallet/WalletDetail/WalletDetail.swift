@@ -77,7 +77,7 @@ struct WalletDetail: View {
             }
             .padding(.bottom, Spacing.xl)
             
-            if viewModel.preferredPlatform == .mobile {
+            if viewModel.preferredPlatform == .mobile && viewModel.wallet.isInstalled != true {
                 appStoreRow()
             }
         }
@@ -94,6 +94,12 @@ struct WalletDetail: View {
                 .resizable()
                 .frame(width: 80, height: 80)
                 .cornerRadius(Radius.m)
+                .overlay(alignment: .bottomTrailing) {
+                    Image.ToastError
+                        .background(Color.Background125)
+                        .clipShape(Circle())
+                        .opacity(viewModel.retryShown ? 1 : 0)
+                }
                 
                 if !viewModel.retryShown {
                     DrawingProgressView(
@@ -108,8 +114,8 @@ struct WalletDetail: View {
             .padding(.bottom, Spacing.s)
             
             Text(viewModel.retryShown ? "Connection declined" : "Continue in \(viewModel.wallet.name)")
-                .font(.paragraph500)
-                .foregroundColor(.Foreground100)
+                .font(.paragraph600)
+                .foregroundColor(viewModel.retryShown ? .Error100 : .Foreground100)
             
             Text(
                 viewModel.retryShown

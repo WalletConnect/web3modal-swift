@@ -56,4 +56,6 @@ public extension Image {
     static var ToastSuccess: Image { Image(#function, bundle: .module) }
     static var ToastError: Image { Image(#function, bundle: .module) }
     static var ToastInfo: Image { Image(#function, bundle: .module) }
+    
+    static var Error: Image { Image(#function, bundle: .module) }
 }
