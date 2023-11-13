@@ -10,6 +10,13 @@
 	<string>Atlantis would use Bonjour Service to discover Proxyman app from your local network.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>w3mdapp</string>
+		</dict>
+	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>metamask</string>
