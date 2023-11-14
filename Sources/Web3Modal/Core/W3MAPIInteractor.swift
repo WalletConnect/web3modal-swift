@@ -143,10 +143,7 @@ final class W3MAPIInteractor: ObservableObject {
             
             let url = URL(string: "https://api.web3modal.com/getWalletImage/\(wallet.imageId)")!
             var request = URLRequest(url: url)
-            
-            request.setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")
-            request.setValue("w3m", forHTTPHeaderField: "x-sdk-type")
-            request.setValue("ios-3.0.0-alpha.0", forHTTPHeaderField: "x-sdk-version")
+            request.setW3MHeaders()
             
             do {
                 let (data, _) = try await URLSession.shared.data(for: request)
@@ -179,10 +176,7 @@ final class W3MAPIInteractor: ObservableObject {
             
             let url = URL(string: "https://api.web3modal.com/public/getAssetImage/\(chain.imageId)")!
             var request = URLRequest(url: url)
-            
-            request.setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")
-            request.setValue("w3m", forHTTPHeaderField: "x-sdk-type")
-            request.setValue("ios-3.0.0-alpha.0", forHTTPHeaderField: "x-sdk-version")
+            request.setW3MHeaders()
             
             do {
                 let (data, _) = try await URLSession.shared.data(for: request)
@@ -206,5 +200,14 @@ final class W3MAPIInteractor: ObservableObject {
                 new
             }
         }
+    }
+}
+
+private extension URLRequest {
+    
+    mutating func setW3MHeaders() {
+        setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")
+        setValue(Web3Modal.Config.sdkType, forHTTPHeaderField: "x-sdk-type")
+        setValue(Web3Modal.Config.sdkVersion, forHTTPHeaderField: "x-sdk-version")
     }
 }
