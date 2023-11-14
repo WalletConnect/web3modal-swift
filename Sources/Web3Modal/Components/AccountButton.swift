@@ -196,7 +196,16 @@ public struct AccountButtonPreviewView: View {
         store.balance = balance
         store.session = .stub
         
-        Web3Modal.configure(projectId: "", metadata: .init(name: "", description: "", url: "", icons: []))
+        Web3Modal.configure(
+            projectId: "",
+            metadata: .init(
+                name: "",
+                description: "",
+                url: "",
+                icons: [],
+                redirect: .init(native: "", universal: "")
+            )
+        )
         
         return store
     }
