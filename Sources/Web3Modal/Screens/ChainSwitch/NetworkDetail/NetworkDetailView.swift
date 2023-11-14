@@ -39,6 +39,7 @@ struct NetworkDetailView: View {
                 .cornerRadius(Radius.m)
                 .overlay(alignment: .bottomTrailing) {
                     Image.ToastError
+                        .padding(2)
                         .background(Color.Background125)
                         .clipShape(Circle())
                         .opacity(viewModel.switchFailed ? 1 : 0)

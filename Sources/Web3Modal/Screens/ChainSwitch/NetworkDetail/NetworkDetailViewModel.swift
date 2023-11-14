@@ -62,9 +62,14 @@ final class NetworkDetailViewModel: ObservableObject {
                 case .response:
                     self.store.selectedChain = chain
                     self.router.setRoute(Router.AccountSubpage.profile)
-                case .error:
+                case let .error(error):
                     
-                    if self.triedAddingChain == false {
+                    if error.message.contains("4001") {
+                        self.switchFailed = true
+                        return
+                    }
+                    
+                    if !self.triedAddingChain {
                         guard let from = store.selectedChain else {
                             return
                         }
@@ -73,7 +78,6 @@ final class NetworkDetailViewModel: ObservableObject {
                         try? await self.addEthChain(from: from, to: chain)
                     } else {
                         self.switchFailed = true
-                        self.objectWillChange.send()
                     }
                 }
             }
