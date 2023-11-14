@@ -33,7 +33,7 @@ struct Web3ModalView: View {
         case .whatIsAWallet:
             WhatIsWalletView()
         case let .walletDetail(wallet):
-            WalletDetail(
+            WalletDetailView(
                 viewModel: .init(
                     wallet: wallet,
                     router: router,

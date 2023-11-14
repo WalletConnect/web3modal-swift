@@ -1,7 +1,7 @@
 import SwiftUI
 import Web3ModalUI
 
-struct WalletDetail: View {
+struct WalletDetailView: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
     @EnvironmentObject var store: Store
@@ -96,6 +96,7 @@ struct WalletDetail: View {
                 .cornerRadius(Radius.m)
                 .overlay(alignment: .bottomTrailing) {
                     Image.ToastError
+                        .padding(2)
                         .background(Color.Background125)
                         .clipShape(Circle())
                         .opacity(viewModel.retryShown ? 1 : 0)

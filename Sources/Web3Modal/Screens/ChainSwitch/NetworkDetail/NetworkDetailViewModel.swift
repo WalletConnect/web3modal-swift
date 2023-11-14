@@ -57,6 +57,11 @@ final class NetworkDetailViewModel: ObservableObject {
                     }
                 case let .error(error):
                     
+                    if error.message.contains("4001") {
+                        self.switchFailed = true
+                        return
+                    }
+                    
                     if !self.triedAddingChain {
                         guard let from = store.selectedChain else {
                             return
@@ -68,10 +73,7 @@ final class NetworkDetailViewModel: ObservableObject {
                             try? await self.addEthChain(from: from, to: chain)
                         }
                     } else {
-                        DispatchQueue.main.async {
-                            self.switchFailed = true
-                            self.objectWillChange.send()
-                        }
+                        self.switchFailed = true
                     }
                 }
             }
