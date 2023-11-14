@@ -38,7 +38,7 @@ struct AccountView: View {
                         UIPasteboard.general.string = store.session?.accounts.first?.address
                         store.toast = .init(style: .success, message: "Address copied")
                     } label: {
-                        Image.LargeCopy
+                        Image.Medium.copy
                             .resizable()
                             .frame(width: 12, height: 12)
                             .foregroundColor(.Foreground250)
@@ -70,11 +70,11 @@ struct AccountView: View {
                     variant: .transparent,
                     size: .s,
                     leadingImage: {
-                        Image.Compass
+                        Image.Medium.compass
                             .resizable()
                     },
                     trailingImage: {
-                        Image.ExternalLink
+                        Image.Bold.externalLink
                             .resizable()
                     }
                 ))
@@ -94,6 +94,7 @@ struct AccountView: View {
                     uiImage: store.chainImages[selectedChain.imageId] ?? UIImage()
                 )
                 .resizable()
+                .frame(width: 32, height: 32)
                 .clipShape(Circle())
             }))
             
@@ -106,9 +107,13 @@ struct AccountView: View {
                 Text("Disconnect")
             }
             .buttonStyle(W3MListSelectStyle(imageContent: { _ in
-                Image.Disconnect
+                Image.Medium.disconnect
                     .resizable()
-                    .frame(width: 22, height: 22)
+                    .frame(width: 14, height: 14)
+                    .padding(Spacing.xxxs)
+                    .frame(width: 32, height: 32)
+                    .background(.GrayGlass010)
+                    .clipShape(Circle())
             }))
             
             Spacer()
@@ -175,7 +180,7 @@ struct AccountView: View {
                 store.isModalShown = false
             }
         } label: {
-            Image.LargeClose
+            Image.Medium.xMark
         }
     }
 }

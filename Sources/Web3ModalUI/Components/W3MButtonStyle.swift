@@ -110,24 +110,24 @@ public struct W3MButtonStyle: ButtonStyle {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, leftIcon: .Desktop))
+                        .buttonStyle(W3MButtonStyle(size: .s, leftIcon: .Medium.desktop))
                         
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, rightIcon: .Phone, isPressedOverride: true))
+                        .buttonStyle(W3MButtonStyle(size: .s, rightIcon: .Medium.mobile, isPressedOverride: true))
                     }
                     
                     HStack {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, leftIcon: .Desktop, rightIcon: .Phone))
+                        .buttonStyle(W3MButtonStyle(size: .s, leftIcon: .Medium.desktop, rightIcon: .Medium.mobile))
                         
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, leftIcon: .Desktop, rightIcon: .Phone))
+                        .buttonStyle(W3MButtonStyle(size: .s, leftIcon: .Medium.desktop, rightIcon: .Medium.mobile))
                         .disabled(true)
                         
                         Button(action: {}) {
@@ -151,24 +151,24 @@ public struct W3MButtonStyle: ButtonStyle {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, leftIcon: .Desktop))
+                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, leftIcon: .Medium.desktop))
                         
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, rightIcon: .Phone, isPressedOverride: true))
+                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, rightIcon: .Medium.mobile, isPressedOverride: true))
                     }
                     
                     HStack {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, leftIcon: .Desktop, rightIcon: .Phone))
+                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, leftIcon: .Medium.desktop, rightIcon: .Medium.mobile))
                         
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, leftIcon: .Desktop, rightIcon: .Phone))
+                        .buttonStyle(W3MButtonStyle(size: .s, variant: .accent, leftIcon: .Medium.desktop, rightIcon: .Medium.mobile))
                         .disabled(true)
                         
                         Button(action: {}) {
@@ -195,24 +195,24 @@ public struct W3MButtonStyle: ButtonStyle {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(leftIcon: .Desktop))
+                        .buttonStyle(W3MButtonStyle(leftIcon: .Medium.desktop))
                         
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(rightIcon: .Phone, isPressedOverride: true))
+                        .buttonStyle(W3MButtonStyle(rightIcon: .Medium.mobile, isPressedOverride: true))
                     }
                     
                     HStack {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(leftIcon: .Desktop, rightIcon: .Phone))
+                        .buttonStyle(W3MButtonStyle(leftIcon: .Medium.desktop, rightIcon: .Medium.mobile))
                         
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(leftIcon: .Desktop, rightIcon: .Phone))
+                        .buttonStyle(W3MButtonStyle(leftIcon: .Medium.desktop, rightIcon: .Medium.mobile))
                         .disabled(true)
                         
                         Button(action: {}) {
@@ -236,24 +236,24 @@ public struct W3MButtonStyle: ButtonStyle {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(variant: .accent, leftIcon: .Desktop))
+                        .buttonStyle(W3MButtonStyle(variant: .accent, leftIcon: .Medium.desktop))
                         
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(variant: .accent, rightIcon: .Phone, isPressedOverride: true))
+                        .buttonStyle(W3MButtonStyle(variant: .accent, rightIcon: .Medium.mobile, isPressedOverride: true))
                     }
                     
                     HStack {
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(variant: .accent, leftIcon: .Desktop, rightIcon: .Phone))
+                        .buttonStyle(W3MButtonStyle(variant: .accent, leftIcon: .Medium.desktop, rightIcon: .Medium.mobile))
                         
                         Button(action: {}) {
                             Text("Button")
                         }
-                        .buttonStyle(W3MButtonStyle(variant: .accent, leftIcon: .Desktop, rightIcon: .Phone))
+                        .buttonStyle(W3MButtonStyle(variant: .accent, leftIcon: .Medium.desktop, rightIcon: .Medium.mobile))
                         .disabled(true)
                         
                         Button(action: {}) {

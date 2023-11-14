@@ -8,26 +8,31 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
 
     var imageContent: (CGFloat) -> ImageContent
     var tag: W3MTag?
+    var showChevron: Bool
 
     var isPressedOverride: Bool?
 
     public init(
         @ViewBuilder imageContent: @escaping (CGFloat) -> ImageContent,
-        tag: W3MTag? = nil
+        tag: W3MTag? = nil,
+        showChevron: Bool = false
     ) {
         self.imageContent = imageContent
         self.tag = tag
+        self.showChevron = showChevron
     }
 
     #if DEBUG
         init(
             @ViewBuilder imageContent: @escaping (CGFloat) -> ImageContent,
             tag: W3MTag? = nil,
-            isPressedOverride: Bool? = nil
+            isPressedOverride: Bool? = nil,
+            showChevron: Bool = false
         ) {
             self.imageContent = imageContent
             self.tag = tag
             self.isPressedOverride = isPressedOverride
+            self.showChevron = showChevron
         }
     #endif
 
@@ -60,6 +65,9 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                     tag
                         .saturation(isEnabled ? 1 : 0)
                         .layoutPriority(3)
+                } else if showChevron {
+                    Image.Bold.chevronRight
+                        .foregroundColor(.Foreground200)
                 } else if !layoutBreakCondition {
                     Spacer()
                         .layoutPriority(3)
@@ -97,7 +105,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        imageContent: { _ in Image("MockWalletImage", bundle: .module).resizable() },
+                        imageContent: { _ in Image.mockWallet.resizable() },
                         tag: W3MTag(title: "QR Code", variant: .main)
                     ))
 
@@ -109,7 +117,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                             ZStack {
                                 Color.Overgray005
                                 RoundedRectangle(cornerRadius: Radius.xxxs * scale).stroke(.Overgray010, lineWidth: 1 * scale)
-                                Image.Wallet
+                                Image.Medium.wallet
                             }
                         },
                         tag: W3MTag(title: "Installed", variant: .success),
@@ -120,7 +128,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        imageContent: { _ in Image("MockWalletImage", bundle: .module).resizable() }
+                        imageContent: { _ in Image.mockWallet.resizable() }
                     ))
 
                     Button(action: {}, label: {
@@ -136,8 +144,25 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                         Text("Rainbow")
                     })
                     .buttonStyle(W3MListSelectStyle(
-                        imageContent: { _ in Image("MockWalletImage", bundle: .module).resizable() },
+                        imageContent: { _ in Image.mockWallet.resizable() },
                         tag: W3MTag(title: "QR Code", variant: .main)
+                    ))
+                    .disabled(true)
+                    
+                    Button(action: {}, label: {
+                        Text("Rainbow")
+                    })
+                    .buttonStyle(W3MListSelectStyle(
+                        imageContent: { _ in Image.mockWallet.resizable() },
+                        showChevron: true
+                    ))
+                    
+                    Button(action: {}, label: {
+                        Text("Rainbow")
+                    })
+                    .buttonStyle(W3MListSelectStyle(
+                        imageContent: { _ in Image.mockWallet.resizable() },
+                        showChevron: true
                     ))
                     .disabled(true)
                 }

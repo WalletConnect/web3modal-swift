@@ -60,7 +60,7 @@ struct ChainSelectView: View {
                     router.setRoute(Router.NetworkSwitchSubpage.whatIsANetwork)
                 } label: {
                     HStack {
-                        Image.QuestionMarkCircle
+                        Image.Bold.questionMarkCircle
                             .resizable()
                             .frame(width: 12, height: 12)
                         
@@ -170,7 +170,7 @@ struct ChainSelectView: View {
         Button {
             router.goBack()
         } label: {
-            Image.LargeBackward
+            Image.Medium.chevronLeft
         }
     }
     
@@ -180,7 +180,7 @@ struct ChainSelectView: View {
                 store.isModalShown = false
             }
         } label: {
-            Image.LargeClose
+            Image.Medium.xMark
         }
     }
 }

@@ -39,7 +39,7 @@ struct NetworkDetailView: View {
                 .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
                 .cornerRadius(Radius.m)
                 .overlay(alignment: .bottomTrailing) {
-                    Image.ToastError
+                    Image.Original.toastError
                         .padding(2)
                         .background(Color.Background125)
                         .clipShape(Circle())
@@ -71,7 +71,7 @@ struct NetworkDetailView: View {
                         .foregroundColor(.Blue100)
                 }
                 .padding(Spacing.xl)
-                .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Retry))
+                .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Bold.refresh))
             }
         }
     }

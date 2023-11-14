@@ -44,7 +44,7 @@ struct WhatIsNetworkView: View {
             }) {
                 HStack {
                     Text("Learn More")
-                    Image.ExternalLink
+                    Image.Bold.externalLink
                 }
             }
             .buttonStyle(W3MButtonStyle(size: .m))
