@@ -18,7 +18,8 @@ struct ExampleApp: App {
             name: "Web3Modal Swift Dapp",
             description: "Web3Modal DApp sample",
             url: "wallet.connect",
-            icons: ["https://avatars.githubusercontent.com/u/37784886"]
+            icons: ["https://avatars.githubusercontent.com/u/37784886"],
+            redirect: .init(native: "", universal: "")
         )
         
         let projectId = Secrets.load().projectID
@@ -30,7 +31,6 @@ struct ExampleApp: App {
 
         Web3Modal.configure(
             projectId: projectId,
-            chainId: Blockchain("eip155:1")!,
             metadata: metadata
         )
     }

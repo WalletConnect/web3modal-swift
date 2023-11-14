@@ -3,7 +3,7 @@ import SwiftUI
 public struct Toast: Equatable {
     let style: ToastStyle
     let message: String
-    var duration: Double = 3
+    var duration: Double = 1.5
     var width: Double = .infinity
     
     public init(style: ToastStyle, message: String, duration: Double = 3, width: Double = .infinity) {

@@ -73,11 +73,10 @@ struct WalletDetail: View {
     @ViewBuilder
     func content() -> some View {
         VStack(spacing: 0) {
-            walletImage()
+            
+                walletImage()
                 .padding(.top, 40)
                 .padding(.bottom, Spacing.l)
-            
-            
             
             appStoreRow()
                 .opacity(viewModel.preferredPlatform != .native ? 0 : 1)
@@ -88,12 +87,17 @@ struct WalletDetail: View {
     
     func walletImage() -> some View {
         VStack(spacing: Spacing.xs) {
-            Image(
-                uiImage: store.walletImages[viewModel.wallet.imageId] ?? UIImage()
-            )
-            .resizable()
-            .frame(width: 80, height: 80)
-            .cornerRadius(Radius.m)
+            ZStack {
+                Image(
+                    uiImage: store.walletImages[viewModel.wallet.imageId] ?? UIImage()
+                )
+                .resizable()
+                .frame(width: 80, height: 80)
+                .cornerRadius(Radius.m)
+                
+                DrawingProgressView(shape: .roundedRectangleAbsolute(cornerRadius: 20), color: .Blue100, lineWidth: 3, isAnimating: .constant(true))
+                    .frame(width: 100, height: 100)
+            }
             .padding(.bottom, Spacing.s)
             
             Text("Continue in \(viewModel.wallet.name)")

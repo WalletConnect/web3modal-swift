@@ -1,26 +1,46 @@
 import Foundation
 
 public struct Chain: Identifiable, Hashable {
-    struct Token: Hashable {
-        var name: String
-        var symbol: String
-        var decimal: Int
-    }
-    
+        
     public var id: String {
         "\(chainNamespace):\(chainReference)"
     }
 
     public var chainName: String
-    var chainNamespace: String
-    var chainReference: String
-    var requiredMethods: [String]
-    var optionalMethods: [String]
-    var events: [String]
-    var token: Token
-    var rpcUrl: String
-    var blockExplorerUrl: String
-    var imageId: String
+    public var chainNamespace: String
+    public var chainReference: String
+    public var requiredMethods: [String]
+    public var optionalMethods: [String]
+    public var events: [String]
+    public var token: Token
+    public var rpcUrl: String
+    public var blockExplorerUrl: String
+    public var imageId: String
+    
+    public struct Token: Hashable {
+        public var name: String
+        public var symbol: String
+        public var decimal: Int
+        
+        public init(name: String, symbol: String, decimal: Int) {
+            self.name = name
+            self.symbol = symbol
+            self.decimal = decimal
+        }
+    }
+    
+    public init(chainName: String, chainNamespace: String, chainReference: String, requiredMethods: [String], optionalMethods: [String], events: [String], token: Chain.Token, rpcUrl: String, blockExplorerUrl: String, imageId: String) {
+        self.chainName = chainName
+        self.chainNamespace = chainNamespace
+        self.chainReference = chainReference
+        self.requiredMethods = requiredMethods
+        self.optionalMethods = optionalMethods
+        self.events = events
+        self.token = token
+        self.rpcUrl = rpcUrl
+        self.blockExplorerUrl = blockExplorerUrl
+        self.imageId = imageId
+    }
 }
 
 enum EthUtils {
@@ -42,10 +62,10 @@ enum EthUtils {
     static let ethEvents = [chainChanged, accountsChanged]
 }
 
-enum ChainsPresets {
+enum ChainPresets {
     static let ethToken = Chain.Token(name: "Ether", symbol: "ETH", decimal: 18)
 
-    static let ethChains: [Chain] = [
+    static var ethChains: [Chain] = [
         Chain(
             chainName: "Ethereum",
             chainNamespace: "eip155",

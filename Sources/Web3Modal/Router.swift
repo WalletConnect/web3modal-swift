@@ -57,6 +57,7 @@ class Router: ObservableObject {
 
     enum NetworkSwitchSubpage: SubPage {
         case selectChain
+        case networkDetail(Chain)
         case whatIsANetwork
     }
 }

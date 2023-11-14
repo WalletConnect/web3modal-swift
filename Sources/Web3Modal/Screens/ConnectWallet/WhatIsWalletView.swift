@@ -45,7 +45,7 @@ struct WhatIsWalletView: View {
                 }) {
                     HStack {
                         Image.Wallet
-                        Text("Get a Wallet")
+                        Text("Get a wallet")
                     }
                 }
             }
@@ -58,14 +58,14 @@ struct WhatIsWalletView: View {
     func sections() -> [HelpSection] {
         [
             HelpSection(
-                title: "A home for your digital assets",
-                description: "A wallet lets you store, send and receive digital assets like cryptocurrencies and NFTs.",
-                assets: [.imageDeFi, .imageNft, .imageEth]
-            ),
-            HelpSection(
                 title: "One login for all of web3",
                 description: "Log in to any app by connecting your wallet. Say goodbye to countless passwords!",
                 assets: [.imageLogin, .imageProfile, .imageLock]
+            ),
+            HelpSection(
+                title: "A home for your digital assets",
+                description: "A wallet lets you store, send and receive digital assets like cryptocurrencies and NFTs.",
+                assets: [.imageDeFi, .imageNft, .imageEth]
             ),
             HelpSection(
                 title: "Your gateway to a new web",

@@ -12,9 +12,9 @@ struct ContentView: View {
             VStack {
                 Spacer()
                 
-                Web3Button()
+                Web3ModalButton()
                 
-                NetworkButton()
+                Web3ModalNetworkButton()
                 
                 Spacer()
                     

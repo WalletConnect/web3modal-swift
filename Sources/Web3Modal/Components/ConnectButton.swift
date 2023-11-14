@@ -18,7 +18,13 @@ public struct ConnectButton: View {
             Web3Modal.present()
         } label: {
             if store.connecting {
-                CircleProgressView(color: .white, lineWidth: 2, isAnimating: .constant(true))
+                DrawingProgressView(
+                    shape: .circle,
+                    color: .white,
+                    lineWidth: 2,
+                    duration: 1,
+                    isAnimating: .constant(true)
+                )
                     .frame(width: 20, height: 20)
             } else {
                 Text("Connect wallet")

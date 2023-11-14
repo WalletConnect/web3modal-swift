@@ -24,14 +24,7 @@ class Web3ModalViewModel: ObservableObject {
         self.w3mApiInteractor = w3mApiInteractor
         self.signInteractor = signInteractor
         self.blockchainApiInteractor = blockchainApiInteractor
-        
-        signInteractor.sessionResponsePublisher
-            .receive(on: DispatchQueue.main)
-            .sink { response in
-                print(response)
-            }
-            .store(in: &disposeBag)
-        
+    
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
             .sink { session in
@@ -44,7 +37,7 @@ class Web3ModalViewModel: ObservableObject {
                 
                 if
                     let blockchain = session.accounts.first?.blockchain,
-                    let matchingChain = ChainsPresets.ethChains.first(where: { $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference })
+                    let matchingChain = ChainPresets.ethChains.first(where: { $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference })
                 {
                     store.selectedChain = matchingChain
                 }
@@ -99,8 +92,9 @@ class Web3ModalViewModel: ObservableObject {
                         return
                     }
                     
-                    store.selectedChain = ChainsPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
-                    
+                    store.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
+                    self.fetchBalance()
+                    self.fetchIdentity()
                 default:
                     return
                 }
@@ -132,178 +126,6 @@ class Web3ModalViewModel: ObservableObject {
         }
     }
     
-    func switchChain(_ to: Chain) async {
-        guard let from = store.selectedChain else { return }
-        
-        if self.store.session == nil {
-            DispatchQueue.main.async {
-                self.store.selectedChain = to
-                self.router.setRoute(Router.ConnectingSubpage.connectWallet)
-            }
-        }
-        
-        do {
-            try await switchEthChain(from: from, to: to)
-        } catch {
-            print(error.localizedDescription)
-            DispatchQueue.main.async {
-                self.store.toast = .init(style: .error, message: "Failed to switchEthChain trying addEthChain instead")
-            }
-            // TODO: Call addChain only if the error code is 4902
-            
-            do {
-                try await addEthChain(from: from, to: to)
-            } catch {
-                DispatchQueue.main.async {
-                    self.store.toast = .init(style: .error, message: "Failed to addEthChain")
-                }
-            }
-        }
-        
-        DispatchQueue.main.async {
-            if self.store.session != nil {
-                self.router.setRoute(Router.AccountSubpage.profile)
-            } else {
-                self.router.setRoute(Router.ConnectingSubpage.connectWallet)
-            }
-        }
-    }
-    
-    @discardableResult
-    private func switchEthChain(
-        from: Chain,
-        to: Chain
-    ) async throws -> String? {
-        guard let session = store.session else { return nil }
-        guard let chainIdNumber = Int(to.chainReference) else { return nil }
-        
-        let chainHex = String(format: "%X", chainIdNumber)
-        
-        try await Web3Modal.instance.request(params:
-            .init(
-                topic: session.topic,
-                method: EthUtils.walletSwitchEthChain,
-                params: AnyCodable([AnyCodable(ChainSwitchParams(chainId: "0x\(chainHex)"))]),
-                chainId: .init(from.id)!
-            )
-        )
-        
-        // TODO: Nice to have: Somehow open the wallet with switch confirmation dialog
-        
-        let result = try await withCheckedThrowingContinuation { continuation in
-            var cancellable: AnyCancellable?
-            cancellable = Web3Modal.instance.sessionResponsePublisher
-                .sink { response in
-                    defer { cancellable?.cancel() }
-                    switch response.result {
-                    case .response(let value):
-                        do {
-                            let string = try value.get(String.self)
-                            continuation.resume(returning: string)
-                        } catch {
-                            continuation.resume(throwing: error)
-                        }
-                    case .error(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-        }
-        
-        DispatchQueue.main.async {
-            self.store.selectedChain = to
-            self.fetchBalance()
-        }
-        
-        return result
-    }
-
-    @discardableResult
-    private func addEthChain(
-        from: Chain,
-        to: Chain
-    ) async throws -> String? {
-        guard let session = store.session else { return nil }
-        
-        try await Web3Modal.instance.request(params:
-            .init(
-                topic: session.topic,
-                method: EthUtils.walletAddEthChain,
-                params: AnyCodable([AnyCodable(createAddEthChainParams(chain: to))]),
-                chainId: .init(from.id)!
-            )
-        )
-        
-        let result = try await withCheckedThrowingContinuation { continuation in
-            var cancellable: AnyCancellable?
-            cancellable = Web3Modal.instance.sessionResponsePublisher
-                .sink { response in
-                    defer { cancellable?.cancel() }
-                    switch response.result {
-                    case .response(let value):
-                        do {
-                            let string = try value.get(String.self)
-                            continuation.resume(returning: string)
-                        } catch {
-                            continuation.resume(throwing: error)
-                        }
-                    case .error(let error):
-                        continuation.resume(throwing: error)
-                    }
-                }
-        }
-        
-        DispatchQueue.main.async {
-            self.store.selectedChain = to
-            self.fetchBalance()
-        }
-        
-        return result
-    }
-
-    func createAddEthChainParams(chain: Chain) -> ChainAddParams? {
-        guard let chainIdNumber = Int(chain.chainReference) else { return nil }
-        
-        let chainHex = String(format: "%X", chainIdNumber)
-        
-        return ChainAddParams(
-            chainId: "0x\(chainHex)",
-            blockExplorerUrls: [
-                chain.blockExplorerUrl
-            ],
-            chainName: chain.chainName,
-            nativeCurrency: .init(
-                name: chain.token.name,
-                symbol: chain.token.symbol,
-                decimals: chain.token.decimal
-            ),
-            rpcUrls: [
-                chain.rpcUrl
-            ],
-            iconUrls: [
-                chain.imageId
-            ]
-        )
-    }
-    
-    struct ChainAddParams: Codable {
-        let chainId: String
-        let blockExplorerUrls: [String]
-        let chainName: String
-        let nativeCurrency: NativeCurrency
-        let rpcUrls: [String]
-        let iconUrls: [String]
-        
-        struct NativeCurrency: Codable {
-            let name: String
-            let symbol: String
-            let decimals: Int
-        }
-    }
-    
-    struct ChainSwitchParams: Codable {
-        let chainId: String
-    }
-    
     func getChains() -> [Chain] {
         guard let namespaces = store.session?.namespaces.values else {
             return []
@@ -329,8 +151,25 @@ class Web3ModalViewModel: ObservableObject {
         
         return chains
             .compactMap { chain in
-                ChainsPresets.ethChains.first(where: { chain.reference == $0.chainReference && chain.namespace == $0.chainNamespace })
+                ChainPresets.ethChains.first(where: { chain.reference == $0.chainReference && chain.namespace == $0.chainNamespace })
             }
+    }
+    
+    func getMethods() -> [String] {
+        
+        guard let session = store.session else {
+            return []
+        }
+        
+        let methods = session.namespaces.values
+            .compactMap { $0.methods }
+            .flatMap { $0 }
+        
+        let requiredMethods = session.requiredNamespaces.values
+            .compactMap { $0.methods }
+            .flatMap { $0 }
+        
+        return (methods + requiredMethods)
     }
     
     func isChainIdCAIP2Compliant(chainId: String) -> Bool {

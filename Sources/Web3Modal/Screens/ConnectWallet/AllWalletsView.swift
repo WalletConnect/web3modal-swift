@@ -63,17 +63,19 @@ struct AllWalletsView: View {
                 
                 if interactor.isLoading || interactor.page < interactor.totalPage {
                     ForEach(1 ... 8, id: \.self) { _ in
-                        Button(action: {}, label: { Text("Wallet") })
+                        Button(action: {}, label: { Text("Loading") })
                             .buttonStyle(W3MCardSelectStyle(
                                 variant: .wallet,
                                 imageContent: {
                                     Color.Overgray005.modifier(ShimmerBackground())
                                 },
-                                isLoading: $interactor.isLoading
+                                isLoading: .constant(true)
                             ))
                     }
                     .onAppear {
-                        if !interactor.isLoading { fetchWallets() }
+//                        if !interactor.isLoading {
+                            fetchWallets()
+//                        }
                     }
                 }
             }
