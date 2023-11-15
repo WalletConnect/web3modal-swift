@@ -58,3 +58,20 @@ public extension ShapeStyle where Self == Color {
     static var GrayGlass010: Color { Color(#function, bundle: .module) }
     static var GrayGlass020: Color { Color(#function, bundle: .module) }
 }
+
+public extension ShapeStyle where Self == Color {
+    static var accent100: Color { Color(red: 71/255, green: 161/255, blue: 255/255) }
+    static var accent090: Color { Color(red: 89/255, green: 170/255, blue: 255/255) }
+    static var accent080: Color { Color(red: 108/255, green: 180/255, blue: 255/255) }
+
+    
+    
+    
+    static var accentGlass090: Color { Color(red: 71/255, green: 161/255, blue: 255/255).opacity(0.90) }
+    static var accentGlass080: Color { Color(red: 71/255, green: 161/255, blue: 255/255).opacity(0.80) }
+    static var accentGlass020: Color { Color(red: 71/255, green: 161/255, blue: 255/255).opacity(0.20) }
+    static var accentGlass015: Color { Color(red: 71/255, green: 161/255, blue: 255/255).opacity(0.15) }
+    static var accentGlass010: Color { Color(red: 71/255, green: 161/255, blue: 255/255).opacity(0.10) }
+    static var accentGlass005: Color { Color(red: 71/255, green: 161/255, blue: 255/255).opacity(0.05) }
+    static var accentGlass002: Color { Color(red: 71/255, green: 161/255, blue: 255/255).opacity(0.02) }
+}

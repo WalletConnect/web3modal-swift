@@ -5,11 +5,16 @@ public struct W3MTextField: View {
     @Binding var text: String
 
     /// Whether the user is focused on this `TextField`.
-    @State private var isEditing: Bool = false
+    @Binding private var isEditing: Bool
 
-    public init(_ titleKey: LocalizedStringKey, text: Binding<String>) {
+    public init(
+        _ titleKey: LocalizedStringKey,
+        text: Binding<String>,
+        isEditing: Binding<Bool> = .stored(false)
+    ) {
         self.titleKey = titleKey
         self._text = text
+        self._isEditing = isEditing
     }
 
     public var body: some View {
@@ -18,6 +23,18 @@ public struct W3MTextField: View {
                 .foregroundColor(.Overgray030)
 
             TextField(titleKey, text: $text, onEditingChanged: { isEditing = $0 })
+            
+            if !text.isEmpty {
+                Button(action: {
+                    text = ""
+                }) {
+                    Image.Medium.xMark
+                        .padding(Spacing.xxxs)
+                        .foregroundColor(.GrayGlass020)
+                        .background(.Background250)
+                        .clipShape(RoundedRectangle(cornerRadius: Radius.xxxxs))
+                }
+            }
         }
         .multilineTextAlignment(.leading)
         .foregroundColor(.Foreground100)
@@ -31,9 +48,19 @@ public struct W3MTextField: View {
         )
         .if(isEditing) {
             $0.background(
-                RoundedRectangle(cornerRadius: Radius.xxs)
-                    .inset(by: 5)
-                .stroke(Color.Blue100, lineWidth: 1)
+                ZStack {
+                    RoundedRectangle(cornerRadius: Radius.xxs)
+                        .fill(Color(red: 0.2, green: 0.59, blue: 1).opacity(0.2))
+                    
+                    RoundedRectangle(cornerRadius: Radius.xxs)
+                        .inset(by: 3)
+                        .blendMode(.destinationOut)
+                    
+                    RoundedRectangle(cornerRadius: Radius.xxs)
+                        .inset(by: 3)
+                        .stroke(Color.Blue100, lineWidth: 1)
+                }
+                .compositingGroup()
             )
         }
     }
@@ -44,6 +71,7 @@ struct W3MTextFieldStylePreview: PreviewProvider {
         VStack {
             W3MTextField("FOoo", text: .constant("Foo"))
             W3MTextField("FOoo", text: .constant("Foo"))
+            W3MTextField("FOoo", text: .constant("Foo"), isEditing: .constant(true))
         }
         .padding()
     }

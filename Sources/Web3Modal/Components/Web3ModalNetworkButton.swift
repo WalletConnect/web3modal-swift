@@ -37,7 +37,15 @@ public struct Web3ModalNetworkButton: View {
             .buttonStyle(
                 W3MChipButtonStyle(
                     variant: .shade,
-                    leadingImage: { Image(systemName: "network") }
+                    leadingImage: {
+                        Image.Bold.network
+                            .resizable()
+                            .frame(width: 14, height: 14)
+                            .foregroundColor(.Foreground200)
+                            .padding(5)
+                            .background(.GrayGlass010)
+                            .frame(width: 24, height: 24)
+                    }
                 )
             )
         }

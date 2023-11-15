@@ -15,10 +15,12 @@ struct AllWalletsView: View {
         searchTerm.count >= 2
     }
     
+    @State var isEditing: Bool = false
+    
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                W3MTextField("Search wallet", text: $searchTerm)
+                W3MTextField("Search wallet", text: $searchTerm, isEditing: $isEditing)
                     
                 qrButton()
             }

@@ -38,8 +38,6 @@ final class W3MAPIInteractor: ObservableObject {
             excludedIds: Web3Modal.config.excludedWalletIds
         )
         
-        print(#function, search, params.page, params.entries)
-        
         let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
         let response = try await httpClient.request(
             GetWalletsResponse.self,

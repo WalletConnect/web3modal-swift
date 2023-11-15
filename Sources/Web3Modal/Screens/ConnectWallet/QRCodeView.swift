@@ -58,6 +58,8 @@ struct QRCodeView: View {
             let pathWidth = logoSize * (uiImage.size.width / uiImage.size.height)
             let pathHeight = logoSize
             
+            // TODO: Square logo
+            
             doc.logoTemplate = QRCode.LogoTemplate(
                 image: cgImage,
                 path: CGPath(
