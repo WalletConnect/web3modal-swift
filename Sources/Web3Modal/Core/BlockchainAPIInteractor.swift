@@ -3,8 +3,8 @@ import HTTPClient
 
 import JSONRPC
 
-final class BlockchainAPIInteractor: ObservableObject {
-    private let store: Store
+class BlockchainAPIInteractor: ObservableObject {
+    let store: Store
     
     init(store: Store = .shared) {
         self.store = store
@@ -123,3 +123,15 @@ extension Decimal {
         return self / weiFactor
     }
 }
+
+#if DEBUG
+class MockBlockchainAPIInteractor: BlockchainAPIInteractor {
+    override func getIdentity() async throws {
+        // no-op
+    }
+    
+    override func getBalance() async throws {
+        // no-op
+    }
+}
+#endif

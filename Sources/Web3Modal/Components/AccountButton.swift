@@ -144,14 +144,17 @@ struct AccountButtonStyle: ButtonStyle {
 }
 
 public struct AccountButton: View {
-    var store: Store
+    let store: Store
+    let blockchainApiInteractor: BlockchainAPIInteractor
     
     public init() {
         self.store = .shared
+        self.blockchainApiInteractor = BlockchainAPIInteractor(store: .shared)
     }
     
-    init(store: Store = .shared) {
+    init(store: Store = .shared, blockchainApiInteractor: BlockchainAPIInteractor) {
         self.store = store
+        self.blockchainApiInteractor = blockchainApiInteractor
     }
     
     public var body: some View {
@@ -168,7 +171,7 @@ public struct AccountButton: View {
     func fetchIdentity() {
         Task { @MainActor in
             do {
-                try await BlockchainAPIInteractor(store: store).getIdentity()
+                try await blockchainApiInteractor.getIdentity()
             } catch {
                 store.toast = .init(style: .error, message: "Failed to fetch identity")
             }
@@ -178,7 +181,7 @@ public struct AccountButton: View {
     func fetchBalance() {
         Task { @MainActor in
             do {
-                try await BlockchainAPIInteractor(store: store).getBalance()
+                try await blockchainApiInteractor.getBalance()
             } catch {
                 store.toast = .init(style: .error, message: "Failed to fetch balance")
             }
@@ -195,32 +198,37 @@ public struct AccountButtonPreviewView: View {
         let store = Store()
         store.balance = balance
         store.session = .stub
-        
-        Web3Modal.configure(
-            projectId: "",
-            metadata: .init(
-                name: "",
-                description: "",
-                url: "",
-                icons: [],
-                redirect: .init(native: "", universal: "")
-            )
-        )
-        
+    
         return store
+    }
+    
+    static let blockchainInteractor = { () -> BlockchainAPIInteractor in
+        MockBlockchainAPIInteractor()
     }
     
     public var body: some View {
         VStack {
-            AccountButton(store: AccountButtonPreviewView.store(1.23))
+            AccountButton(
+                store: AccountButtonPreviewView.store(1.23),
+                blockchainApiInteractor: MockBlockchainAPIInteractor()
+            )
             
-            AccountButton(store: AccountButtonPreviewView.store(nil))
+            AccountButton(
+                store: AccountButtonPreviewView.store(nil),
+                blockchainApiInteractor: MockBlockchainAPIInteractor()
+            )
             
-            AccountButton(store: AccountButtonPreviewView.store(1.23))
-                .disabled(true)
+            AccountButton(
+                store: AccountButtonPreviewView.store(1.23),
+                blockchainApiInteractor: MockBlockchainAPIInteractor()
+            )
+            .disabled(true)
             
-            AccountButton(store: AccountButtonPreviewView.store(nil))
-                .disabled(true)
+            AccountButton(
+                store: AccountButtonPreviewView.store(nil),
+                blockchainApiInteractor: MockBlockchainAPIInteractor()
+            )
+            .disabled(true)
             
             Button(action: {}, label: {})
                 .buttonStyle(
