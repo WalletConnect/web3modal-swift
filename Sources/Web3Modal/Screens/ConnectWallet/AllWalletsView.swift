@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import UIKit
 import Web3ModalUI
 
 struct AllWalletsView: View {
@@ -9,8 +10,6 @@ struct AllWalletsView: View {
     
     @State var searchTerm: String = ""
     let searchTermPublisher = PassthroughSubject<String, Never>()
-    
-    @State private var keyboardHeight: CGFloat = 0
     
     var isSearching: Bool {
         searchTerm.count >= 2
@@ -26,15 +25,17 @@ struct AllWalletsView: View {
             .padding(.horizontal)
             .padding(.vertical, Spacing.xs)
             
-            
             if isSearching {
                 searchGrid()
             } else {
                 regularGrid()
             }
         }
+        .onAppear {
+            fetchWallets()
+        }
         .animation(.default, value: isSearching)
-        .frame(height: 600)
+        .frame(height: UIScreen.main.bounds.height - 120)
         .onChange(of: searchTerm) { searchTerm in
             searchTermPublisher.send(searchTerm)
         }
@@ -57,11 +58,11 @@ struct AllWalletsView: View {
         
         ScrollView {
             LazyVGrid(columns: collumns) {
-                ForEach(store.wallets, id: \.self) { wallet in
+                ForEach(store.wallets.sorted(by: { $0.order < $1.order }), id: \.self) { wallet in
                     gridElement(for: wallet)
                 }
                 
-                if interactor.isLoading || interactor.page < interactor.totalPage {
+                if interactor.isLoading || store.currentPage < store.totalPages {
                     ForEach(1 ... 8, id: \.self) { _ in
                         Button(action: {}, label: { Text("Loading") })
                             .buttonStyle(W3MCardSelectStyle(
@@ -73,42 +74,38 @@ struct AllWalletsView: View {
                             ))
                     }
                     .onAppear {
-//                        if !interactor.isLoading {
-                            fetchWallets()
-//                        }
+                        fetchWallets()
                     }
                 }
             }
             .padding(.horizontal)
-            .padding(.bottom, 30)
+            .padding(.bottom, 60)
         }
     }
     
     @ViewBuilder
     private func searchGrid() -> some View {
         Group {
-            
-                ZStack(alignment: .center) {
-                    Spacer().frame(maxWidth: .infinity, maxHeight: .infinity)
+            ZStack(alignment: .center) {
+                Spacer().frame(maxWidth: .infinity, maxHeight: .infinity)
                     
-                    ProgressView()
-                        .opacity(interactor.isLoading ? 1 : 0)
+                ProgressView()
+                    .opacity(interactor.isLoading ? 1 : 0)
                     
-                    let collumns = Array(repeating: GridItem(.flexible()), count: 4)
+                let collumns = Array(repeating: GridItem(.flexible()), count: 4)
                     
-                    ScrollView {
-                        LazyVGrid(columns: collumns) {
-                            ForEach(store.searchedWallets, id: \.self) { wallet in
-                                gridElement(for: wallet)
-                            }
+                ScrollView {
+                    LazyVGrid(columns: collumns) {
+                        ForEach(store.searchedWallets, id: \.self) { wallet in
+                            gridElement(for: wallet)
                         }
-                        .animation(nil, value: store.searchedWallets)
-                        .padding(.horizontal)
-                        .padding(.bottom, 30)
                     }
-                    .opacity(interactor.isLoading ? 0 : 1)
+                    .animation(nil, value: store.searchedWallets)
+                    .padding(.horizontal)
+                    .padding(.bottom, 30)
                 }
-                
+                .opacity(interactor.isLoading ? 0 : 1)
+            }
         }
         .animation(.default, value: interactor.isLoading)
     }
@@ -147,59 +144,5 @@ struct AllWalletsView: View {
         } label: {
             Image.optionQrCode
         }
-    }
-}
-
-struct KeyboardAdaptive: ViewModifier {
-    @State private var keyboardHeight: CGFloat = 0
-
-    func body(content: Content) -> some View {
-        content
-            .padding(.bottom, keyboardHeight)
-            .onReceive(Publishers.keyboardHeight) { self.keyboardHeight = $0 }
-    }
-}
-
-extension View {
-    func keyboardAdaptive() -> some View {
-        ModifiedContent(content: self, modifier: KeyboardAdaptive())
-    }
-}
-
-extension Publishers {
-    static var keyboardHeight: AnyPublisher<CGFloat, Never> {
-        let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
-            .map { $0.keyboardHeight }
-        
-        let willHide = NotificationCenter.default.publisher(for: UIApplication.keyboardWillHideNotification)
-            .map { _ in CGFloat(0) }
-        
-        return MergeMany(willShow, willHide)
-            .eraseToAnyPublisher()
-    }
-}
-
-extension Notification {
-    var keyboardHeight: CGFloat {
-        return (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
-    }
-}
-
-extension UIResponder {
-    static var currentFirstResponder: UIResponder? {
-        _currentFirstResponder = nil
-        UIApplication.shared.sendAction(#selector(UIResponder.findFirstResponder(_:)), to: nil, from: nil, for: nil)
-        return _currentFirstResponder
-    }
-
-    private static weak var _currentFirstResponder: UIResponder?
-
-    @objc private func findFirstResponder(_ sender: Any) {
-        UIResponder._currentFirstResponder = self
-    }
-
-    var globalFrame: CGRect? {
-        guard let view = self as? UIView else { return nil }
-        return view.superview?.convert(view.frame, to: nil)
     }
 }

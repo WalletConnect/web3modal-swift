@@ -37,6 +37,13 @@ struct NetworkDetailView: View {
                 .frame(width: 80, height: 80)
                 .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
                 .cornerRadius(Radius.m)
+                .overlay(alignment: .bottomTrailing) {
+                    Image.ToastError
+                        .padding(2)
+                        .background(Color.Background125)
+                        .clipShape(Circle())
+                        .opacity(viewModel.switchFailed ? 1 : 0)
+                }
                 
                 if !viewModel.switchFailed {
                     DrawingProgressView(shape: .hexagon, color: .Blue100, lineWidth: 3, isAnimating: .constant(true))

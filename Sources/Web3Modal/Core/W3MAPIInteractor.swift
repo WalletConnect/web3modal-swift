@@ -9,8 +9,6 @@ final class W3MAPIInteractor: ObservableObject {
     
     private let entriesPerPage: Int = 40
     
-    var page: Int = 0
-    var totalPage: Int = .max
     var totalEntries: Int = 0
         
     init(
@@ -27,22 +25,26 @@ final class W3MAPIInteractor: ObservableObject {
         }
         
         if search.isEmpty {
-            page = min(page + 1, totalPage)
+            store.currentPage = min(store.currentPage + 1, store.totalPages)
         }
+        
+        let params = Web3ModalAPI.GetWalletsParams(
+            page: search.isEmpty ? store.currentPage : 1,
+            entries: search.isEmpty ? entriesPerPage : 100,
+            search: search,
+            projectId: Web3Modal.config.projectId,
+            metadata: Web3Modal.config.metadata,
+            recommendedIds: Web3Modal.config.recommendedWalletIds,
+            excludedIds: Web3Modal.config.excludedWalletIds
+        )
+        
+        print(#function, search, params.page, params.entries)
         
         let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
         let response = try await httpClient.request(
             GetWalletsResponse.self,
             at: Web3ModalAPI.getWallets(
-                params: .init(
-                    page: search.isEmpty ? page : 1,
-                    entries: search.isEmpty ? entriesPerPage : 100,
-                    search: search,
-                    projectId: Web3Modal.config.projectId,
-                    metadata: Web3Modal.config.metadata,
-                    recommendedIds: Web3Modal.config.recommendedWalletIds,
-                    excludedIds: Web3Modal.config.excludedWalletIds
-                )
+                params: params
             )
         )
     
@@ -60,13 +62,12 @@ final class W3MAPIInteractor: ObservableObject {
                 self.store.searchedWallets = wallets
             } else {
                 self.store.searchedWallets = []
-                self.store.wallets.append(contentsOf: wallets)
+                self.store.wallets.formUnion(wallets)
                 self.totalEntries = response.count
-                self.totalPage = Int(ceil(Double(response.count) / Double(entriesPerPage)))
+                self.store.totalPages = Int(ceil(Double(response.count) / Double(entriesPerPage)))
             }
             
             self.isLoading = false
-            self.objectWillChange.send()
         }
     }
     

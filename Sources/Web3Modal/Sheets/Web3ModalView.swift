@@ -2,7 +2,8 @@ import SwiftUI
 
 struct Web3ModalView: View {
     @ObservedObject var viewModel: Web3ModalViewModel
-    
+
+    @EnvironmentObject var signInteractor: SignInteractor
     @EnvironmentObject var store: Store
     @EnvironmentObject var router: Router
 
@@ -32,10 +33,12 @@ struct Web3ModalView: View {
         case .whatIsAWallet:
             WhatIsWalletView()
         case let .walletDetail(wallet):
-            WalletDetail(
+            WalletDetailView(
                 viewModel: .init(
                     wallet: wallet,
-                    router: router
+                    router: router,
+                    signInteractor: signInteractor,
+                    store: store
                 )
             )
         case .getWallet:

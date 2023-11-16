@@ -1,15 +1,12 @@
 import SwiftUI
 import Web3ModalUI
 
-struct WalletDetail: View {
+struct WalletDetailView: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
     @EnvironmentObject var store: Store
     
-    @ObservedObject var viewModel: WalletDetailViewModel
-    
-    @State var retryShown: Bool = false
-    @State var showCopyLink: Bool = false
+    @StateObject var viewModel: WalletDetailViewModel
     
     var body: some View {
         VStack {
@@ -21,7 +18,7 @@ struct WalletDetail: View {
                         
                     HStack {
                         switch item {
-                        case .native:
+                        case .mobile:
                             Image(systemName: "iphone")
                         case .browser:
                             Image(systemName: "safari")
@@ -52,19 +49,6 @@ struct WalletDetail: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         viewModel.handle(.onAppear)
                     }
-                    
-                    if verticalSizeClass == .compact {
-                        retryShown = true
-                    } else {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            withAnimation {
-                                retryShown = true
-                            }
-                        }
-                    }
-                }
-                .onDisappear {
-                    retryShown = false
                 }
                 .animation(.easeInOut, value: viewModel.preferredPlatform)
         }
@@ -74,12 +58,28 @@ struct WalletDetail: View {
     func content() -> some View {
         VStack(spacing: 0) {
             
-                walletImage()
+            walletImage()
                 .padding(.top, 40)
                 .padding(.bottom, Spacing.l)
             
-            appStoreRow()
-                .opacity(viewModel.preferredPlatform != .native ? 0 : 1)
+            Button {
+                viewModel.handle(.didTapCopy)
+            } label: {
+                HStack {
+                    Image.LargeCopy
+                        .resizable()
+                        .frame(width: 12, height: 12)
+                    Text("Copy link")
+                }
+                .font(.small600)
+                .foregroundColor(.Foreground200)
+                .padding(Spacing.xs)
+            }
+            .padding(.bottom, Spacing.xl)
+            
+            if viewModel.preferredPlatform == .mobile && viewModel.wallet.isInstalled != true {
+                appStoreRow()
+            }
         }
         .padding(.horizontal)
         .padding(.bottom, Spacing.xl * 2)
@@ -94,46 +94,48 @@ struct WalletDetail: View {
                 .resizable()
                 .frame(width: 80, height: 80)
                 .cornerRadius(Radius.m)
+                .overlay(alignment: .bottomTrailing) {
+                    Image.ToastError
+                        .padding(2)
+                        .background(Color.Background125)
+                        .clipShape(Circle())
+                        .opacity(viewModel.retryShown ? 1 : 0)
+                }
                 
-                DrawingProgressView(shape: .roundedRectangleAbsolute(cornerRadius: 20), color: .Blue100, lineWidth: 3, isAnimating: .constant(true))
-                    .frame(width: 100, height: 100)
+                if !viewModel.retryShown {
+                    DrawingProgressView(
+                        shape: .roundedRectangleRelative(relativeCornerRadius: Radius.m / 80),
+                        color: .Blue100,
+                        lineWidth: 3,
+                        isAnimating: .constant(true)
+                    )
+                    .frame(width: 90, height: 90)
+                }
             }
             .padding(.bottom, Spacing.s)
             
-            Text("Continue in \(viewModel.wallet.name)")
-                .font(.paragraph500)
-                .foregroundColor(.Foreground100)
+            Text(viewModel.retryShown ? "Connection declined" : "Continue in \(viewModel.wallet.name)")
+                .font(.paragraph600)
+                .foregroundColor(viewModel.retryShown ? .Error100 : .Foreground100)
             
-            Text(viewModel.preferredPlatform == .browser ? "Open and continue in a new browser tab" : "Accept connection request in the wallet")
+            Text(
+                viewModel.retryShown
+                ? "Connection can be declined if a previous request is still active"
+                : viewModel.preferredPlatform == .browser ? "Open and continue in a new browser tab" : "Accept connection request in the wallet")
                 .font(.small500)
                 .foregroundColor(.Foreground200)
             
-            Button {
-                viewModel.handle(.didTapOpen)
-            } label: {
-                HStack {
-                    Text(viewModel.preferredPlatform == .browser ? "Open" : "Try again")
-                }
-                .font(.small600)
-                .foregroundColor(.Blue100)
-            }
-            .padding(Spacing.xl)
-            .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Retry))
-            
-            if showCopyLink {
+            if viewModel.retryShown || viewModel.preferredPlatform == .browser {
                 Button {
-                    viewModel.handle(.didTapCopy)
+                    viewModel.handle(.didTapOpen)
                 } label: {
                     HStack {
-                        Image.LargeCopy
-                            .resizable()
-                            .frame(width: 12, height: 12)
-                        Text("Copy link")
+                        Text(viewModel.preferredPlatform == .browser ? "Open" : "Try again")
                     }
                     .font(.small600)
-                    .foregroundColor(.Foreground200)
-                    .padding(Spacing.xs)
+                    .foregroundColor(.Blue100)
                 }
+                .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Retry))
             }
         }
     }
@@ -165,7 +167,7 @@ struct WalletDetail: View {
         }
         .padding()
         .frame(height: 56)
-        .background(.GrayGlass005)
+        .background(.GrayGlass002)
         .cornerRadius(Radius.xs)
     }
 }
