@@ -11,7 +11,7 @@ struct WalletDetailView: View {
     var body: some View {
         VStack {
             if viewModel.showToggle {
-                Web3ModalPicker(
+                W3MPicker(
                     WalletDetailViewModel.Platform.allCases,
                     selection: viewModel.preferredPlatform
                 ) { item in
@@ -19,9 +19,9 @@ struct WalletDetailView: View {
                     HStack {
                         switch item {
                         case .mobile:
-                            Image(systemName: "iphone")
+                            Image.Bold.mobile
                         case .browser:
-                            Image(systemName: "safari")
+                            Image.Bold.browser
                         }
                         Text(item.rawValue.capitalized)
                     }
@@ -100,6 +100,7 @@ struct WalletDetailView: View {
                         .background(Color.Background125)
                         .clipShape(Circle())
                         .opacity(viewModel.retryShown ? 1 : 0)
+                        .offset(x: 5, y: 5)
                 }
                 
                 if !viewModel.retryShown {
@@ -151,23 +152,107 @@ struct WalletDetailView: View {
             Button {
                 viewModel.handle(.didTapAppStore)
             } label: {
-                HStack(spacing: 4) {
-                    Text("Get")
-                    
-                    Image(systemName: "chevron.right")
-                }
-                .font(.small600)
-                .foregroundColor(.Blue100)
-                .padding(Spacing.xs)
+                Text("Get")
             }
-            .overlay {
-                Capsule()
-                    .stroke(.GrayGlass010, lineWidth: 1)
-            }
+            .buttonStyle(GetWalletButtonStyle())
         }
         .padding()
         .frame(height: 56)
         .background(.GrayGlass002)
         .cornerRadius(Radius.xs)
     }
+    
+    struct GetWalletButtonStyle: ButtonStyle {
+        
+        func makeBody(configuration: Configuration) -> some View {
+            
+            HStack(spacing: 4) {
+                configuration.label
+                Image.Bold.chevronRight
+                    .resizable()
+                    .frame(width: 12, height: 12)
+            }
+            .font(.small600)
+            .foregroundColor(.Blue100)
+            .padding([.vertical, .trailing], Spacing.xs)
+            .padding(.leading, Spacing.s)
+            .background(configuration.isPressed ? .GrayGlass010 : .clear)
+            .overlay {
+                Capsule()
+                    .stroke(.GrayGlass010, lineWidth: 1)
+            }
+            .clipShape(Capsule())
+        }
+    }
 }
+
+#if DEBUG
+
+class MockSignInteractor: SignInteractor {
+    
+    override func createPairingAndConnect() async throws {
+        // no-op
+    }
+    
+    override func disconnect() async throws {
+        // no-op
+    }
+}
+
+class MockWalletDetailViewModel: WalletDetailViewModel {
+        
+    convenience init(retryShown: Bool, store: Store) {
+                
+        self.init(
+            wallet: .stubList.first!,
+            router: Router(),
+            signInteractor: MockSignInteractor(store: store),
+            store: store
+        )
+        
+        self.retryShown = retryShown
+    }
+    
+    override func startObserving() {
+        // no-op
+    }
+    
+    override func handle(_ event: Event) {
+        // no-op
+    }
+}
+
+struct WalletDetailView_Preview: PreviewProvider {
+    static let store = {
+        let store = Store()
+        store.walletImages["0528ee7e-16d1-4089-21e3-bbfb41933100"] = UIImage(
+            named: "MockWalletImage", in: .UIModule, compatibleWith: nil
+        )
+        
+        return store
+    }()
+    
+    static var previews: some View {
+        
+        ScrollView {
+            WalletDetailView(
+                viewModel: MockWalletDetailViewModel(
+                    retryShown: false,
+                    store: WalletDetailView_Preview.store
+                )
+            )
+            
+            Divider()
+            
+            WalletDetailView(
+                viewModel: MockWalletDetailViewModel(
+                    retryShown: true,
+                    store: WalletDetailView_Preview.store
+                )
+            )
+        }
+        .environmentObject(WalletDetailView_Preview.store)
+    }
+}
+
+#endif

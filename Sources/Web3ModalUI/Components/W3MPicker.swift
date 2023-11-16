@@ -1,13 +1,13 @@
 import SwiftUI
 
-public struct Web3ModalPicker<Data, Content>: View where Data: Hashable, Content: View {
+public struct W3MPicker<Data, Content>: View where Data: Hashable, Content: View {
     let sources: [Data]
     let selection: Data?
     let itemBuilder: (Data) -> Content
     
     @State private var backgroundColor: Color = Color.black.opacity(0.05)
     
-    public func pickerBackgroundColor(_ color: Color) -> Web3ModalPicker {
+    public func pickerBackgroundColor(_ color: Color) -> W3MPicker {
         var view = self
         view._backgroundColor = State(initialValue: color)
         return view
@@ -15,7 +15,7 @@ public struct Web3ModalPicker<Data, Content>: View where Data: Hashable, Content
     
     @State private var cornerRadius: CGFloat?
     
-    public func cornerRadius(_ cornerRadius: CGFloat) -> Web3ModalPicker {
+    public func cornerRadius(_ cornerRadius: CGFloat) -> W3MPicker {
         var view = self
         view._cornerRadius = State(initialValue: cornerRadius)
         return view
@@ -23,7 +23,7 @@ public struct Web3ModalPicker<Data, Content>: View where Data: Hashable, Content
     
     @State private var borderColor: Color?
     
-    public func borderColor(_ borderColor: Color) -> Web3ModalPicker {
+    public func borderColor(_ borderColor: Color) -> W3MPicker {
         var view = self
         view._borderColor = State(initialValue: borderColor)
         return view
@@ -31,7 +31,7 @@ public struct Web3ModalPicker<Data, Content>: View where Data: Hashable, Content
     
     @State private var borderWidth: CGFloat?
     
-    public func borderWidth(_ borderWidth: CGFloat) -> Web3ModalPicker {
+    public func borderWidth(_ borderWidth: CGFloat) -> W3MPicker {
         var view = self
         view._borderWidth = State(initialValue: borderWidth)
         return view
@@ -57,7 +57,6 @@ public struct Web3ModalPicker<Data, Content>: View where Data: Hashable, Content
                     RoundedRectangle(cornerRadius: cornerRadius ?? 6.0)
                         .stroke(borderColor ?? .clear, lineWidth: borderWidth ?? 0)
                         .foregroundColor(.accentColor)
-//                        .padding(EdgeInsets(top: borderWidth ?? 2, leading: borderWidth ?? 2, bottom: borderWidth ?? 2, trailing: borderWidth ?? 2))
                         .frame(width: geo.size.width / CGFloat(sources.count))
                         .animation(.spring().speed(1.5), value: selection)
                         .offset(x: geo.size.width / CGFloat(sources.count) * CGFloat(selectedIdx), y: 0)
@@ -88,13 +87,13 @@ struct PreviewWeb3ModalPicker: View {
     @State private var selectedItem: Platform? = .native
     
     var body: some View {
-        Web3ModalPicker(
+        W3MPicker(
             Platform.allCases,
             selection: selectedItem
         ) { item in
                 
             HStack {
-                Image(systemName: "iphone")
+                item == .native ? Image.Bold.mobile : Image.Bold.web
                 Text(item.rawValue.capitalized)
             }
             .font(.small600)

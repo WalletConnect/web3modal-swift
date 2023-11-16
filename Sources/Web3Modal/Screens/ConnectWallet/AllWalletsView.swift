@@ -21,6 +21,7 @@ struct AllWalletsView: View {
         VStack(spacing: 0) {
             HStack {
                 W3MTextField("Search wallet", text: $searchTerm, isEditing: $isEditing)
+                    .ignoresSafeArea(.keyboard, edges: .bottom)
                     
                 qrButton()
             }
