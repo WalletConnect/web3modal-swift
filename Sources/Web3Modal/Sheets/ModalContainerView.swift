@@ -17,8 +17,8 @@ struct ModalContainerView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            Color.clear
-                .frame(minHeight: 120)
+            Spacer()
+                .background(.green)
 
             if store.isModalShown {
                 Group {
@@ -74,7 +74,6 @@ struct ModalContainerView: View {
                 store.isModalShown = true
             }
         }
-        .ignoresSafeArea(.keyboard)
     }
     
     private func dismiss() {

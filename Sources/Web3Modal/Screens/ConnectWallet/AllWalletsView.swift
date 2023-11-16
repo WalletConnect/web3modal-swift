@@ -15,12 +15,10 @@ struct AllWalletsView: View {
         searchTerm.count >= 2
     }
     
-    @State var isEditing: Bool = false
-    
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                W3MTextField("Search wallet", text: $searchTerm, isEditing: $isEditing)
+                W3MTextField("Search wallet", text: $searchTerm)
                     .ignoresSafeArea(.keyboard, edges: .bottom)
                     
                 qrButton()
@@ -38,7 +36,7 @@ struct AllWalletsView: View {
             fetchWallets()
         }
         .animation(.default, value: isSearching)
-        .frame(height: UIScreen.main.bounds.height - 120)
+        .frame(maxHeight: UIScreen.main.bounds.height - 240)
         .onChange(of: searchTerm) { searchTerm in
             searchTermPublisher.send(searchTerm)
         }
