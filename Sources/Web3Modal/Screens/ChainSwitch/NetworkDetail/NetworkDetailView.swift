@@ -13,7 +13,6 @@ struct NetworkDetailView: View {
                 .onAppear {
                     viewModel.handle(.onAppear)
                 }
-
         }
     }
     
