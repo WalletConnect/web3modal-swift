@@ -56,6 +56,7 @@ struct ModalContainerView: View {
                         $0.onTapGesture {
                             withAnimation {
                                 store.isModalShown = false
+                                store.connecting = false
                             }
                         }
                     #endif
@@ -66,6 +67,7 @@ struct ModalContainerView: View {
             if newValue == false {
                 withAnimation {
                     self.dismiss()
+                    store.connecting = false
                 }
             }
         })
