@@ -51,7 +51,7 @@ public class Web3Modal {
     }()
     
     struct Config {
-        static let sdkVersion = "swift-1.0.0-beta.10"
+        static let sdkVersion = "swift-1.0.0-beta.11"
         static let sdkType = "w3m"
         
         let projectId: String
