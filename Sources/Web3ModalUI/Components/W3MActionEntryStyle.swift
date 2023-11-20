@@ -71,14 +71,14 @@ public struct W3MActionEntryStyle: ButtonStyle {
                         Text("Copy link")
                     })
                     .buttonStyle(W3MActionEntryStyle(
-                        leftIcon: Image.LargeCopy
+                        leftIcon: Image.Medium.desktop
                     ))
 
                     Button(action: {}, label: {
                         Text("Copy link")
                     })
                     .buttonStyle(W3MActionEntryStyle(
-                        leftIcon: Image.LargeCopy,
+                        leftIcon: Image.Regular.copy,
                         isPressedOverride: true
                     ))
 
@@ -86,7 +86,7 @@ public struct W3MActionEntryStyle: ButtonStyle {
                         Text("Copy link")
                     })
                     .buttonStyle(W3MActionEntryStyle(
-                        leftIcon: Image.LargeCopy
+                        leftIcon: Image.Regular.copy
                     ))
                     .disabled(true)
                 }

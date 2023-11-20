@@ -14,7 +14,7 @@ public struct W3MTextField: View {
 
     public var body: some View {
         HStack(spacing: Spacing.xs) {
-            Image.Search
+            Image.Medium.magnifier
                 .foregroundColor(.Overgray030)
 
             TextField(titleKey, text: $text, onEditingChanged: { isEditing = $0 })

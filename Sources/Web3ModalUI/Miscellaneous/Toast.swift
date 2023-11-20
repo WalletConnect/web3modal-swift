@@ -21,9 +21,9 @@ public enum ToastStyle {
   
     var icon: Image {
         switch self {
-        case .info: return Image.ToastInfo
-        case .success: return Image.ToastSuccess
-        case .error: return Image.ToastError
+        case .info: return Image.Original.toastInfo
+        case .success: return Image.Original.toastSuccess
+        case .error: return Image.Original.toastError
         }
     }
 }

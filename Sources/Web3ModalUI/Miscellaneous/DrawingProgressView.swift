@@ -2,10 +2,10 @@ import SwiftUI
 import UIKit
 
 public struct DrawingProgressView: UIViewRepresentable {
-    let shape: DrawingProgressUIView.ShapePath
-    let color: Color
-    let lineWidth: CGFloat
-    let duration: Double
+    var shape: DrawingProgressUIView.ShapePath
+    var color: Color
+    var lineWidth: CGFloat
+    var duration: Double
 
     @Binding var isAnimating: Bool
 

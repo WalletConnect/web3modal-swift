@@ -69,6 +69,11 @@ final class NetworkDetailViewModel: ObservableObject {
                         return
                     }
                     
+                    if error.message.contains("4001") {
+                        self.switchFailed = true
+                        return
+                    }
+                    
                     if !self.triedAddingChain {
                         guard let from = store.selectedChain else {
                             return

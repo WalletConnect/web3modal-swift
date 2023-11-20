@@ -192,7 +192,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 W3MChipButtonStyle(
                                     variant: .fill,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -204,7 +204,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 W3MChipButtonStyle(
                                     variant: .fill,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: true
                                 )
                             )
@@ -216,7 +216,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 W3MChipButtonStyle(
                                     variant: .fill,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -248,7 +248,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 W3MChipButtonStyle(
                                     variant: .shade,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -260,7 +260,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 W3MChipButtonStyle(
                                     variant: .shade,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: true
                                 )
                             )
@@ -272,7 +272,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 W3MChipButtonStyle(
                                     variant: .shade,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -305,7 +305,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 W3MChipButtonStyle(
                                     variant: .transparent,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -317,7 +317,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 W3MChipButtonStyle(
                                     variant: .transparent,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: true
                                 )
                             )
@@ -329,7 +329,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                 W3MChipButtonStyle(
                                     variant: .transparent,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -368,7 +368,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                     variant: .fill,
                                     size: .s,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -381,7 +381,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                     variant: .fill,
                                     size: .s,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: true
                                 )
                             )
@@ -394,7 +394,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                     variant: .fill,
                                     size: .s,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -428,7 +428,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                     variant: .shade,
                                     size: .s,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -441,7 +441,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                     variant: .shade,
                                     size: .s,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: true
                                 )
                             )
@@ -454,7 +454,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                     variant: .shade,
                                     size: .s,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -487,7 +487,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                     variant: .transparent,
                                     size: .s,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )
@@ -500,7 +500,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                     variant: .transparent,
                                     size: .s,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: true
                                 )
                             )
@@ -513,7 +513,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                                     variant: .transparent,
                                     size: .s,
                                     leadingImage: { Image.imageEth.resizable() },
-                                    trailingImage: { Image.ExternalLink },
+                                    trailingImage: { Image.Medium.externalLink },
                                     isPressedOverride: nil
                                 )
                             )

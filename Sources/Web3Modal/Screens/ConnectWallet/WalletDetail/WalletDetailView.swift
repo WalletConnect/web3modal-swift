@@ -66,7 +66,7 @@ struct WalletDetailView: View {
                 viewModel.handle(.didTapCopy)
             } label: {
                 HStack {
-                    Image.LargeCopy
+                    Image.Bold.copy
                         .resizable()
                         .frame(width: 12, height: 12)
                     Text("Copy link")
@@ -95,7 +95,7 @@ struct WalletDetailView: View {
                 .frame(width: 80, height: 80)
                 .cornerRadius(Radius.m)
                 .overlay(alignment: .bottomTrailing) {
-                    Image.ToastError
+                    Image.Original.toastError
                         .padding(2)
                         .background(Color.Background125)
                         .clipShape(Circle())
@@ -135,7 +135,7 @@ struct WalletDetailView: View {
                     .font(.small600)
                     .foregroundColor(.Blue100)
                 }
-                .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Retry))
+                .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Bold.refresh))
             }
         }
     }

@@ -20,7 +20,7 @@ struct GetAWalletView: View {
                         AsyncImage(url: URL(string: "https://api.web3modal.com/getWalletImage/\(wallet.imageId)")) { image in 
                             image.resizable()
                         } placeholder: {
-                            Image.Wallet
+                            Image.Medium.wallet
                         }
                     }
                 ))

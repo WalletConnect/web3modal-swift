@@ -83,7 +83,7 @@ struct Web3ModalView: View {
         Button(action: {
             router.setRoute(Router.ConnectingSubpage.whatIsAWallet)
         }, label: {
-            Image.QuestionMarkCircle
+            Image.Medium.questionMarkCircle
         })
     }
     
@@ -91,7 +91,7 @@ struct Web3ModalView: View {
         Button {
             router.goBack()
         } label: {
-            Image.LargeBackward
+            Image.Medium.chevronLeft
         }
     }
     
@@ -101,7 +101,7 @@ struct Web3ModalView: View {
                 store.isModalShown = false
             }
         } label: {
-            Image.LargeClose
+            Image.Medium.xMark
         }
     }
 }

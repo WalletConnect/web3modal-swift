@@ -120,7 +120,7 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
+                        imageContent: { Image.mockWallet.resizable() },
                         isLoading: .constant(false)
                     ))
 
@@ -129,7 +129,7 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
+                        imageContent: { Image.mockWallet.resizable() },
                         isLoading: .constant(false)
                     ))
                     .disabled(true)
@@ -139,7 +139,7 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
+                        imageContent: { Image.mockWallet.resizable() },
                         isLoading: .constant(false),
                         isSelected: true
                     ))
@@ -149,7 +149,7 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                     })
                     .buttonStyle(W3MCardSelectStyle(
                         variant: .wallet,
-                        imageContent: { Image("MockWalletImage", bundle: .module).resizable() },
+                        imageContent: { Image.mockWallet.resizable() },
                         isPressedOverride: true,
                         isLoading: .constant(false)
                     ))

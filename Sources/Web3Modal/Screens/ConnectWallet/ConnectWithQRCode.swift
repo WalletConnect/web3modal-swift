@@ -29,7 +29,7 @@ struct ConnectWithQRCode: View {
             }, label: {
                 Text("Copy Link")
             })
-            .buttonStyle(W3MActionEntryStyle(leftIcon: .LargeCopy))
+            .buttonStyle(W3MActionEntryStyle(leftIcon: .Bold.copy))
             .disabled(store.uri == nil)
         }
         .padding([.top, .horizontal], Spacing.xl)

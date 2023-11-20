@@ -44,7 +44,7 @@ struct WhatIsWalletView: View {
                     router.setRoute(Router.ConnectingSubpage.getWallet)
                 }) {
                     HStack {
-                        Image.Wallet
+                        Image.Bold.wallet
                         Text("Get a wallet")
                     }
                 }

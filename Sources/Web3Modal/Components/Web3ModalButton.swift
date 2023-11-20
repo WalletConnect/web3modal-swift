@@ -22,6 +22,8 @@ public struct Web3ModalButton: View {
     }
 }
 
+#if DEBUG
+
 struct Web3Button_Preview: PreviewProvider {
     static let store = { () -> Store in
         let store = Store()
@@ -39,3 +41,5 @@ struct Web3Button_Preview: PreviewProvider {
         }
     }
 }
+
+#endif
