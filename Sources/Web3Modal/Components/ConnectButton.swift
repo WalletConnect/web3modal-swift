@@ -27,7 +27,7 @@ public struct ConnectButton: View {
                     )
                     .frame(width: 20, height: 20)
                     
-                    Text("Connecting")
+                    Text("Connecting...")
                 }
             } else {
                 Text("Connect wallet")

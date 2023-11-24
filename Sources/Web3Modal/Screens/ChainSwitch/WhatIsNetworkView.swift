@@ -47,7 +47,7 @@ struct WhatIsNetworkView: View {
                     Image.Bold.externalLink
                 }
             }
-            .buttonStyle(W3MButtonStyle(size: .m))
+            .buttonStyle(W3MButtonStyle(size: .s))
         }
         .padding(.vertical, Spacing.xxl)
         .padding(.horizontal, Spacing.xl)

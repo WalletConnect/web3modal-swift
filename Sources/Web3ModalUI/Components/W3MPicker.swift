@@ -5,38 +5,6 @@ public struct W3MPicker<Data, Content>: View where Data: Hashable, Content: View
     let selection: Data?
     let itemBuilder: (Data) -> Content
     
-    @State private var backgroundColor: Color = Color.black.opacity(0.05)
-    
-    public func pickerBackgroundColor(_ color: Color) -> W3MPicker {
-        var view = self
-        view._backgroundColor = State(initialValue: color)
-        return view
-    }
-    
-    @State private var cornerRadius: CGFloat?
-    
-    public func cornerRadius(_ cornerRadius: CGFloat) -> W3MPicker {
-        var view = self
-        view._cornerRadius = State(initialValue: cornerRadius)
-        return view
-    }
-    
-    @State private var borderColor: Color?
-    
-    public func borderColor(_ borderColor: Color) -> W3MPicker {
-        var view = self
-        view._borderColor = State(initialValue: borderColor)
-        return view
-    }
-    
-    @State private var borderWidth: CGFloat?
-    
-    public func borderWidth(_ borderWidth: CGFloat) -> W3MPicker {
-        var view = self
-        view._borderWidth = State(initialValue: borderWidth)
-        return view
-    }
-    
     private var customIndicator: AnyView?
     
     public init(
@@ -54,9 +22,8 @@ public struct W3MPicker<Data, Content>: View where Data: Hashable, Content: View
             if let selection = selection, let selectedIdx = sources.firstIndex(of: selection) {
                 
                 GeometryReader { geo in
-                    RoundedRectangle(cornerRadius: cornerRadius ?? 6.0)
-                        .stroke(borderColor ?? .clear, lineWidth: borderWidth ?? 0)
-                        .foregroundColor(.accentColor)
+                    RoundedRectangle(cornerRadius: Radius.s)
+                        .fill(.GrayGlass002, strokeBorder: .GrayGlass002, lineWidth: 1)
                         .frame(width: geo.size.width / CGFloat(sources.count))
                         .animation(.spring().speed(1.5), value: selection)
                         .offset(x: geo.size.width / CGFloat(sources.count) * CGFloat(selectedIdx), y: 0)
@@ -70,8 +37,8 @@ public struct W3MPicker<Data, Content>: View where Data: Hashable, Content: View
             }
         }
         .background(
-            RoundedRectangle(cornerRadius: cornerRadius ?? 6.0)
-                .fill(backgroundColor)
+            RoundedRectangle(cornerRadius: Radius.s)
+                .fill(.GrayGlass002)
                 .padding(-3)
         )
     }
@@ -93,7 +60,7 @@ struct PreviewWeb3ModalPicker: View {
         ) { item in
                 
             HStack {
-                item == .native ? Image.Bold.mobile : Image.Bold.web
+                item == .native ? Image.Bold.mobile : Image.Bold.browser
                 Text(item.rawValue.capitalized)
             }
             .font(.small600)
@@ -107,12 +74,8 @@ struct PreviewWeb3ModalPicker: View {
                 }
             }
         }
-        .pickerBackgroundColor(.Background100)
-        .cornerRadius(20)
-        .borderWidth(1)
-        .borderColor(Color.Overgray005)
         .accentColor(Color.Overgray005)
-        .frame(maxWidth: 250)
+        .frame(maxWidth: 200)
         .padding()
     }
 }

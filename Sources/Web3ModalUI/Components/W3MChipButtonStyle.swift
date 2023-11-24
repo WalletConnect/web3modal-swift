@@ -96,15 +96,18 @@ public struct W3MChipButtonStyle<LeadingImageContent: View, TrailingImageContent
         return HStack(spacing: Spacing.xxs) {
             leadingImage()
                 .clipShape(Circle())
+                .saturation(isEnabled ? 1 : 0)
+                .opacity(isEnabled ? 1 : 0.5)
                 .frame(width: size == .m ? 24 : 16, height: size == .m ? 24 : 16)
     
             configuration
                 .label
                 .font(.paragraph600)
-                
                 .lineLimit(1)
             
             trailingImage()
+                .saturation(isEnabled ? 1 : 0)
+                .opacity(isEnabled ? 1 : 0.5)
                 .frame(width: size == .m ? 14 : 12, height: size == .m ? 14 : 12)
         }
         .foregroundColor(textColor)

@@ -14,20 +14,26 @@ public struct Web3ModalNetworkButton: View {
     
     public var body: some View {
         if let selectedChain = store.selectedChain {
-            let storedImage = store.chainImages[selectedChain.imageId]
-            let chainImage = Image(
-                uiImage: storedImage ?? UIImage()
-            )
-            .resizable()
-            .frame(width: 24, height: 24)
-            
             Button(selectedChain.chainName) {
                 Web3Modal.selectChain()
             }
             .buttonStyle(
                 W3MChipButtonStyle(
                     variant: .shade,
-                    leadingImage: { chainImage }
+                    leadingImage: {
+                        if let storedImage = store.chainImages[selectedChain.imageId] {
+                            Image(uiImage: storedImage)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                        } else {
+                            Image.Bold.network
+                                .resizable()
+                                .foregroundColor(.Foreground200)
+                                .padding(Spacing.xxxs)
+                                .background(.GrayGlass010)
+                                .frame(width: 24, height: 24)
+                        }
+                    }
                 )
             )
         } else {
@@ -40,9 +46,8 @@ public struct Web3ModalNetworkButton: View {
                     leadingImage: {
                         Image.Bold.network
                             .resizable()
-                            .frame(width: 14, height: 14)
                             .foregroundColor(.Foreground200)
-                            .padding(5)
+                            .padding(Spacing.xxxs)
                             .background(.GrayGlass010)
                             .frame(width: 24, height: 24)
                     }
@@ -62,6 +67,9 @@ public struct NetworkButtonPreviewView: View {
         store.balance = 1.23
         store.session = .stub
         store.selectedChain = chain
+        store.chainImages[ChainPresets.ethChains[0].imageId] = UIImage(
+            named: "MockWalletImage", in: .UIModule, compatibleWith: nil
+        )
         return store
     }
     

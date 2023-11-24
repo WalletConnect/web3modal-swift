@@ -23,8 +23,10 @@ struct WalletDetailView: View {
                         case .browser:
                             Image.Bold.browser
                         }
+                        
                         Text(item.rawValue.capitalized)
                     }
+                    
                     .font(.small500)
                     .multilineTextAlignment(.center)
                     .foregroundColor(viewModel.preferredPlatform == item ? .Foreground100 : .Foreground200)
@@ -36,12 +38,8 @@ struct WalletDetailView: View {
                         }
                     }
                 }
-                .pickerBackgroundColor(.GrayGlass005)
-                .cornerRadius(20)
-                .borderWidth(1)
-                .borderColor(.GrayGlass010)
-                .frame(maxWidth: 250)
-                .padding()
+                .frame(maxWidth: 200)
+                .padding(.top, Spacing.l)
             }
             
             content()
@@ -62,20 +60,22 @@ struct WalletDetailView: View {
                 .padding(.top, 40)
                 .padding(.bottom, Spacing.l)
             
-            Button {
-                viewModel.handle(.didTapCopy)
-            } label: {
-                HStack {
-                    Image.Bold.copy
-                        .resizable()
-                        .frame(width: 12, height: 12)
-                    Text("Copy link")
+            if viewModel.wallet.isInstalled == true {
+                Button {
+                    viewModel.handle(.didTapCopy)
+                } label: {
+                    HStack {
+                        Image.Bold.copy
+                            .resizable()
+                            .frame(width: 12, height: 12)
+                        Text("Copy link")
+                    }
+                    .font(.small600)
+                    .foregroundColor(.Foreground200)
+                    .padding(Spacing.xs)
                 }
-                .font(.small600)
-                .foregroundColor(.Foreground200)
-                .padding(Spacing.xs)
+                .padding(.bottom, Spacing.xl)
             }
-            .padding(.bottom, Spacing.xl)
             
             if viewModel.preferredPlatform == .mobile && viewModel.wallet.isInstalled != true {
                 appStoreRow()
@@ -131,12 +131,19 @@ struct WalletDetailView: View {
                     viewModel.handle(.didTapOpen)
                 } label: {
                     HStack {
-                        Text(viewModel.preferredPlatform == .browser ? "Open" : "Try again")
+                        Text(!viewModel.retryShown ? "Open" : "Try again")
                     }
                     .font(.small600)
                     .foregroundColor(.Blue100)
                 }
-                .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Bold.refresh))
+                .buttonStyle(
+                    W3MButtonStyle(
+                        size: .m,
+                        variant: .accent,
+                        leftIcon: viewModel.retryShown ? Image.Bold.refresh : nil,
+                        rightIcon: viewModel.retryShown ? nil : Image.Bold.externalLink
+                    )
+                )
             }
         }
     }
@@ -201,10 +208,13 @@ class MockSignInteractor: SignInteractor {
 
 class MockWalletDetailViewModel: WalletDetailViewModel {
         
-    convenience init(retryShown: Bool, store: Store) {
+    convenience init(retryShown: Bool, isInstalled: Bool, store: Store) {
                 
+        var wallet = Wallet.stubList.first!
+        wallet.isInstalled = isInstalled
+        
         self.init(
-            wallet: .stubList.first!,
+            wallet: wallet,
             router: Router(),
             signInteractor: MockSignInteractor(store: store),
             store: store
@@ -237,7 +247,8 @@ struct WalletDetailView_Preview: PreviewProvider {
         ScrollView {
             WalletDetailView(
                 viewModel: MockWalletDetailViewModel(
-                    retryShown: false,
+                    retryShown: false, 
+                    isInstalled: false,
                     store: WalletDetailView_Preview.store
                 )
             )
@@ -247,6 +258,27 @@ struct WalletDetailView_Preview: PreviewProvider {
             WalletDetailView(
                 viewModel: MockWalletDetailViewModel(
                     retryShown: true,
+                    isInstalled: false,
+                    store: WalletDetailView_Preview.store
+                )
+            )
+            
+            Divider()
+            
+            WalletDetailView(
+                viewModel: MockWalletDetailViewModel(
+                    retryShown: true,
+                    isInstalled: true,
+                    store: WalletDetailView_Preview.store
+                )
+            )
+            
+            Divider()
+            
+            WalletDetailView(
+                viewModel: MockWalletDetailViewModel(
+                    retryShown: true,
+                    isInstalled: true,
                     store: WalletDetailView_Preview.store
                 )
             )

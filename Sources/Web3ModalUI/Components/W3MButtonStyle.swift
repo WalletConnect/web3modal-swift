@@ -54,14 +54,17 @@ public struct W3MButtonStyle: ButtonStyle {
         backgroundColor = (isPressedOverride ?? configuration.isPressed) ? pressedColor : backgroundColor
         backgroundColor = isEnabled ? backgroundColor : .Overgray010
         
-        let verticalPadding = size == .m ? Spacing.xxs : Spacing.xxxs
-        let horizontalPadding = size == .m ? Spacing.xs : Spacing.xxs
-        let leadingPadding = horizontalPadding + (leftIcon != nil ? 0 : Spacing.xs)
-        let trailingPadding = horizontalPadding + (rightIcon != nil ? 0 : Spacing.xs)
+        let verticalPadding = size == .m ? Spacing.xs : Spacing.xxs
+        let horizontalPadding = size == .m ? Spacing.l : Spacing.s
+        let leadingPadding = horizontalPadding - (leftIcon == nil ? 0 : Spacing.xxxs)
+        let trailingPadding = horizontalPadding - (rightIcon == nil ? 0 : Spacing.xxxs)
+        let iconSize: CGFloat = size == .m ? 16 : 14
         
-        return HStack(spacing: Spacing.xxs) {
+        return HStack(spacing: size == .m ? Spacing.xxs : Spacing.xxxs) {
             if let leftIcon {
                 leftIcon
+                    .resizable()
+                    .frame(width: iconSize, height: iconSize)
                     .foregroundColor(textColor)
             }
     
@@ -73,12 +76,15 @@ public struct W3MButtonStyle: ButtonStyle {
             
             if let rightIcon {
                 rightIcon
+                    .resizable()
+                    .frame(width: iconSize, height: iconSize)
                     .foregroundColor(textColor)
             }
         }
         .padding(.vertical, verticalPadding)
         .padding(.leading, leadingPadding)
         .padding(.trailing, trailingPadding)
+        .frame(height: size == .m ? 40 : 32)
         .background(backgroundColor)
         .cornerRadius(Radius.m)
         .overlay(

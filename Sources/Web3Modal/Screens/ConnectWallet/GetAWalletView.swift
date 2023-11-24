@@ -4,7 +4,7 @@ import Web3ModalUI
 struct GetAWalletView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var store: Store
-    
+
     var body: some View {
         VStack {
             ForEach(store.featuredWallets.prefix(4), id: \.self) { wallet in
@@ -17,25 +17,45 @@ struct GetAWalletView: View {
                 })
                 .buttonStyle(W3MListSelectStyle(
                     imageContent: { _ in
-                        AsyncImage(url: URL(string: "https://api.web3modal.com/getWalletImage/\(wallet.imageId)")) { image in 
-                            image.resizable()
-                        } placeholder: {
-                            Image.Medium.wallet
+                        Group {
+                            if let storedImage = store.walletImages[wallet.imageId] {
+                                Image(uiImage: storedImage)
+                                    .resizable()
+                            } else {
+                                Image.Regular.wallet
+                                    .resizable()
+                                    .padding(Spacing.xxs)
+                            }
+                        }
+                        .background {
+                            RoundedRectangle(cornerRadius: Radius.xxxs)
+                                .fill(.Overgray005)
+                        }
+                        .overlay {
+                            RoundedRectangle(cornerRadius: Radius.xxxs)
+                                .stroke(.Overgray010, lineWidth: 1)
                         }
                     }
                 ))
             }
-                
+
             Button(action: {
                 router.openURL(URL(string: "https://walletconnect.com/explorer?type=wallet")!)
             }, label: {
-                Text("Explorer all")
+                Text("Explore all")
             })
             .buttonStyle(W3MListSelectStyle(
                 imageContent: { _ in
                     Image.optionAll
                 }
             ))
+            .overlay(alignment: .trailing) {
+                Image.Bold.externalLink
+                    .resizable()
+                    .frame(width: 14, height: 14)
+                    .foregroundColor(.Foreground200)
+                    .padding(.trailing, Spacing.l)
+            }
         }
         .padding(Spacing.s)
         .padding(.bottom)
@@ -45,8 +65,22 @@ struct GetAWalletView: View {
 #if DEBUG
 
 struct GetAWalletView_Previews: PreviewProvider {
+    static let store = {
+        let store = Store()
+        store.featuredWallets = Wallet.stubList
+
+        for id in Wallet.stubList.map(\.imageId).prefix(2) {
+            store.walletImages[id] = UIImage(
+                named: "MockWalletImage", in: .UIModule, compatibleWith: nil
+            )
+        }
+
+        return store
+    }()
+
     static var previews: some View {
         GetAWalletView()
+            .environmentObject(GetAWalletView_Previews.store)
     }
 }
 

@@ -54,17 +54,20 @@ struct ConnectWalletView: View {
                     })
                     .buttonStyle(W3MListSelectStyle(
                         imageContent: { scale in
-                            Image(
-                                uiImage: store.walletImages[wallet.imageId]
-                                ?? UIImage(named: "Wallet", in: .UIModule, compatibleWith: nil)
-                                ?? UIImage()
-                                
-                            )
-                            .resizable()
+                            Group {
+                                if let storedImage = store.walletImages[wallet.imageId] {
+                                    Image(uiImage: storedImage)
+                                        .resizable()
+                                } else {
+                                    Image.Regular.wallet
+                                        .resizable()
+                                        .padding(Spacing.xxs)
+                                }
+                            }
                             .background(.Overgray005)
                             .overlay {
-                                RoundedRectangle(cornerRadius: Radius.xxxs * scale)
-                                    .strokeBorder(.Overgray010, lineWidth: 1 * scale)
+                                RoundedRectangle(cornerRadius: Radius.xxxs)
+                                    .stroke(.Overgray010, lineWidth: 1)
                             }
                         },
                         tag: tagTitle != nil ? .init(title: tagTitle!, variant: .info) : nil
