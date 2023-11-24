@@ -10,9 +10,6 @@ struct Web3ModalView: View {
     var body: some View {
         VStack(spacing: 0) {
             modalHeader()
-                    
-            Divider()
-                    
             routes()
         }
         .background(Color.Background125)

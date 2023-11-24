@@ -70,7 +70,8 @@ struct AllWalletsView: View {
                 columns: Array(
                     repeating: GridItem(.flexible()),
                     count: calculateNumberOfColumns()
-                )
+                ),
+                spacing: Spacing.l
             ) {
                 ForEach(store.wallets.sorted(by: { $0.order < $1.order }), id: \.self) { wallet in
                     gridElement(for: wallet)
@@ -106,19 +107,17 @@ struct AllWalletsView: View {
                 ProgressView()
                     .opacity(interactor.isLoading ? 1 : 0)
                     
-                let collumns = Array(
+                let columns = Array(
                     repeating: GridItem(.flexible()),
                     count: calculateNumberOfColumns()
                 )
                     
                 ScrollView {
-                    LazyVGrid(columns: collumns) {
+                    LazyVGrid(columns: columns, spacing: Spacing.l) {
                         ForEach(store.searchedWallets, id: \.self) { wallet in
                             gridElement(for: wallet)
                         }
                     }
-                    .animation(.default)
-//                    .animation(.default, value: store.searchedWallets)
                     .padding(.horizontal)
                     .padding(.bottom, 30)
                 }
@@ -168,7 +167,7 @@ struct AllWalletsView: View {
         }
     }
     
-    func calculateNumberOfColumns() -> Int {
+    private func calculateNumberOfColumns() -> Int {
         let itemWidth: CGFloat = 76
         
         let screenWidth = UIScreen.main.bounds.width

@@ -9,6 +9,7 @@ public enum W3MFont {
     case paragraph500
     case paragraph600
     case paragraph700
+    case small400
     case small500
     case small600
     case tiny500
@@ -19,21 +20,22 @@ public enum W3MFont {
     
     var weight: Font.Weight {
         switch self {
-        case .large500: return .regular
-        case .large600: return .medium
-        case .large700: return .semibold
-        case .micro600: return .medium
-        case .micro700: return .semibold
-        case .paragraph500: return .regular
-        case .paragraph600: return .medium
-        case .paragraph700: return .semibold
-        case .small500: return .regular
-        case .small600: return .medium
-        case .tiny500: return .regular
-        case .tiny600: return .medium
-        case .title500: return .regular
-        case .title600: return .medium
-        case .title700: return .semibold
+        case .large500: return .medium
+        case .large600: return .semibold
+        case .large700: return .bold
+        case .micro600: return .semibold
+        case .micro700: return .bold
+        case .paragraph500: return .medium
+        case .paragraph600: return .semibold
+        case .paragraph700: return .bold
+        case .small400: return .regular
+        case .small500: return .medium
+        case .small600: return .semibold
+        case .tiny500: return .medium
+        case .tiny600: return .semibold
+        case .title500: return .medium
+        case .title600: return .semibold
+        case .title700: return .bold
         }
     }
     
@@ -47,6 +49,7 @@ public enum W3MFont {
         case .paragraph500: return 16.0
         case .paragraph600: return 16.0
         case .paragraph700: return 16.0
+        case .small400: return 14.0
         case .small500: return 14.0
         case .small600: return 14.0
         case .tiny500: return 12.0

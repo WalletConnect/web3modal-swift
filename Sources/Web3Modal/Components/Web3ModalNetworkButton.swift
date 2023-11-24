@@ -22,38 +22,46 @@ public struct Web3ModalNetworkButton: View {
                     variant: .shade,
                     leadingImage: {
                         if let storedImage = store.chainImages[selectedChain.imageId] {
-                            Image(uiImage: storedImage)
-                                .resizable()
-                                .frame(width: 24, height: 24)
+                            Circle()
+                                .fill(.GrayGlass005)
+                                .overlay {
+                                    Image(uiImage: storedImage)
+                                        .resizable()
+                                        .frame(width: 22, height: 22)
+                                        .clipShape(Circle())
+                                }
+                                .frame(width: 26, height: 26)
                         } else {
-                            Image.Bold.network
-                                .resizable()
-                                .foregroundColor(.Foreground200)
-                                .padding(Spacing.xxxs)
-                                .background(.GrayGlass010)
-                                .frame(width: 24, height: 24)
+                            networkImagePlaceholder()
                         }
                     }
                 )
             )
         } else {
-            Button("Select network") {
+            Button {
                 Web3Modal.selectChain()
+            } label: {
+                Text("Select network").foregroundColor(.Foreground100)
             }
             .buttonStyle(
                 W3MChipButtonStyle(
                     variant: .shade,
                     leadingImage: {
-                        Image.Bold.network
-                            .resizable()
-                            .foregroundColor(.Foreground200)
-                            .padding(Spacing.xxxs)
-                            .background(.GrayGlass010)
-                            .frame(width: 24, height: 24)
+                        networkImagePlaceholder()
                     }
                 )
             )
         }
+    }
+    
+    private func networkImagePlaceholder() -> some View {
+        Circle().fill(.GrayGlass010, strokeBorder: .GrayGlass005, lineWidth: 2)
+            .overlay {
+                Image.Bold.network
+                    .foregroundColor(.Foreground200)
+                    .padding(Spacing.xs)
+            }
+            .frame(width: 24, height: 24)
     }
 }
 

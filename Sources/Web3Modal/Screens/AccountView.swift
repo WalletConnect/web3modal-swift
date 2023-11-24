@@ -119,7 +119,7 @@ struct AccountView: View {
             Spacer()
                 .frame(height: Spacing.m)
         }
-        .padding(.horizontal)
+        .padding(.horizontal, Spacing.s)
         .padding(.top, 40)
         .padding(.bottom)
         .onAppear {

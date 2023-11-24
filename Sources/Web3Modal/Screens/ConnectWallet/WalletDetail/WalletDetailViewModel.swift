@@ -24,7 +24,7 @@ class WalletDetailViewModel: ObservableObject {
     @Published var retryShown = false
     
     var showToggle: Bool {
-        hasWebAppLink && hasMobileLink
+        hasWebAppLink && hasMobileLink && wallet.isInstalled != true
     }
     
     var hasWebAppLink: Bool { wallet.webappLink?.isEmpty == false }
