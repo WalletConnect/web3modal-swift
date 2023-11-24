@@ -10,16 +10,14 @@ struct QRCodeView: View {
     
     var body: some View {
         let size: CGSize = .init(
-            width: UIScreen.main.bounds.width - 20,
+            width: UIScreen.main.bounds.width - Spacing.xl * 2,
             height: UIScreen.main.bounds.height * 0.4
         )
-        
-        let height: CGFloat = min(size.width, size.height)
         
         VStack(alignment: .center) {
             render(
                 content: uri,
-                size: .init(width: height, height: height)
+                size: .init(width: size.width, height: size.width)
             )
             .id(colorScheme)
             .colorScheme(.light)
@@ -32,9 +30,9 @@ struct QRCodeView: View {
             utf8String: content,
             errorCorrection: .quantize
         )
-        doc.design.shape.eye = QRCode.EyeShape.Squircle()
+        doc.design.shape.eye = QRCode.EyeShape.Squircle2()
         doc.design.shape.onPixels = QRCode.PixelShape.Vertical(
-            insetFraction: 0.3,
+            insetFraction: 0.15,
             cornerRadiusFraction: 1
         )
         
@@ -57,9 +55,7 @@ struct QRCodeView: View {
             let logoSize = 0.25
             let pathWidth = logoSize * (uiImage.size.width / uiImage.size.height)
             let pathHeight = logoSize
-            
-            // TODO: Square logo
-            
+                        
             doc.logoTemplate = QRCode.LogoTemplate(
                 image: cgImage,
                 path: CGPath(
@@ -128,3 +124,77 @@ struct QRCodeView_Previews: PreviewProvider {
     }
 }
 #endif
+
+extension QRCode.EyeShape {
+    /// A 'squircle' eye style
+    @objc(QRCodeEyeShapeSquircle2) class Squircle2: NSObject, QRCodeEyeShapeGenerator {
+        @objc public static let Name = "squircle"
+        @objc public static var Title: String { "Squircle2" }
+        @objc public static func Create(_ settings: [String: Any]?) -> QRCodeEyeShapeGenerator {
+            return QRCode.EyeShape.Squircle2()
+        }
+
+        @objc public func settings() -> [String: Any] { return [:] }
+        @objc public func supportsSettingValue(forKey key: String) -> Bool { false }
+        @objc public func setSettingValue(_ value: Any?, forKey key: String) -> Bool { false }
+
+        /// Make a copy of the object
+        @objc public func copyShape() -> QRCodeEyeShapeGenerator {
+            return Self.Create(settings())
+        }
+
+        public func eyePath() -> CGPath {
+            
+            let strokeWidth: CGFloat = 10
+            let size: CGFloat = 65
+            let cornerRadius: CGFloat = min(25, size/2)
+            let offset: CGFloat = (90 - size) / 2
+            
+            let path = CGMutablePath()
+            path.addRoundedRect(in: CGRect(x: offset, y: offset, width: size, height: size), cornerWidth: cornerRadius, cornerHeight: cornerRadius)
+            
+            return path.copy(strokingWithWidth: strokeWidth, lineCap: .round, lineJoin: .round, miterLimit: 1)
+        }
+
+        @objc public func eyeBackgroundPath() -> CGPath {
+            CGPath(rect: CGRect(origin: .zero, size: CGSize(width: 90, height: 90)), transform: nil)
+        }
+
+        private static let _defaultPupil = QRCode.PupilShape.Squircle2()
+        public func defaultPupil() -> QRCodePupilShapeGenerator { Self._defaultPupil }
+    }
+}
+
+
+extension QRCode.PupilShape {
+    /// A 'squircle' pupil style
+    @objc(QRCodePupilShapeSquircle2) class Squircle2: NSObject, QRCodePupilShapeGenerator {
+        @objc public static var Name: String { "squircle2" }
+        /// The generator title
+        @objc public static var Title: String { "Squircle2" }
+
+        @objc public static func Create(_ settings: [String : Any]?) -> QRCodePupilShapeGenerator {
+            Squircle2()
+        }
+
+        /// Make a copy of the object
+        @objc public func copyShape() -> QRCodePupilShapeGenerator { Squircle2() }
+
+        @objc public func settings() -> [String : Any] { [:] }
+        @objc public func supportsSettingValue(forKey key: String) -> Bool { false }
+        @objc public func setSettingValue(_ value: Any?, forKey key: String) -> Bool { false }
+
+        /// The pupil centered in the 90x90 square
+        @objc public func pupilPath() -> CGPath {
+     
+            let size: CGFloat = 35
+            let cornerRadius: CGFloat = min(12, size/2)
+            let offset: CGFloat = (90 - size) / 2
+            
+            let path = CGMutablePath()
+            path.addRoundedRect(in: CGRect(x: offset, y: offset, width: size, height: size), cornerWidth: cornerRadius, cornerHeight: cornerRadius)
+            
+            return path
+        }
+    }
+}
