@@ -17,8 +17,8 @@ struct ModalContainerView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            Color.clear
-                .frame(minHeight: 120)
+            Spacer()
+                .background(.green)
 
             if store.isModalShown {
                 Group {
@@ -56,6 +56,7 @@ struct ModalContainerView: View {
                         $0.onTapGesture {
                             withAnimation {
                                 store.isModalShown = false
+                                store.connecting = false
                             }
                         }
                     #endif
@@ -66,6 +67,7 @@ struct ModalContainerView: View {
             if newValue == false {
                 withAnimation {
                     self.dismiss()
+                    store.connecting = false
                 }
             }
         })
@@ -74,7 +76,6 @@ struct ModalContainerView: View {
                 store.isModalShown = true
             }
         }
-        .ignoresSafeArea(.keyboard)
     }
     
     private func dismiss() {

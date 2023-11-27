@@ -49,7 +49,7 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
         var backgroundColor: Color = (isPressedOverride ?? configuration.isPressed) ? .Overgray010 : .Overgray005
         backgroundColor = isSelected ? Color.Blue100.opacity(0.2) : backgroundColor
         
-        var foregroundColor: Color = (isPressedOverride ?? configuration.isPressed) ? .Blue100 : .Foreground100
+        var foregroundColor: Color = .Foreground100
         foregroundColor = isSelected ? .Blue100 : foregroundColor
         
         return VStack(spacing: Spacing.xs) {

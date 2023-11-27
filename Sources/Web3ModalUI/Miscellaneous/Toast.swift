@@ -49,12 +49,14 @@ struct ToastView: View {
         .padding(.leading, Spacing.xs)
         .padding(.trailing, Spacing.l)
         .padding(.vertical, Spacing.xs)
-        .background(Color.Background125)
+        .background(.Background125)
         .cornerRadius(Radius.l)
         .overlay {
             RoundedRectangle(cornerRadius: Radius.l)
                 .stroke(.GrayGlass005, lineWidth: 1)
         }
+        .shadow(color: .black.opacity(0.12), radius: 32, x: 0, y: 14)
+        .shadow(color: .black.opacity(0.12), radius: 11, x: 0, y: 8)
     }
 }
 

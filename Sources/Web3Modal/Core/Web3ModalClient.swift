@@ -1,4 +1,6 @@
 import Combine
+import Foundation
+import UIKit
 import WalletConnectSign
 
 // Web3 Modal Client
@@ -60,13 +62,16 @@ public class Web3ModalClient {
 
     private let signClient: SignClientProtocol
     private let pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer
+    private let store: Store
     
     init(
         signClient: SignClientProtocol,
-        pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer
+        pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer,
+        store: Store
     ) {
         self.signClient = signClient
         self.pairingClient = pairingClient
+        self.store = store
     }
     
     /// For creating new pairing
@@ -167,5 +172,33 @@ public class Web3ModalClient {
     /// - Note: Will unsubscribe from all topics
     public func cleanup() async throws {
         try await signClient.cleanup()
+    }
+    
+    public func getSelectedChain() -> Chain? {
+        guard let chain = store.selectedChain else {
+            return nil
+        }
+        
+        return chain
+    }
+    
+    public func addChainPreset(_ chain: Chain) {
+        ChainPresets.ethChains.append(chain)
+    }
+    
+    public func selectChain(_ chain: Chain) {
+        store.selectedChain = chain
+    }
+    
+    public func launchCurrentWallet() {
+        guard
+            let session = store.session,
+            let urlString = session.peer.redirect?.native ?? session.peer.redirect?.universal,
+            let url = URL(string: urlString)
+        else { return }
+        
+        DispatchQueue.main.async {
+            UIApplication.shared.open(url, completionHandler: nil)
+        }
     }
 }

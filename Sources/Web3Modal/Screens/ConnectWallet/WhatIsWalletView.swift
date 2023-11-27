@@ -49,10 +49,10 @@ struct WhatIsWalletView: View {
                     }
                 }
             }
-            .buttonStyle(W3MButtonStyle(size: .m))
+            .buttonStyle(W3MButtonStyle(size: .s))
         }
         .padding(.vertical, 40)
-        .padding(.horizontal, Spacing.xl)
+        .padding(.horizontal, 40)
     }
 
     func sections() -> [HelpSection] {

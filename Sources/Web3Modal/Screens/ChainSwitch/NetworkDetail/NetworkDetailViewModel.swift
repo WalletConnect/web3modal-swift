@@ -16,8 +16,6 @@ final class NetworkDetailViewModel: ObservableObject {
     let router: Router
     let store: Store
     
-    private var disposeBag = Set<AnyCancellable>()
-    
     init(
         chain: Chain,
         router: Router,
@@ -39,7 +37,7 @@ final class NetworkDetailViewModel: ObservableObject {
                     
                     self.store.selectedChain = ChainPresets.ethChains.first(where: { $0.chainReference == String(chainReference) })
                     self.router.setRoute(Router.AccountSubpage.profile)
-                
+                    
                 case "accountsChanged":
                     
                     guard let account = try? event.data.get([String].self) else {
@@ -54,20 +52,19 @@ final class NetworkDetailViewModel: ObservableObject {
                     break
                 }
             }
-            
+        }
+        
+        Task { @MainActor [weak self] in
             for await response in Web3Modal.instance.sessionResponsePublisher.values {
-                guard let self = self else { return }
+                guard let self = self else {
+                    return
+                }
                 
                 switch response.result {
                 case .response:
                     self.store.selectedChain = chain
                     self.router.setRoute(Router.AccountSubpage.profile)
                 case let .error(error):
-                    
-                    if error.message.contains("4001") {
-                        self.switchFailed = true
-                        return
-                    }
                     
                     if error.message.contains("4001") {
                         self.switchFailed = true

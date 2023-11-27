@@ -32,7 +32,8 @@ public class Web3Modal {
         }
         let client = Web3ModalClient(
             signClient: Sign.instance,
-            pairingClient: Pair.instance as! (PairingClientProtocol & PairingInteracting & PairingRegisterer)
+            pairingClient: Pair.instance as! (PairingClientProtocol & PairingInteracting & PairingRegisterer),
+            store: .shared
         )
         
         if let session = client.getSessions().first {
@@ -51,7 +52,7 @@ public class Web3Modal {
     }()
     
     struct Config {
-        static let sdkVersion = "swift-1.0.0-beta.10"
+        static let sdkVersion = "swift-1.0.0-beta.11"
         static let sdkType = "w3m"
         
         let projectId: String
@@ -116,26 +117,12 @@ public class Web3Modal {
     public static func set(sessionParams: SessionParams) {
         Web3Modal.config.sessionParams = sessionParams
     }
-    
-    public static func getSelectedChain() -> Chain? {
-        guard let chain = Store.shared.selectedChain else {
-            return nil
-        }
-        
-        return chain
-    }
 }
 
 #if canImport(UIKit)
 
 public extension Web3Modal {
-    static func addChainPreset(_ chain: Chain) {
-        ChainPresets.ethChains.append(chain)
-    }
     
-    static func selectChain(_ chain: Chain) {
-        Store.shared.selectedChain = chain
-    }
     
     static func selectChain(from presentingViewController: UIViewController? = nil) {
         guard let vc = presentingViewController ?? topViewController() else {
@@ -145,8 +132,9 @@ public extension Web3Modal {
         
         _ = Web3Modal.instance
         
-        
         Web3Modal.viewModel.router.setRoute(Router.NetworkSwitchSubpage.selectChain)
+        
+        Store.shared.connecting = true
         
         let modal = Web3ModalSheetController(router: Web3Modal.viewModel.router)
         vc.present(modal, animated: true)
@@ -159,6 +147,8 @@ public extension Web3Modal {
         }
         
         _ = Web3Modal.instance
+        
+        Store.shared.connecting = true
         
         Web3Modal.viewModel.router.setRoute(Store.shared.session != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
         

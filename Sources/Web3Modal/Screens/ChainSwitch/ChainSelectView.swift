@@ -32,34 +32,32 @@ struct ChainSelectView: View {
     
     @ViewBuilder
     private func grid() -> some View {
-        let collumns = Array(repeating: GridItem(.flexible()), count: 4)
+        let collumns = Array(repeating: GridItem(.flexible()), count: calculateNumberOfColumns())
 
         VStack {
             VStack {
-                LazyVGrid(columns: collumns) {
+                LazyVGrid(columns: collumns, spacing: Spacing.l) {
                     ForEach(ChainPresets.ethChains, id: \.self) { chain in
                         gridElement(for: chain)
                     }
                 }
-                .padding(.horizontal)
-                .padding(.vertical)
+                .padding(Spacing.s)
             }
             
-         
             Divider()
+                .background(.GrayGlass005)
             
             VStack(spacing: 0) {
-                
                 Text("Your connected wallet may not support some of the networks available for this dApp")
                     .fixedSize(horizontal: false, vertical: true)
-                    .font(.small500)
+                    .font(.small400)
                     .foregroundColor(.Foreground300)
                     .multilineTextAlignment(.center)
                 
                 Button {
                     router.setRoute(Router.NetworkSwitchSubpage.whatIsANetwork)
                 } label: {
-                    HStack {
+                    HStack(spacing: Spacing.xxs) {
                         Image.Bold.questionMarkCircle
                             .resizable()
                             .frame(width: 12, height: 12)
@@ -67,9 +65,9 @@ struct ChainSelectView: View {
                         Text("What is a network")
                     }
                     .foregroundColor(.Blue100)
-                    .font(.small500)
+                    .font(.small600)
                 }
-                .padding(.vertical, Spacing.xs)
+                .padding(.vertical, Spacing.s)
                 .background(Color.clear)
                 .contentShape(Rectangle())
             }
@@ -182,6 +180,18 @@ struct ChainSelectView: View {
         } label: {
             Image.Medium.xMark
         }
+    }
+    
+    private func calculateNumberOfColumns() -> Int {
+        let itemWidth: CGFloat = 76
+        
+        let screenWidth = UIScreen.main.bounds.width
+        let count = floor(screenWidth / itemWidth)
+        let spaceLeft = screenWidth.truncatingRemainder(dividingBy: itemWidth)
+        let spacing = spaceLeft / (count - 1)
+        let updatedCount = spacing < 4 ? count - 1 : count
+        
+        return Int(updatedCount)
     }
 }
 

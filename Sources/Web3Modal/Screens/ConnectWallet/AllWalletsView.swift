@@ -11,6 +11,8 @@ struct AllWalletsView: View {
     @State var searchTerm: String = ""
     let searchTermPublisher = PassthroughSubject<String, Never>()
     
+    private let semaphore = AsyncSemaphore(count: 1)
+    
     var isSearching: Bool {
         searchTerm.count >= 2
     }
@@ -19,6 +21,7 @@ struct AllWalletsView: View {
         VStack(spacing: 0) {
             HStack {
                 W3MTextField("Search wallet", text: $searchTerm)
+                    .ignoresSafeArea(.keyboard, edges: .bottom)
                     
                 qrButton()
             }
@@ -35,7 +38,7 @@ struct AllWalletsView: View {
             fetchWallets()
         }
         .animation(.default, value: isSearching)
-        .frame(height: UIScreen.main.bounds.height - 120)
+        .frame(maxHeight: UIScreen.main.bounds.height - 240)
         .onChange(of: searchTerm) { searchTerm in
             searchTermPublisher.send(searchTerm)
         }
@@ -47,23 +50,35 @@ struct AllWalletsView: View {
                 }
                 .removeDuplicates()
         ) { debouncedSearchTerm in
-            store.searchedWallets = []
             fetchWallets(search: debouncedSearchTerm)
+        }
+        .onReceive(
+            searchTermPublisher
+                .receive(on: DispatchQueue.main)
+                .removeDuplicates()
+        ) { searchTerm in
+            if searchTerm.count < 2 {
+                store.searchedWallets = []
+            }
         }
     }
     
     @ViewBuilder
     private func regularGrid() -> some View {
-        let collumns = Array(repeating: GridItem(.flexible()), count: 4)
-        
         ScrollView {
-            LazyVGrid(columns: collumns) {
+            LazyVGrid(
+                columns: Array(
+                    repeating: GridItem(.flexible()),
+                    count: calculateNumberOfColumns()
+                ),
+                spacing: Spacing.l
+            ) {
                 ForEach(store.wallets.sorted(by: { $0.order < $1.order }), id: \.self) { wallet in
                     gridElement(for: wallet)
                 }
                 
                 if interactor.isLoading || store.currentPage < store.totalPages {
-                    ForEach(1 ... 8, id: \.self) { _ in
+                    ForEach(1 ... calculateNumberOfColumns() * 2, id: \.self) { _ in
                         Button(action: {}, label: { Text("Loading") })
                             .buttonStyle(W3MCardSelectStyle(
                                 variant: .wallet,
@@ -78,7 +93,7 @@ struct AllWalletsView: View {
                     }
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 12)
             .padding(.bottom, 60)
         }
     }
@@ -92,19 +107,20 @@ struct AllWalletsView: View {
                 ProgressView()
                     .opacity(interactor.isLoading ? 1 : 0)
                     
-                let collumns = Array(repeating: GridItem(.flexible()), count: 4)
+                let columns = Array(
+                    repeating: GridItem(.flexible()),
+                    count: calculateNumberOfColumns()
+                )
                     
                 ScrollView {
-                    LazyVGrid(columns: collumns) {
+                    LazyVGrid(columns: columns, spacing: Spacing.l) {
                         ForEach(store.searchedWallets, id: \.self) { wallet in
                             gridElement(for: wallet)
                         }
                     }
-                    .animation(nil, value: store.searchedWallets)
                     .padding(.horizontal)
                     .padding(.bottom, 30)
                 }
-                .opacity(interactor.isLoading ? 0 : 1)
             }
         }
         .animation(.default, value: interactor.isLoading)
@@ -120,20 +136,25 @@ struct AllWalletsView: View {
             variant: .wallet,
             imageContent: {
                 Image(
-                    uiImage: store.walletImages[wallet.imageId] ?? UIImage()
+                    uiImage: store.walletImages[wallet.imageId] ??
+                        UIImage(named: "Regular/Wallet", in: .UIModule, compatibleWith: nil) ??
+                        UIImage()
                 )
                 .resizable()
             },
             isLoading: .constant(false)
         ))
+        .id(wallet.id)
     }
     
     private func fetchWallets(search: String = "") {
         Task {
             do {
-                try await interactor.fetchWallets(search: search)
+                try await semaphore.withTurn {
+                    try await interactor.fetchWallets(search: search)
+                }
             } catch {
-                store.toast = .init(style: .error, message: "Failed to fetch wallets.")
+                store.toast = .init(style: .error, message: "Network error")
             }
         }
     }
@@ -144,5 +165,17 @@ struct AllWalletsView: View {
         } label: {
             Image.optionQrCode
         }
+    }
+    
+    private func calculateNumberOfColumns() -> Int {
+        let itemWidth: CGFloat = 76
+        
+        let screenWidth = UIScreen.main.bounds.width
+        let count = floor(screenWidth / itemWidth)
+        let spaceLeft = screenWidth.truncatingRemainder(dividingBy: itemWidth)
+        let spacing = spaceLeft / (count - 1)
+        let updatedCount = spacing < 4 ? count - 1 : count
+        
+        return Int(updatedCount)
     }
 }

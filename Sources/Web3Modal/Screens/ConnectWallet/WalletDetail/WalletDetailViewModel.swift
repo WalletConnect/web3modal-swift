@@ -1,6 +1,6 @@
 import SwiftUI
 
-final class WalletDetailViewModel: ObservableObject {
+class WalletDetailViewModel: ObservableObject {
     enum Platform: String, CaseIterable, Identifiable {
         case mobile
         case browser
@@ -18,12 +18,13 @@ final class WalletDetailViewModel: ObservableObject {
     let wallet: Wallet
     let router: Router
     let store: Store
+    let signInteractor: SignInteractor
     
     @Published var preferredPlatform: Platform = .mobile
     @Published var retryShown = false
     
     var showToggle: Bool {
-        hasWebAppLink && hasMobileLink
+        hasWebAppLink && hasMobileLink && wallet.isInstalled != true
     }
     
     var hasWebAppLink: Bool { wallet.webappLink?.isEmpty == false }
@@ -38,8 +39,13 @@ final class WalletDetailViewModel: ObservableObject {
         self.wallet = wallet
         self.router = router
         self.store = store
+        self.signInteractor = signInteractor
         preferredPlatform = wallet.mobileLink != nil ? .mobile : .browser
                 
+        startObserving()
+    }
+    
+    func startObserving() {
         Task { @MainActor in
             for await (_, _) in Web3Modal.instance.sessionRejectionPublisher.values {
                 retryShown = true
@@ -76,7 +82,7 @@ final class WalletDetailViewModel: ObservableObject {
         }
     }
 
-    func openAppstore(wallet: Wallet) {
+    private func openAppstore(wallet: Wallet) {
         guard
             let storeLinkString = wallet.appStore,
             let storeLink = URL(string: storeLinkString)
@@ -85,7 +91,7 @@ final class WalletDetailViewModel: ObservableObject {
         router.openURL(storeLink)
     }
     
-    func navigateToDeepLink(wallet: Wallet, preferBrowser: Bool) {
+    private func navigateToDeepLink(wallet: Wallet, preferBrowser: Bool) {
         do {
             let link = preferBrowser ? wallet.webappLink : wallet.mobileLink
             
@@ -117,11 +123,11 @@ final class WalletDetailViewModel: ObservableObject {
         }
     }
         
-    func isHttpUrl(url: String) -> Bool {
+    private func isHttpUrl(url: String) -> Bool {
         return url.hasPrefix("http://") || url.hasPrefix("https://")
     }
         
-    func formatNativeUrlString(_ string: String?) throws -> String? {
+    private func formatNativeUrlString(_ string: String?) throws -> String? {
         guard let string = string, !string.isEmpty else { return nil }
             
         if isHttpUrl(url: string) {
@@ -141,7 +147,7 @@ final class WalletDetailViewModel: ObservableObject {
         return "\(safeAppUrl)wc?uri=\(deeplinkUri)"
     }
         
-    func formatUniversalUrlString(_ string: String?) throws -> String? {
+    private func formatUniversalUrlString(_ string: String?) throws -> String? {
         guard let string = string, !string.isEmpty else { return nil }
             
         if !isHttpUrl(url: string) {

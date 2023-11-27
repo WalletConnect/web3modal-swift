@@ -38,11 +38,18 @@ struct NetworkDetailView: View {
                 .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
                 .cornerRadius(Radius.m)
                 .overlay(alignment: .bottomTrailing) {
-                    Image.Original.toastError
+                    Image.Bold.xMark
+                        .resizable()
+                        .foregroundColor(.Error100)
+                        .frame(width: 10, height: 10)
+                        .padding(5)
+                        .background(.Error100.opacity(0.15))
+                        .clipShape(Circle())
                         .padding(2)
                         .background(Color.Background125)
                         .clipShape(Circle())
                         .opacity(viewModel.switchFailed ? 1 : 0)
+                        .offset(x: 5, y: 5)
                 }
                 
                 if !viewModel.switchFailed {

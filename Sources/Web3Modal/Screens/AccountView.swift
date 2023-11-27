@@ -119,7 +119,7 @@ struct AccountView: View {
             Spacer()
                 .frame(height: Spacing.m)
         }
-        .padding(.horizontal)
+        .padding(.horizontal, Spacing.s)
         .padding(.top, 40)
         .padding(.bottom)
         .onAppear {
@@ -127,7 +127,7 @@ struct AccountView: View {
                 do {
                     try await blockchainApiInteractor.getBalance()
                 } catch {
-                    store.toast = .init(style: .error, message: "Failed to fetch balance")
+                    store.toast = .init(style: .error, message: "Network error")
                 }
             }
             
@@ -139,7 +139,7 @@ struct AccountView: View {
                 do {
                     try await blockchainApiInteractor.getIdentity()
                 } catch {
-                    store.toast = .init(style: .error, message: "Failed to fetch identity")
+                    store.toast = .init(style: .error, message: "Network error")
                 }
             }
         }
@@ -169,7 +169,7 @@ struct AccountView: View {
                 router.setRoute(Router.ConnectingSubpage.connectWallet)
                 try await signInteractor.disconnect()
             } catch {
-                store.toast = .init(style: .error, message: "Failed to disconnect")
+                store.toast = .init(style: .error, message: "Network error")
             }
         }
     }

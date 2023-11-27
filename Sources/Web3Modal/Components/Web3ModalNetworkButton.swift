@@ -14,33 +14,54 @@ public struct Web3ModalNetworkButton: View {
     
     public var body: some View {
         if let selectedChain = store.selectedChain {
-            let storedImage = store.chainImages[selectedChain.imageId]
-            let chainImage = Image(
-                uiImage: storedImage ?? UIImage()
-            )
-            .resizable()
-            .frame(width: 24, height: 24)
-            
             Button(selectedChain.chainName) {
                 Web3Modal.selectChain()
             }
             .buttonStyle(
                 W3MChipButtonStyle(
                     variant: .shade,
-                    leadingImage: { chainImage }
+                    leadingImage: {
+                        if let storedImage = store.chainImages[selectedChain.imageId] {
+                            Circle()
+                                .fill(.GrayGlass005)
+                                .overlay {
+                                    Image(uiImage: storedImage)
+                                        .resizable()
+                                        .frame(width: 22, height: 22)
+                                        .clipShape(Circle())
+                                }
+                                .frame(width: 26, height: 26)
+                        } else {
+                            networkImagePlaceholder()
+                        }
+                    }
                 )
             )
         } else {
-            Button("Select network") {
+            Button {
                 Web3Modal.selectChain()
+            } label: {
+                Text("Select network").foregroundColor(.Foreground100)
             }
             .buttonStyle(
                 W3MChipButtonStyle(
                     variant: .shade,
-                    leadingImage: { Image(systemName: "network") }
+                    leadingImage: {
+                        networkImagePlaceholder()
+                    }
                 )
             )
         }
+    }
+    
+    private func networkImagePlaceholder() -> some View {
+        Circle().fill(.GrayGlass010, strokeBorder: .GrayGlass005, lineWidth: 2)
+            .overlay {
+                Image.Bold.network
+                    .foregroundColor(.Foreground200)
+                    .padding(Spacing.xs)
+            }
+            .frame(width: 24, height: 24)
     }
 }
 
@@ -54,6 +75,9 @@ public struct NetworkButtonPreviewView: View {
         store.balance = 1.23
         store.session = .stub
         store.selectedChain = chain
+        store.chainImages[ChainPresets.ethChains[0].imageId] = UIImage(
+            named: "MockWalletImage", in: .UIModule, compatibleWith: nil
+        )
         return store
     }
     

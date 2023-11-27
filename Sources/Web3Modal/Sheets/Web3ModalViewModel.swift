@@ -107,7 +107,7 @@ class Web3ModalViewModel: ObservableObject {
             do {
                 try await blockchainApiInteractor.getIdentity()
             } catch {
-                store.toast = .init(style: .error, message: "Failed to fetch identity.")
+                store.toast = .init(style: .error, message: "Network error")
             }
         }
     }
@@ -117,7 +117,7 @@ class Web3ModalViewModel: ObservableObject {
             do {
                 try await blockchainApiInteractor.getBalance()
             } catch {
-                store.toast = .init(style: .error, message: "Failed to fetch balance.")
+                store.toast = .init(style: .error, message: "Network error")
             }
         }
     }

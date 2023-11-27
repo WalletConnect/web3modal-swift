@@ -2,7 +2,6 @@ import SwiftUI
 import Web3ModalUI
 
 public struct ConnectButton: View {
-    
     @ObservedObject var store: Store
     
     public init() {
@@ -18,14 +17,18 @@ public struct ConnectButton: View {
             Web3Modal.present()
         } label: {
             if store.connecting {
-                DrawingProgressView(
-                    shape: .circle,
-                    color: .white,
-                    lineWidth: 2,
-                    duration: 1,
-                    isAnimating: .constant(true)
-                )
+                HStack {
+                    DrawingProgressView(
+                        shape: .circle,
+                        color: .white,
+                        lineWidth: 2,
+                        duration: 1,
+                        isAnimating: .constant(true)
+                    )
                     .frame(width: 20, height: 20)
+                    
+                    Text("Connecting...")
+                }
             } else {
                 Text("Connect wallet")
             }
@@ -35,7 +38,6 @@ public struct ConnectButton: View {
 }
 
 struct ConnectButton_Preview: PreviewProvider {
-    
     static var previews: some View {
         VStack {
             ConnectButton()

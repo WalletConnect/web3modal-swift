@@ -9,133 +9,163 @@ struct WalletDetailView: View {
     @StateObject var viewModel: WalletDetailViewModel
     
     var body: some View {
-        VStack {
-            if viewModel.showToggle {
-                Web3ModalPicker(
-                    WalletDetailViewModel.Platform.allCases,
-                    selection: viewModel.preferredPlatform
-                ) { item in
-                        
-                    HStack {
-                        switch item {
-                        case .mobile:
-                            Image(systemName: "iphone")
-                        case .browser:
-                            Image(systemName: "safari")
-                        }
-                        Text(item.rawValue.capitalized)
-                    }
-                    .font(.small500)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(viewModel.preferredPlatform == item ? .Foreground100 : .Foreground200)
-                    .frame(maxWidth: .infinity)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            viewModel.preferredPlatform = item
-                        }
-                    }
+        content()
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    viewModel.handle(.onAppear)
                 }
-                .pickerBackgroundColor(.GrayGlass005)
-                .cornerRadius(20)
-                .borderWidth(1)
-                .borderColor(.GrayGlass010)
-                .frame(maxWidth: 250)
-                .padding()
             }
-            
-            content()
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        viewModel.handle(.onAppear)
-                    }
-                }
-                .animation(.easeInOut, value: viewModel.preferredPlatform)
-        }
+            .animation(.easeInOut, value: viewModel.preferredPlatform)
     }
     
     @ViewBuilder
     func content() -> some View {
         VStack(spacing: 0) {
-            
-            walletImage()
-                .padding(.top, 40)
-                .padding(.bottom, Spacing.l)
-            
-            Button {
-                viewModel.handle(.didTapCopy)
-            } label: {
-                HStack {
-                    Image.Bold.copy
-                        .resizable()
-                        .frame(width: 12, height: 12)
-                    Text("Copy link")
-                }
-                .font(.small600)
-                .foregroundColor(.Foreground200)
-                .padding(Spacing.xs)
+            if viewModel.showToggle {
+                picker()
             }
-            .padding(.bottom, Spacing.xl)
+            
+            walletInfo()
+            
+            if viewModel.wallet.isInstalled == true {
+                copyLink()
+            }
             
             if viewModel.preferredPlatform == .mobile && viewModel.wallet.isInstalled != true {
                 appStoreRow()
             }
         }
-        .padding(.horizontal)
-        .padding(.bottom, Spacing.xl * 2)
+        .padding(.horizontal, Spacing.s)
+        .padding(.bottom, Spacing.xl)
     }
     
-    func walletImage() -> some View {
-        VStack(spacing: Spacing.xs) {
-            ZStack {
-                Image(
-                    uiImage: store.walletImages[viewModel.wallet.imageId] ?? UIImage()
-                )
-                .resizable()
-                .frame(width: 80, height: 80)
-                .cornerRadius(Radius.m)
-                .overlay(alignment: .bottomTrailing) {
-                    Image.Original.toastError
-                        .padding(2)
-                        .background(Color.Background125)
-                        .clipShape(Circle())
-                        .opacity(viewModel.retryShown ? 1 : 0)
+    private func picker() -> some View {
+        W3MPicker(
+            WalletDetailViewModel.Platform.allCases,
+            selection: viewModel.preferredPlatform
+        ) { item in
+            
+            HStack {
+                switch item {
+                case .mobile:
+                    Image.Bold.mobile
+                case .browser:
+                    Image.Bold.browser
                 }
                 
-                if !viewModel.retryShown {
-                    DrawingProgressView(
-                        shape: .roundedRectangleRelative(relativeCornerRadius: Radius.m / 80),
-                        color: .Blue100,
-                        lineWidth: 3,
-                        isAnimating: .constant(true)
-                    )
-                    .frame(width: 90, height: 90)
+                Text(item.rawValue.capitalized)
+            }
+            
+            .font(.small500)
+            .multilineTextAlignment(.center)
+            .foregroundColor(viewModel.preferredPlatform == item ? .Foreground100 : .Foreground200)
+            .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    viewModel.preferredPlatform = item
                 }
             }
-            .padding(.bottom, Spacing.s)
+        }
+        .frame(maxWidth: 200)
+        .padding(.top, Spacing.l)
+    }
+    
+    private func copyLink() -> some View {
+        Button {
+            viewModel.handle(.didTapCopy)
+        } label: {
+            HStack(spacing: Spacing.xxxs) {
+                Image.Bold.copy
+                    .resizable()
+                    .frame(width: 12, height: 12)
+                Text("Copy link")
+            }
+            .font(.small600)
+            .foregroundColor(.Foreground200)
+            .padding(Spacing.xs)
+        }
+        .padding(.bottom, Spacing.xl)
+    }
+    
+    private func walletImage() -> some View {
+        return ZStack {
+            Image(
+                uiImage: store.walletImages[viewModel.wallet.imageId] ?? UIImage()
+            )
+            .resizable()
+            .frame(width: 80, height: 80)
+            .cornerRadius(Radius.m)
+            .overlay(alignment: .bottomTrailing) {
+                Image.Bold.xMark
+                    .resizable()
+                    .foregroundColor(.Error100)
+                    .frame(width: 10, height: 10)
+                    .padding(5)
+                    .background(.Error100.opacity(0.15))
+                    .clipShape(Circle())
+                    .padding(2)
+                    .background(Color.Background125)
+                    .clipShape(Circle())
+                    .opacity(viewModel.retryShown ? 1 : 0)
+                    .offset(x: 5, y: 5)
+            }
+            
+            if !viewModel.retryShown {
+                DrawingProgressView(
+                    shape: .roundedRectangleRelative(relativeCornerRadius: Radius.m / 80),
+                    color: .Blue100,
+                    lineWidth: 3,
+                    isAnimating: .constant(true)
+                )
+                .frame(width: 90, height: 90)
+            }
+        }
+    }
+    
+    private func retryButton() -> some View {
+        return Button {
+            viewModel.handle(.didTapOpen)
+        } label: {
+            HStack {
+                Text(!viewModel.retryShown ? "Open" : "Try again")
+            }
+            .font(.small600)
+            .foregroundColor(.Blue100)
+        }
+        .buttonStyle(
+            W3MButtonStyle(
+                size: .m,
+                variant: .accent,
+                leftIcon: viewModel.retryShown ? Image.Bold.refresh : nil,
+                rightIcon: viewModel.retryShown ? nil : Image.Bold.externalLink
+            )
+        )
+    }
+    
+    private func walletInfo() -> some View {
+        VStack(spacing: 0) {
+            walletImage()
+                .padding(.top, 40)
+                .padding(.bottom, Spacing.xl)
             
             Text(viewModel.retryShown ? "Connection declined" : "Continue in \(viewModel.wallet.name)")
                 .font(.paragraph600)
                 .foregroundColor(viewModel.retryShown ? .Error100 : .Foreground100)
+                .padding(.bottom, Spacing.xs)
             
             Text(
                 viewModel.retryShown
-                ? "Connection can be declined if a previous request is still active"
-                : viewModel.preferredPlatform == .browser ? "Open and continue in a new browser tab" : "Accept connection request in the wallet")
-                .font(.small500)
-                .foregroundColor(.Foreground200)
+                    ? "Connection can be declined if a previous request is still active"
+                    : viewModel.preferredPlatform == .browser ? "Open and continue in a new browser tab" : "Accept connection request in the wallet"
+            )
+            .font(.small500)
+            .foregroundColor(.Foreground200)
+            .multilineTextAlignment(.center)
+            .padding(.bottom, Spacing.l)
             
             if viewModel.retryShown || viewModel.preferredPlatform == .browser {
-                Button {
-                    viewModel.handle(.didTapOpen)
-                } label: {
-                    HStack {
-                        Text(viewModel.preferredPlatform == .browser ? "Open" : "Try again")
-                    }
-                    .font(.small600)
-                    .foregroundColor(.Blue100)
-                }
-                .buttonStyle(W3MButtonStyle(size: .m, variant: .accent, leftIcon: Image.Bold.refresh))
+                retryButton()
             }
         }
     }
@@ -151,23 +181,128 @@ struct WalletDetailView: View {
             Button {
                 viewModel.handle(.didTapAppStore)
             } label: {
-                HStack(spacing: 4) {
-                    Text("Get")
-                    
-                    Image(systemName: "chevron.right")
-                }
-                .font(.small600)
-                .foregroundColor(.Blue100)
-                .padding(Spacing.xs)
+                Text("Get")
             }
-            .overlay {
-                Capsule()
-                    .stroke(.GrayGlass010, lineWidth: 1)
-            }
+            .buttonStyle(GetWalletButtonStyle())
         }
         .padding()
         .frame(height: 56)
         .background(.GrayGlass002)
         .cornerRadius(Radius.xs)
     }
+    
+    struct GetWalletButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            HStack(spacing: Spacing.xxxs) {
+                configuration.label
+                Image.Bold.chevronRight
+                    .resizable()
+                    .frame(width: 12, height: 12)
+            }
+            .font(.small600)
+            .foregroundColor(.Blue100)
+            .padding([.vertical, .trailing], Spacing.xs)
+            .padding(.leading, Spacing.s)
+            .background(configuration.isPressed ? .GrayGlass010 : .clear)
+            .overlay {
+                Capsule()
+                    .stroke(.GrayGlass010, lineWidth: 1)
+            }
+            .clipShape(Capsule())
+        }
+    }
 }
+
+#if DEBUG
+
+class MockSignInteractor: SignInteractor {
+    override func createPairingAndConnect() async throws {
+        // no-op
+    }
+    
+    override func disconnect() async throws {
+        // no-op
+    }
+}
+
+class MockWalletDetailViewModel: WalletDetailViewModel {
+    convenience init(retryShown: Bool, isInstalled: Bool, store: Store) {
+        var wallet = Wallet.stubList.first!
+        wallet.isInstalled = isInstalled
+        
+        self.init(
+            wallet: wallet,
+            router: Router(),
+            signInteractor: MockSignInteractor(store: store),
+            store: store
+        )
+        
+        self.retryShown = retryShown
+    }
+    
+    override func startObserving() {
+        // no-op
+    }
+    
+    override func handle(_ event: Event) {
+        // no-op
+    }
+}
+
+struct WalletDetailView_Preview: PreviewProvider {
+    static let store = {
+        let store = Store()
+        store.walletImages["0528ee7e-16d1-4089-21e3-bbfb41933100"] = UIImage(
+            named: "MockWalletImage", in: .UIModule, compatibleWith: nil
+        )
+        
+        return store
+    }()
+    
+    static var previews: some View {
+        ScrollView {
+            WalletDetailView(
+                viewModel: MockWalletDetailViewModel(
+                    retryShown: false,
+                    isInstalled: false,
+                    store: WalletDetailView_Preview.store
+                )
+            )
+            
+            Divider()
+            
+            WalletDetailView(
+                viewModel: MockWalletDetailViewModel(
+                    retryShown: true,
+                    isInstalled: false,
+                    store: WalletDetailView_Preview.store
+                )
+            )
+            
+            Divider()
+            
+            WalletDetailView(
+                viewModel: MockWalletDetailViewModel(
+                    retryShown: true,
+                    isInstalled: true,
+                    store: WalletDetailView_Preview.store
+                )
+            )
+            
+            Divider()
+            
+            WalletDetailView(
+                viewModel: MockWalletDetailViewModel(
+                    retryShown: false,
+                    isInstalled: true,
+                    store: WalletDetailView_Preview.store
+                )
+            )
+            
+            Divider()
+        }
+        .environmentObject(WalletDetailView_Preview.store)
+    }
+}
+
+#endif

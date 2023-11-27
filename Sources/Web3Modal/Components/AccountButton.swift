@@ -86,10 +86,6 @@ struct AccountButtonStyle: ButtonStyle {
         return HStack(spacing: Spacing.xs) {
             HStack(spacing: Spacing.xxs) {
                 networkImage()
-                    .clipShape(Circle())
-                    .saturation(isEnabled ? 1 : 0)
-                    .opacity(isEnabled ? 1 : 0.5)
-                    .frame(width: 24, height: 24)
                 
                 let balance = store.balance?.roundedDecimal(to: 4, mode: .down) ?? 0
                 
@@ -116,14 +112,23 @@ struct AccountButtonStyle: ButtonStyle {
         }
     }
     
+    @ViewBuilder
     func networkImage() -> some View {
-        let storedImage = store.chainImages[selectedChain.imageId]
-        let chainImage = Image(
-            uiImage: storedImage ?? UIImage()
-        )
-        
-        return chainImage
-            .resizable()
+        Group {
+            if let storedImage = store.chainImages[selectedChain.imageId] {
+                Image(uiImage: storedImage)
+                    .resizable()
+            } else {
+                Image.Regular.network
+                    .resizable()
+                    .padding(Spacing.xxs)
+            }
+        }
+        .saturation(isEnabled ? 1 : 0)
+        .opacity(isEnabled ? 1 : 0.5)
+        .frame(width: 24, height: 24)
+        .clipShape(Circle())
+        .overlay(Circle().stroke(.Overgray005, lineWidth: 2))
     }
     
     @ViewBuilder
@@ -173,7 +178,7 @@ public struct AccountButton: View {
             do {
                 try await blockchainApiInteractor.getIdentity()
             } catch {
-                store.toast = .init(style: .error, message: "Failed to fetch identity")
+                store.toast = .init(style: .error, message: "Network error")
             }
         }
     }
@@ -183,7 +188,7 @@ public struct AccountButton: View {
             do {
                 try await blockchainApiInteractor.getBalance()
             } catch {
-                store.toast = .init(style: .error, message: "Failed to fetch balance")
+                store.toast = .init(style: .error, message: "Network error")
             }
         }
     }

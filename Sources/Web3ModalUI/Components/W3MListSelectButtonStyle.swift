@@ -42,7 +42,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
         AdaptiveStack(
             condition: layoutBreakCondition,
             horizontalAlignment: .center,
-            spacing: Spacing.xs * scale
+            spacing: 10 * scale
         ) {
             Group {
                 imageComponent()
@@ -78,7 +78,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
         .opacity(isEnabled ? 1 : 0.5)
         .padding(.vertical, Spacing.xs * scale)
         .padding(.leading, Spacing.xs * scale)
-        .padding(.trailing, Spacing.xs * scale)
+        .padding(.trailing, Spacing.l * scale)
         .background((isPressedOverride ?? configuration.isPressed) ? .Overgray010 : .Overgray002)
         .cornerRadius(Radius.xs * scale)
     }
@@ -90,7 +90,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
             .aspectRatio(contentMode: .fit)
             .saturation(isEnabled ? 1 : 0)
             .opacity(isEnabled ? 1 : 0.5)
-            .cornerRadius(Radius.xxxs * scale)
+            .cornerRadius(Radius.xxs * scale)
     }
 }
 

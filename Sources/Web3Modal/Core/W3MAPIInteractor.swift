@@ -20,12 +20,16 @@ final class W3MAPIInteractor: ObservableObject {
     }
     
     func fetchWallets(search: String = "") async throws {
-        DispatchQueue.main.async {
-            self.isLoading = true
+        if search.isEmpty {
+            if store.currentPage + 1 > store.totalPages {
+                return
+            }
+            
+            store.currentPage = min(store.currentPage + 1, store.totalPages)
         }
         
-        if search.isEmpty {
-            store.currentPage = min(store.currentPage + 1, store.totalPages)
+        DispatchQueue.main.async {
+            self.isLoading = true
         }
         
         let params = Web3ModalAPI.GetWalletsParams(
@@ -37,8 +41,6 @@ final class W3MAPIInteractor: ObservableObject {
             recommendedIds: Web3Modal.config.recommendedWalletIds,
             excludedIds: Web3Modal.config.excludedWalletIds
         )
-        
-        print(#function, search, params.page, params.entries)
         
         let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
         let response = try await httpClient.request(
