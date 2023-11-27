@@ -78,7 +78,7 @@ struct AllWalletsView: View {
                 }
                 
                 if interactor.isLoading || store.currentPage < store.totalPages {
-                    ForEach(1 ... calculateNumberOfColumns() * 2, id: \.self) { _ in
+                    ForEach(1 ... calculateNumberOfColumns() * 4, id: \.self) { _ in
                         Button(action: {}, label: { Text("Loading") })
                             .buttonStyle(W3MCardSelectStyle(
                                 variant: .wallet,

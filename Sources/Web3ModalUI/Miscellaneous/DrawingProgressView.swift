@@ -242,7 +242,7 @@ class ProgressShapeLayer: CAShapeLayer {
         self.strokeColor = strokeColor.cgColor
         self.lineWidth = lineWidth
         self.fillColor = UIColor.clear.cgColor
-        self.lineCap = .square
+        self.lineCap = .round
     }
 
     @available(*, unavailable)

@@ -32,17 +32,22 @@ struct ChainSelectView: View {
     
     @ViewBuilder
     private func grid() -> some View {
-        let collumns = Array(repeating: GridItem(.flexible()), count: calculateNumberOfColumns())
+        let numberOfColumns = calculateNumberOfColumns()
+        let columns = Array(repeating: GridItem(.flexible()), count: numberOfColumns)
+        let maxNumberOfRows = ceil(Double(ChainPresets.ethChains.count) / Double(numberOfColumns))
+        let numberOfRows = min(4, maxNumberOfRows)
 
         VStack {
-            VStack {
-                LazyVGrid(columns: collumns, spacing: Spacing.l) {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: Spacing.l) {
                     ForEach(ChainPresets.ethChains, id: \.self) { chain in
                         gridElement(for: chain)
                     }
                 }
-                .padding(Spacing.s)
+                
             }
+            .frame(height: numberOfRows * 96 + (numberOfRows - 1) * Spacing.l)
+            .padding(Spacing.s)
             
             Divider()
                 .background(.GrayGlass005)
@@ -78,7 +83,6 @@ struct ChainSelectView: View {
     }
 
     private func gridElement(for chain: Chain) -> some View {
-        
         let isSelected = chain.id == store.selectedChain?.id
         let currentChains = viewModel.getChains()
         let currentMethods = viewModel.getMethods()
@@ -86,10 +90,10 @@ struct ChainSelectView: View {
         let isChainApproved = store.session != nil ? currentChains.contains(chain) : true
         
         return Button(action: {
-            if store.session == nil  {
+            if store.session == nil {
                 store.selectedChain = chain
                 router.setRoute(Router.ConnectingSubpage.connectWallet)
-            } else if isChainApproved && !needToSendSwitchRequest {
+            } else if isChainApproved, !needToSendSwitchRequest {
                 store.selectedChain = chain
                 router.setRoute(Router.AccountSubpage.profile)
             } else {

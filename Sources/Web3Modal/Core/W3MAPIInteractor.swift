@@ -86,7 +86,6 @@ final class W3MAPIInteractor: ObservableObject {
         )
     
         let installedWallets: [String?] = try await response.data.concurrentMap { walletMetadata in
-                
             guard
                 let nativeUrl = URL(string: walletMetadata.ios_schema),
                 await UIApplication.shared.canOpenURL(nativeUrl)
