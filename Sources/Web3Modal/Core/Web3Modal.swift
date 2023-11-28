@@ -45,7 +45,18 @@ public class Web3Modal {
     }()
     
     struct Config {
-        static let sdkVersion = "swift-1.0.0-beta.11"
+        static let sdkVersion: String = {
+            guard
+                let fileURL = Bundle.coreModule.url(forResource: "PackageConfig", withExtension: "json"),
+                let data = try? Data(contentsOf: fileURL),
+                let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                let version = jsonObject["version"] as? String
+            else {
+                return "undefined"
+            }
+                    
+            return version
+        }()
         static let sdkType = "w3m"
         
         let projectId: String
@@ -75,6 +86,9 @@ public class Web3Modal {
         includeWebWallets: Bool = true
     ) {
         Pair.configure(metadata: metadata)
+        
+        
+        
         Web3Modal.config = Web3Modal.Config(
             projectId: projectId,
             metadata: metadata,
@@ -83,6 +97,8 @@ public class Web3Modal {
             recommendedWalletIds: recommendedWalletIds,
             excludedWalletIds: excludedWalletIds
         )
+        
+       
         
         let store = Store.shared
         let router = Router()

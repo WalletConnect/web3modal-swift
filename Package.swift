@@ -46,7 +46,8 @@ let package = Package(
                 "Web3ModalUI"
             ],
             resources: [
-                .process("Resources/Assets.xcassets")
+                .process("Resources/Assets.xcassets"),
+                .copy("PackageConfig.json")
             ]
         ),
         .target(
