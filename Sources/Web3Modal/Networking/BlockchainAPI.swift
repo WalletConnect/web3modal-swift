@@ -1,5 +1,4 @@
 import Foundation
-import HTTPClient
 
 enum BlockchainAPI: HTTPService {
     struct GetIdentityParams {

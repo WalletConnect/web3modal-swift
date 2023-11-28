@@ -1,5 +1,5 @@
 import SwiftUI
-import Web3ModalUI
+
 
 struct ConnectWithQRCode: View {
     
@@ -51,8 +51,6 @@ struct ConnectWithQRCode: View {
         }
     }
 }
-
-import WalletConnectSign
 
 struct ConnectWithQRCode_Previews: PreviewProvider {
     static let stubUri: String = Array(repeating: ["a", "b", "c", "1", "2", "3"], count: 30)

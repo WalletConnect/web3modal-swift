@@ -1,6 +1,4 @@
 import Foundation
-import HTTPClient
-import WalletConnectSign
 
 enum Web3ModalAPI: HTTPService {
     struct GetWalletsParams {

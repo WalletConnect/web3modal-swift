@@ -1,16 +1,9 @@
 import Foundation
 import SwiftUI
 
-import Web3ModalUI
-
-import WalletConnectSign
-import WalletConnectVerify
-
 #if canImport(UIKit)
 import UIKit
 #endif
-
-public typealias VerifyContext = WalletConnectVerify.VerifyContext
 
 /// Web3Modal instance wrapper
 ///

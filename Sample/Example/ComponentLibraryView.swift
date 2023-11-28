@@ -1,6 +1,6 @@
 import SwiftUI
 import Web3Modal
-import Web3ModalUI
+
 
 struct ComponentLibraryView: View {
     var body: some View {

@@ -1,5 +1,5 @@
 import SwiftUI
-import Web3ModalUI
+
 
 struct WalletDetailView: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass

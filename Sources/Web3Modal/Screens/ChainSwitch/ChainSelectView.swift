@@ -1,5 +1,5 @@
 import SwiftUI
-import Web3ModalUI
+
 
 struct ChainSelectView: View {
     @EnvironmentObject var router: Router

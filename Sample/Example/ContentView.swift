@@ -1,7 +1,5 @@
 import SwiftUI
 import Web3Modal
-import Web3ModalUI
-import WalletConnectUtils
 
 struct ContentView: View {
     @State var showUIComponents: Bool = false

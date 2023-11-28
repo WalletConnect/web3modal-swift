@@ -1,7 +1,5 @@
 import Combine
 import SwiftUI
-import WalletConnectSign
-import WalletConnectUtils
 
 final class NetworkDetailViewModel: ObservableObject {
     enum Event {
