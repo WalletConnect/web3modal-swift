@@ -1,4 +1,3 @@
-import WalletConnectSign
 import Foundation
 
 #if DEBUG

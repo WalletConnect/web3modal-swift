@@ -16,38 +16,7 @@ struct ModalContainerView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
-                .background(.green)
-
-            if store.isModalShown {
-                Group {
-                    switch router.currentRoute {
-                        case _ where router.currentRoute as? Router.AccountSubpage != nil:
-                            AccountView()
-                        case _ where router.currentRoute as? Router.ConnectingSubpage != nil:
-                            Web3ModalView(
-                                viewModel: web3modalViewModel
-                            )
-                        case _ where router.currentRoute as? Router.NetworkSwitchSubpage != nil:
-                            ChainSelectView(
-                                viewModel: web3modalViewModel
-                            )
-                        default:
-                            EmptyView()
-                    }
-                }
-                .toastView(toast: $store.toast)
-                .transition(.move(edge: .bottom))
-                .animation(.spring(), value: store.isModalShown)
-                .environmentObject(web3modalViewModel.router)
-                .environmentObject(web3modalViewModel.store)
-                .environmentObject(web3modalViewModel.w3mApiInteractor)
-                .environmentObject(web3modalViewModel.signInteractor)
-                .environmentObject(web3modalViewModel.blockchainApiInteractor)
-            }
-        }
-        .background(
+        ZStack {
             Color.Overgray020
                 .colorScheme(.light)
                 .opacity(store.isModalShown ? 1 : 0)
@@ -61,7 +30,39 @@ struct ModalContainerView: View {
                         }
                     #endif
                 }
-        )
+            
+            VStack(spacing: 0) {
+                Spacer()
+                    .background(.clear)
+                
+                if store.isModalShown {
+                    Group {
+                        switch router.currentRoute {
+                        case _ where router.currentRoute as? Router.AccountSubpage != nil:
+                            AccountView()
+                        case _ where router.currentRoute as? Router.ConnectingSubpage != nil:
+                            Web3ModalView(
+                                viewModel: web3modalViewModel
+                            )
+                        case _ where router.currentRoute as? Router.NetworkSwitchSubpage != nil:
+                            ChainSelectView(
+                                viewModel: web3modalViewModel
+                            )
+                        default:
+                            EmptyView()
+                        }
+                    }
+                    .toastView(toast: $store.toast)
+                    .transition(.move(edge: .bottom))
+                    .animation(.spring(), value: store.isModalShown)
+                    .environmentObject(web3modalViewModel.router)
+                    .environmentObject(web3modalViewModel.store)
+                    .environmentObject(web3modalViewModel.w3mApiInteractor)
+                    .environmentObject(web3modalViewModel.signInteractor)
+                    .environmentObject(web3modalViewModel.blockchainApiInteractor)
+                }
+            }
+        }
         .edgesIgnoringSafeArea(.all)
         .onChange(of: store.isModalShown, perform: { newValue in
             if newValue == false {

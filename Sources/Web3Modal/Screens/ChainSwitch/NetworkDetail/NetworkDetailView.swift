@@ -1,5 +1,5 @@
 import SwiftUI
-import Web3ModalUI
+
 
 struct NetworkDetailView: View {
     @EnvironmentObject var store: Store

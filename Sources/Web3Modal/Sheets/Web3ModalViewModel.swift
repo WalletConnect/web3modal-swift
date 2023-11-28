@@ -1,7 +1,5 @@
 import Combine
 import SwiftUI
-import WalletConnectSign
-import WalletConnectUtils
 
 class Web3ModalViewModel: ObservableObject {
     private(set) var router: Router

@@ -1,5 +1,5 @@
 import SwiftUI
-import Web3ModalUI
+
 
 struct GetAWalletView: View {
     @EnvironmentObject var router: Router

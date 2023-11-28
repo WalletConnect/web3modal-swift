@@ -1,6 +1,4 @@
 import SwiftUI
-import WalletConnectSign
-import Web3ModalUI
 
 struct AccountButtonStyle: ButtonStyle {
     @ObservedObject var store: Store

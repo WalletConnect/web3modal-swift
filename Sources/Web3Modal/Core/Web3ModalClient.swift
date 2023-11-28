@@ -1,7 +1,6 @@
 import Combine
 import Foundation
 import UIKit
-import WalletConnectSign
 
 // Web3 Modal Client
 ///

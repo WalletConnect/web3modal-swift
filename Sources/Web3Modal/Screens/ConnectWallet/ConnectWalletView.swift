@@ -1,5 +1,5 @@
 import SwiftUI
-import Web3ModalUI
+
 
 struct ConnectWalletView: View {
     @EnvironmentObject var store: Store

@@ -1,6 +1,5 @@
 import Foundation
 import Combine
-import WalletConnectSign
 
 class SignInteractor: ObservableObject {
     

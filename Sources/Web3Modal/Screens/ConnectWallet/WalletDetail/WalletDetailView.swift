@@ -1,5 +1,5 @@
 import SwiftUI
-import Web3ModalUI
+
 
 struct WalletDetailView: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
@@ -36,7 +36,7 @@ struct WalletDetailView: View {
             }
         }
         .padding(.horizontal, Spacing.s)
-        .padding(.bottom, Spacing.xl)
+        .padding(.bottom, Spacing.xl + 17)
     }
     
     private func picker() -> some View {

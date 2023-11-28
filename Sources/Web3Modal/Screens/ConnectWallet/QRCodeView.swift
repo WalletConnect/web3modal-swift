@@ -1,6 +1,5 @@
 import QRCode
 import SwiftUI
-import Web3ModalUI
 
 struct QRCodeView: View {
     let uri: String

@@ -1,5 +1,5 @@
 import SwiftUI
-import Web3ModalUI
+
 
 public struct Web3ModalNetworkButton: View {
     @ObservedObject var store: Store

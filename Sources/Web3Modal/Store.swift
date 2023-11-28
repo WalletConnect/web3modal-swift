@@ -1,7 +1,5 @@
 import Combine
 import SwiftUI
-import WalletConnectSign
-import Web3ModalUI
 
 class Store: ObservableObject {
     static var shared: Store = .init()

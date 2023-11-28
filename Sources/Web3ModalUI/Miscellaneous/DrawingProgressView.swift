@@ -242,7 +242,7 @@ class ProgressShapeLayer: CAShapeLayer {
         self.strokeColor = strokeColor.cgColor
         self.lineWidth = lineWidth
         self.fillColor = UIColor.clear.cgColor
-        self.lineCap = .square
+        self.lineCap = .round
     }
 
     @available(*, unavailable)
@@ -369,11 +369,14 @@ public extension CALayer {
     private static var persistentHelperKey = "CALayer.LayerPersistentHelper"
 
     func makeAnimationsPersistent() {
-        var object = objc_getAssociatedObject(self, &CALayer.persistentHelperKey)
-        if object == nil {
-            object = LayerPersistentHelper(with: self)
-            let nonatomic = objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
-            objc_setAssociatedObject(self, &CALayer.persistentHelperKey, object, nonatomic)
+        withUnsafePointer(to: &CALayer.persistentHelperKey) {
+            var object = objc_getAssociatedObject(self, $0)
+
+            if object == nil {
+                object = LayerPersistentHelper(with: self)
+                let nonatomic = objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC
+                objc_setAssociatedObject(self, $0, object, nonatomic)
+            }
         }
     }
 }
