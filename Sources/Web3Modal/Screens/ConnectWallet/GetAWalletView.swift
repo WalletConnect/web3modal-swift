@@ -71,7 +71,7 @@ struct GetAWalletView_Previews: PreviewProvider {
 
         for id in Wallet.stubList.map(\.imageId).prefix(2) {
             store.walletImages[id] = UIImage(
-                named: "MockWalletImage", in: .UIModule, compatibleWith: nil
+                named: "MockWalletImage", in: .coreModule, compatibleWith: nil
             )
         }
 

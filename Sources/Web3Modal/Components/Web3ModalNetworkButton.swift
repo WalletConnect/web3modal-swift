@@ -76,8 +76,9 @@ public struct NetworkButtonPreviewView: View {
         store.session = .stub
         store.selectedChain = chain
         store.chainImages[ChainPresets.ethChains[0].imageId] = UIImage(
-            named: "MockWalletImage", in: .UIModule, compatibleWith: nil
+            named: "MockWalletImage", in: .coreModule, compatibleWith: nil
         )
+        
         return store
     }
     

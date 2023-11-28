@@ -1,12 +1,11 @@
 import SwiftUI
 
-
 struct WalletDetailView: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
     
     @EnvironmentObject var store: Store
     
-    @StateObject var viewModel: WalletDetailViewModel
+    @ObservedObject var viewModel: WalletDetailViewModel
     
     var body: some View {
         content()
@@ -15,7 +14,6 @@ struct WalletDetailView: View {
                     viewModel.handle(.onAppear)
                 }
             }
-            .animation(.easeInOut, value: viewModel.preferredPlatform)
     }
     
     @ViewBuilder
@@ -55,7 +53,6 @@ struct WalletDetailView: View {
                 
                 Text(item.rawValue.capitalized)
             }
-            
             .font(.small500)
             .multilineTextAlignment(.center)
             .foregroundColor(viewModel.preferredPlatform == item ? .Foreground100 : .Foreground200)
@@ -253,7 +250,7 @@ struct WalletDetailView_Preview: PreviewProvider {
     static let store = {
         let store = Store()
         store.walletImages["0528ee7e-16d1-4089-21e3-bbfb41933100"] = UIImage(
-            named: "MockWalletImage", in: .UIModule, compatibleWith: nil
+            named: "MockWalletImage", in: .coreModule, compatibleWith: nil
         )
         
         return store

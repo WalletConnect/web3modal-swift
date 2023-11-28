@@ -181,6 +181,8 @@ public class DrawingProgressUIView: UIView {
         }
 
         self.shapeLayer.path = path
+        
+        isAnimating = true
     }
 
     // MARK: - Animations

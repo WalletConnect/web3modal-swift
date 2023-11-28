@@ -4,7 +4,7 @@ package = JSON.parse(File.read(File.join(__dir__, "Sources/Web3Modal/PackageConf
 
 Pod::Spec.new do |spec|
   spec.name         = "Web3Modal"
-  spec.version      = "1.0.11"
+  spec.version      = "#{package["version"]}"
   spec.summary      = "A single Web3 provider solution for all Wallets"
   spec.description  = "Your on-ramp to web3 multichain. Web3Modal is a versatile library that makes it super easy to connect users with your Dapp and start interacting with the blockchain."
   spec.screenshots  = "https://web3modal.com/images/hero-banner.png"
@@ -29,8 +29,8 @@ Pod::Spec.new do |spec|
      ss.source_files = 'Sources/Web3Modal/**/*.{h,m,swift}'
      ss.dependency 'Web3Modal/Web3ModalUI'
      ss.dependency 'WalletConnectSwiftV2/WalletConnectSign', '~> 1.9.0'
-    
      ss.dependency 'DSF_QRCode', '~> 16.1.1'
+     ss.resources = "Sources/Web3Modal/Resources/*"
    end
 
    spec.subspec 'Web3ModalUI' do |ss|

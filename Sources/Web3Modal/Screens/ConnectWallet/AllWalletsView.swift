@@ -2,7 +2,6 @@ import Combine
 import SwiftUI
 import UIKit
 
-
 struct AllWalletsView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var store: Store
@@ -135,12 +134,13 @@ struct AllWalletsView: View {
         .buttonStyle(W3MCardSelectStyle(
             variant: .wallet,
             imageContent: {
-                Image(
-                    uiImage: store.walletImages[wallet.imageId] ??
-                        UIImage(named: "Regular/Wallet", in: .UIModule, compatibleWith: nil) ??
-                        UIImage()
-                )
-                .resizable()
+                if let storedImage = store.walletImages[wallet.imageId] {
+                    Image(uiImage: storedImage)
+                        .resizable()
+                } else {
+                    Image.Regular.wallet
+                        .resizable()
+                }
             },
             isLoading: .constant(false)
         ))

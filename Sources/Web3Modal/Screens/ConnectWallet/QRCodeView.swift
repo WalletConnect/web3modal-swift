@@ -44,9 +44,7 @@ struct QRCodeView: View {
         
         let uiImage = imageData != nil ?
             UIImage(data: imageData!) :
-            UIImage(named: "imageLogo",
-                    in: .UIModule,
-                    compatibleWith: nil)?.withColor(UIColor(.Blue100))
+            UIImage(named: "imageLogo", in: .coreModule, compatibleWith: nil)?.withColor(UIColor(.Blue100))
         
         if let uiImage = uiImage {
             let cgImage = uiImage.cgImage!
@@ -107,7 +105,7 @@ public struct QRCodeViewPreviewView: View {
         VStack {
             QRCodeView(
                 uri: QRCodeViewPreviewView.stubUri,
-                imageData: UIImage(named: "MockWalletImage", in: .UIModule, compatibleWith: nil)?.pngData()
+                imageData: UIImage(named: "MockWalletImage", in: .coreModule, compatibleWith: nil)?.pngData()
             )
             .previewLayout(.sizeThatFits)
             

@@ -44,6 +44,9 @@ let package = Package(
                     package: "WalletConnectSwiftV2"
                 ),
                 "Web3ModalUI"
+            ],
+            resources: [
+                .process("Resources/Assets.xcassets")
             ]
         ),
         .target(
