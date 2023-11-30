@@ -1,5 +1,5 @@
 
-#### 📚 [Documentation](https://docs.walletconnect.com/2.0/web3modal/ios/installation)
+#### 📚 [Documentation](https://docs.walletconnect.com/web3modal/ios/about)
 
 #### 🔗 [Website](https://web3modal.com)
 
