@@ -47,11 +47,30 @@ class Router: ObservableObject {
     }
 
     enum ConnectingSubpage: SubPage {
+        static func == (lhs: Router.ConnectingSubpage, rhs: Router.ConnectingSubpage) -> Bool {
+            switch (lhs, rhs) {
+            case (.connectWallet, .connectWallet):
+                return true
+            case (.qr, .qr):
+                return true
+            case (.allWallets, .allWallets):
+                return true
+            case (.whatIsAWallet, .whatIsAWallet):
+                return true
+            case (.walletDetail(let lhsWallet, _), .walletDetail(let rhsWallet, _)):
+                return lhsWallet == rhsWallet
+            case (.getWallet, .getWallet):
+                return true
+            default:
+                return false
+            }
+        }
+        
         case connectWallet
         case qr
         case allWallets
         case whatIsAWallet
-        case walletDetail(Wallet)
+        case walletDetail(Wallet, alternativeConnection: (() -> Void)? = nil)
         case getWallet
     }
 

@@ -1,8 +1,9 @@
+import CoinbaseWalletSDK
 import SwiftUI
 
 struct ModalContainerView: View {
     @Environment(\.presentationMode) var presentationMode
-    
+        
     @ObservedObject var store: Store
     @Backport.StateObject var router: Router
     @Backport.StateObject var web3modalViewModel: Web3ModalViewModel

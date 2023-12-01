@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Wallet: Codable, Identifiable, Hashable {
+public struct Wallet: Codable, Identifiable {
     public let id: String
     let name: String
     let homepage: String
@@ -14,6 +14,7 @@ public struct Wallet: Codable, Identifiable, Hashable {
     
     var lastTimeUsed: Date?
     var isInstalled: Bool = false
+    var alternativeConnectionMethod: (() -> Void)? = nil
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -44,7 +45,8 @@ public struct Wallet: Codable, Identifiable, Hashable {
         webappLink: String? = nil, 
         appStore: String? = nil, 
         lastTimeUsed: Date? = nil, 
-        isInstalled: Bool = false
+        isInstalled: Bool = false,
+        alternativeConnectionMethod: (() -> Void)? = nil
     ) {
         self.id = id
         self.name = name
@@ -58,6 +60,7 @@ public struct Wallet: Codable, Identifiable, Hashable {
         self.appStore = appStore
         self.lastTimeUsed = lastTimeUsed
         self.isInstalled = isInstalled
+        self.alternativeConnectionMethod = alternativeConnectionMethod
     }
     
     public init(from decoder: Decoder) throws {
@@ -74,6 +77,18 @@ public struct Wallet: Codable, Identifiable, Hashable {
         self.appStore = try container.decodeIfPresent(String.self, forKey: .appStore)
         self.lastTimeUsed = try container.decodeIfPresent(Date.self, forKey: .lastTimeUsed)
         self.isInstalled = try container.decodeIfPresent(Bool.self, forKey: .isInstalled) ?? false
+    }
+}
+
+extension Wallet: Equatable {
+    public static func == (lhs: Wallet, rhs: Wallet) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
+extension Wallet: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
