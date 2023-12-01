@@ -20,6 +20,7 @@ class WalletDetailViewModel: ObservableObject {
     let router: Router
     let store: Store
     let signInteractor: SignInteractor
+    let alternativeConnection: (() -> Void)?
     
     @Published var preferredPlatform: Platform = .mobile
     @Published var retryShown = false
@@ -37,12 +38,14 @@ class WalletDetailViewModel: ObservableObject {
         wallet: Wallet,
         router: Router,
         signInteractor: SignInteractor,
-        store: Store = .shared
+        store: Store = .shared,
+        alternativeConnection: (() -> Void)? = nil
     ) {
         self.wallet = wallet
         self.router = router
         self.store = store
         self.signInteractor = signInteractor
+        self.alternativeConnection = alternativeConnection
         preferredPlatform = wallet.mobileLink != nil ? .mobile : .browser
                 
         startObserving()
@@ -67,11 +70,17 @@ class WalletDetailViewModel: ObservableObject {
             UIPasteboard.general.string = store.uri?.absoluteString ?? ""
             store.toast = .init(style: .success, message: "Link copied")
         case .onAppear:
-            navigateToDeepLink(
-                wallet: wallet,
-                preferBrowser: preferredPlatform == .browser
-            )
             
+            if alternativeConnection == nil {
+                
+                navigateToDeepLink(
+                    wallet: wallet,
+                    preferBrowser: preferredPlatform == .browser
+                )
+            } else {
+                alternativeConnection?()
+            }
+                
             var wallet = wallet
             wallet.lastTimeUsed = Date()
             
@@ -79,10 +88,14 @@ class WalletDetailViewModel: ObservableObject {
         case .didTapOpen:
             retryShown = false
             
-            navigateToDeepLink(
-                wallet: wallet,
-                preferBrowser: preferredPlatform == .browser
-            )
+            if alternativeConnection == nil {
+                navigateToDeepLink(
+                    wallet: wallet,
+                    preferBrowser: preferredPlatform == .browser
+                )
+            } else {
+                alternativeConnection?()
+            }
             
         case .didTapAppStore:
             openAppstore(wallet: wallet)

@@ -5,10 +5,12 @@ class RecentWalletsStorage {
     static func loadRecentWallets(defaults: UserDefaults = .standard) -> [Wallet] {
         guard
             let data = defaults.data(forKey: "recentWallets"),
-            let wallets = try? JSONDecoder().decode([Wallet].self, from: data)
+            let wallets = try? JSONDecoder().decode([WalletDTO].self, from: data)
         else {
             return []
         }
+        
+        
         
         return wallets.filter { wallet in
             guard let lastTimeUsed = wallet.lastTimeUsed else {
@@ -18,6 +20,9 @@ class RecentWalletsStorage {
             
             // Consider Recent only for 3 days
             return abs(lastTimeUsed.timeIntervalSinceNow) < (24 * 60 * 60 * 3)
+        }
+        .map { dto in
+            Wallet(dto: dto)
         }
     }
     
@@ -42,8 +47,10 @@ class RecentWalletsStorage {
             uniqueValues.append(item)
         }
         
+        let dtos = uniqueValues.map { $0.toDto() }
+        
         guard
-            let walletsData = try? JSONEncoder().encode(uniqueValues)
+            let walletsData = try? JSONEncoder().encode(dtos)
         else {
             return
         }

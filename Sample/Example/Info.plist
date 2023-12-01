@@ -5,8 +5,14 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLName</key>
 			<string>w3mdapp</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>w3mdapp</string>
+			</array>
 		</dict>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>

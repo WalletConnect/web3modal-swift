@@ -13,6 +13,8 @@ class Store: ObservableObject {
     @Published var session: Session?
     @Published var uri: WalletConnectURI?
     
+    @Published var simplifiedSession: SimplifiedSession?
+    
     @Published var wallets: Set<Wallet> = []
     @Published var featuredWallets: [Wallet] = []
     @Published var searchedWallets: [Wallet] = []
@@ -35,4 +37,9 @@ class Store: ObservableObject {
     @Published var chainImages: [String: UIImage] = [:]
     
     @Published var toast: Toast? = nil
+}
+
+struct SimplifiedSession {
+    let address: String
+    let chainId: String
 }

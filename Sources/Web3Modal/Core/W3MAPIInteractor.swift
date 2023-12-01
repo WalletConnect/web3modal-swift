@@ -49,10 +49,10 @@ final class W3MAPIInteractor: ObservableObject {
             )
         )
     
-        try await fetchWalletImages(for: response.data)
+        try await fetchWalletImages(for: response.data.map(\.imageId))
         
         DispatchQueue.main.async { [self] in
-            var wallets = response.data
+            var wallets = response.data.map { Wallet(dto: $0) }
                 
             for index in wallets.indices {
                 let contains = store.installedWalletIds.contains(wallets[index].id)
@@ -115,11 +115,11 @@ final class W3MAPIInteractor: ObservableObject {
             )
         )
         
-        try await fetchWalletImages(for: response.data)
+        try await fetchWalletImages(for: response.data.map(\.imageId))
         
         DispatchQueue.main.async { [self] in
             
-            var wallets = response.data
+            var wallets = response.data.map({ Wallet(dto: $0) })
                 
             for index in wallets.indices {
                 let contains = store.installedWalletIds.contains(wallets[index].id)
@@ -131,24 +131,20 @@ final class W3MAPIInteractor: ObservableObject {
         }
     }
     
-    func fetchWalletImages(for wallets: [Wallet]) async throws {
+    func fetchWalletImages(for walletImageIds: [String]) async throws {
         var walletImages: [String: UIImage] = [:]
         
-        try await wallets.concurrentMap { wallet in
+        try await walletImageIds.concurrentMap { imageId in
             
             guard !self.store.walletImages.contains(where: { key, _ in
-                key == wallet.imageId
+                key == imageId
             }) else {
                 return ("", UIImage?.none)
             }
             
-            let url = URL(string: "https://api.web3modal.com/getWalletImage/\(wallet.imageId)")!
-            var request = URLRequest(url: url)
-            request.setW3MHeaders()
-            
             do {
-                let (data, _) = try await URLSession.shared.data(for: request)
-                return (wallet.imageId, UIImage(data: data))
+                let image = try await self.fetchWalletImage(id: imageId)
+                return (imageId, image)
             } catch {
                 print(error.localizedDescription)
             }
@@ -174,14 +170,9 @@ final class W3MAPIInteractor: ObservableObject {
         var chainImages: [String: UIImage] = [:]
         
         try await ChainPresets.ethChains.concurrentMap { chain in
-            
-            let url = URL(string: "https://api.web3modal.com/public/getAssetImage/\(chain.imageId)")!
-            var request = URLRequest(url: url)
-            request.setW3MHeaders()
-            
             do {
-                let (data, _) = try await URLSession.shared.data(for: request)
-                return (chain.imageId, UIImage(data: data))
+                let image = try await self.fetchAssetImage(id: chain.imageId)
+                return (chain.imageId, image)
             } catch {
                 print(error.localizedDescription)
             }
@@ -202,9 +193,31 @@ final class W3MAPIInteractor: ObservableObject {
             }
         }
     }
+    
+    func fetchAssetImage(id: String) async throws -> UIImage? {
+        
+        let url = URL(string: "https://api.web3modal.com/public/getAssetImage/\(id)")!
+        var request = URLRequest(url: url)
+        request.setW3MHeaders()
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        
+        return UIImage(data: data)
+    }
+    
+    func fetchWalletImage(id: String) async throws -> UIImage? {
+        
+        let url = URL(string: "https://api.web3modal.com/getWalletImage/\(id)")!
+        var request = URLRequest(url: url)
+        request.setW3MHeaders()
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        
+        return UIImage(data: data)
+    }
 }
 
-private extension URLRequest {
+extension URLRequest {
     
     mutating func setW3MHeaders() {
         setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")

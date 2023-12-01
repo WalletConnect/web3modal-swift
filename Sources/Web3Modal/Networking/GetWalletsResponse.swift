@@ -2,7 +2,7 @@ import Foundation
 
 struct GetWalletsResponse: Codable {
     let count: Int
-    let data: [Wallet]
+    let data: [WalletDTO]
 }
 
 struct GetIosDataResponse: Codable {

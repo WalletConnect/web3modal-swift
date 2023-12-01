@@ -30,7 +30,8 @@ let package = Package(
         .package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.10.0"
-        )
+        ),
+        .package(name: "CoinbaseWalletSDK", url: "https://github.com/coinbase/wallet-mobile-sdk.git", from: "1.0.5"),
     ],
     targets: [
         .target(
@@ -42,7 +43,8 @@ let package = Package(
                     package: "WalletConnectSwiftV2"
                 ),
                 "Web3ModalUI",
-                "Web3ModalBackport"
+                "Web3ModalBackport",
+                "CoinbaseWalletSDK"
             ],
             resources: [
                 .process("Resources/Assets.xcassets"),

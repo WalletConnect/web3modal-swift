@@ -1,8 +1,9 @@
 import Sentry
 import SwiftUI
-
 import WalletConnectSign
 import Web3Modal
+import CoinbaseWalletSDK
+import UIKit
 
 #if DEBUG
 import Atlantis
@@ -10,6 +11,7 @@ import Atlantis
 
 @main
 struct ExampleApp: App {
+    
     init() {
         #if DEBUG
         Atlantis.start()
@@ -52,6 +54,9 @@ struct ExampleApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onOpenURL { url in
+                    Web3Modal.instance.handleDeeplink(url)
+                }
         }
     }
 }

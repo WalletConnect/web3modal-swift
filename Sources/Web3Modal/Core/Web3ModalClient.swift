@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import UIKit
+import CoinbaseWalletSDK
 
 // Web3 Modal Client
 ///
@@ -233,6 +234,16 @@ public class Web3ModalClient {
         
         DispatchQueue.main.async {
             UIApplication.shared.open(url, completionHandler: nil)
+        }
+    }
+    
+    @discardableResult
+    public func handleDeeplink(_ url: URL) -> Bool {
+        do {
+            return try CoinbaseWalletSDK.shared.handleResponse(url)
+        } catch {
+            store.toast = .init(style: .error, message: error.localizedDescription)
+            return false
         }
     }
 }

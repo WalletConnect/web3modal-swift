@@ -1,5 +1,5 @@
+import CoinbaseWalletSDK
 import SwiftUI
-
 
 struct ConnectWalletView: View {
     @EnvironmentObject var store: Store
@@ -8,7 +8,6 @@ struct ConnectWalletView: View {
     let displayWCConnection = false
     
     var wallets: [Wallet] {
-        
         var uniqueValues: [Wallet] = []
         (store.recentWallets + store.featuredWallets).forEach { item in
             guard !uniqueValues.contains(where: { wallet in
@@ -21,59 +20,9 @@ struct ConnectWalletView: View {
     
     var body: some View {
         VStack {
-            if displayWCConnection {
-                Button(action: {
-                    router.setRoute(Router.ConnectingSubpage.qr)
-                }, label: {
-                    Text("WalletConnect")
-                })
-                .buttonStyle(W3MListSelectStyle(
-                    imageContent: { _ in 
-                        ZStack {
-                            Color.Blue100
-                            
-                            Image.imageLogo
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundColor(.white)
-                        }
-                    },
-                    tag: W3MTag(title: "QR CODE", variant: .main)
-                ))
-            }
+            wcConnection()
             
-            ForEach(wallets, id: \.self) { wallet in
-                Group {
-                    let isRecent: Bool = wallet.lastTimeUsed != nil
-                    let tagTitle: String? = isRecent ? "RECENT" : nil
-                    
-                    Button(action: {
-                        router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
-                    }, label: {
-                        Text(wallet.name)
-                    })
-                    .buttonStyle(W3MListSelectStyle(
-                        imageContent: { scale in
-                            Group {
-                                if let storedImage = store.walletImages[wallet.imageId] {
-                                    Image(uiImage: storedImage)
-                                        .resizable()
-                                } else {
-                                    Image.Regular.wallet
-                                        .resizable()
-                                        .padding(Spacing.xxs)
-                                }
-                            }
-                            .background(Color.Overgray005)
-                            .backport.overlay {
-                                RoundedRectangle(cornerRadius: Radius.xxxs)
-                                    .stroke(.Overgray010, lineWidth: 1)
-                            }
-                        },
-                        tag: tagTitle != nil ? .init(title: tagTitle!, variant: .info) : nil
-                    ))
-                }
-            }
+            featuredWallets()
                 
             Button(action: {
                 router.setRoute(Router.ConnectingSubpage.allWallets)
@@ -115,8 +64,8 @@ struct ConnectWalletView: View {
                                     .padding(Spacing.xxs)
                             }
                         }
-                        .background(Color.Overgray005)
-                        .backport.overlay {
+                        .background(.Overgray005)
+                        .overlay {
                             RoundedRectangle(cornerRadius: Radius.xxxs)
                                 .stroke(.Overgray010, lineWidth: 1)
                         }

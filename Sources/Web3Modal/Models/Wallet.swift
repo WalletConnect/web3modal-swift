@@ -1,6 +1,6 @@
 import Foundation
 
-struct Wallet: Codable, Identifiable, Hashable {
+struct WalletDTO: Codable {
     let id: String
     let name: String
     let homepage: String
@@ -69,6 +69,90 @@ struct Wallet: Codable, Identifiable, Hashable {
         self.appStore = try container.decodeIfPresent(String.self, forKey: .appStore)
         self.lastTimeUsed = try container.decodeIfPresent(Date.self, forKey: .lastTimeUsed)
         self.isInstalled = try container.decodeIfPresent(Bool.self, forKey: .isInstalled) ?? false
+    }
+}
+
+struct Wallet: Identifiable, Hashable {
+    
+    
+    static func == (lhs: Wallet, rhs: Wallet) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    let id: String
+    let name: String
+    let homepage: String
+    let imageId: String
+    let order: Int
+    let mobileLink: String?
+    let desktopLink: String?
+    let webappLink: String?
+    let appStore: String?
+    
+    var lastTimeUsed: Date?
+    var isInstalled: Bool? = false
+    var alternativeConnectionMethod: (() -> Void)? = nil
+    
+    init(dto: WalletDTO) {
+        self.id = dto.id
+        self.name = dto.name
+        self.homepage = dto.homepage
+        self.imageId = dto.imageId
+        self.order = dto.order
+        self.mobileLink = dto.mobileLink
+        self.desktopLink = dto.desktopLink
+        self.webappLink = dto.webappLink
+        self.appStore = dto.appStore
+        self.lastTimeUsed = dto.lastTimeUsed
+        self.isInstalled = dto.isInstalled
+    }
+    
+    init(
+        id: String,
+        name: String,
+        homepage: String,
+        imageId: String,
+        order: Int,
+        mobileLink: String? = nil,
+        desktopLink: String? = nil,
+        webappLink: String? = nil,
+        appStore: String? = nil,
+        lastTimeUsed: Date? = nil,
+        isInstalled: Bool? = false,
+        alternativeConnectionMethod: (() -> Void)? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.homepage = homepage
+        self.imageId = imageId
+        self.order = order
+        self.mobileLink = mobileLink
+        self.desktopLink = desktopLink
+        self.webappLink = webappLink
+        self.appStore = appStore
+        self.lastTimeUsed = lastTimeUsed
+        self.isInstalled = isInstalled
+        self.alternativeConnectionMethod = alternativeConnectionMethod
+    }
+    
+    func toDto() -> WalletDTO {
+        WalletDTO(
+            id: id,
+            name: name,
+            homepage: homepage,
+            imageId: imageId,
+            order: order,
+            mobileLink: mobileLink,
+            desktopLink: desktopLink,
+            webappLink: webappLink,
+            appStore: appStore,
+            lastTimeUsed: lastTimeUsed,
+            isInstalled: isInstalled
+        )
     }
 }
 
