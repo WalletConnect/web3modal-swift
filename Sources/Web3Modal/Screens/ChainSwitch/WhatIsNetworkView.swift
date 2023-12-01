@@ -1,10 +1,8 @@
 import SwiftUI
 
-
 struct WhatIsNetworkView: View {
-
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    
+
     @EnvironmentObject var router: Router
 
     var body: some View {
@@ -26,7 +24,9 @@ struct WhatIsNetworkView: View {
                 }
                 .transform {
                     #if os(iOS)
-                    $0.tabViewStyle(.page(indexDisplayMode: .always))
+                    if #available(iOS 14.0, *) {
+                        $0.tabViewStyle(.page(indexDisplayMode: .always))
+                    }
                     #endif
                 }
                 .scaledToFill()

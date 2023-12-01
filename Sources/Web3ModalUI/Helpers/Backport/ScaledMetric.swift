@@ -8,7 +8,7 @@ extension Backport where Wrapped == Any {
 
     /// A dynamic property that scales a numeric value.
     @propertyWrapper
-    public struct ScaledMetric<Value>: DynamicProperty where Value: BinaryFloatingPoint {
+    struct ScaledMetric<Value>: DynamicProperty where Value: BinaryFloatingPoint {
 
         @Environment(\.sizeCategory) var sizeCategory
 

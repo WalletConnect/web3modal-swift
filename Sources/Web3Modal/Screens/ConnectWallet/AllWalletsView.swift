@@ -2,6 +2,8 @@ import Combine
 import SwiftUI
 import UIKit
 
+
+@available(iOS 14.0, *)
 struct AllWalletsView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var store: Store
@@ -17,6 +19,11 @@ struct AllWalletsView: View {
     }
     
     var body: some View {
+        content()
+    }
+    
+    @ViewBuilder
+    private func content() -> some View {
         VStack(spacing: 0) {
             HStack {
                 W3MTextField("Search wallet", text: $searchTerm)
@@ -38,7 +45,7 @@ struct AllWalletsView: View {
         }
         .animation(.default, value: isSearching)
         .frame(maxHeight: UIScreen.main.bounds.height - 240)
-        .onChange(of: searchTerm) { searchTerm in
+        .backport.onChange(of: searchTerm) { searchTerm in
             searchTermPublisher.send(searchTerm)
         }
         .onReceive(

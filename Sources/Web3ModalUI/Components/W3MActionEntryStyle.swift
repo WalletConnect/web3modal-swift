@@ -3,7 +3,7 @@ import SwiftUI
 public struct W3MActionEntryStyle: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
 
-    @ScaledMetric var scale: CGFloat = 1
+    @Backport.ScaledMetric var scale: CGFloat = 1
 
     var leftIcon: Image?
     var rightIcon: Image?

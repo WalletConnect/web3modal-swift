@@ -58,3 +58,7 @@ public extension ShapeStyle where Self == Color {
     static var GrayGlass010: Color { Color(#function, bundle: .module) }
     static var GrayGlass020: Color { Color(#function, bundle: .module) }
 }
+
+public extension UIColor {
+    static var Blue100: UIColor { UIColor(named: #function, in: .module, compatibleWith: nil) ?? .blue }
+}

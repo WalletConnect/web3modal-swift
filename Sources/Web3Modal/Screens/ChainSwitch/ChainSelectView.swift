@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 struct ChainSelectView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var store: Store
@@ -22,7 +21,11 @@ struct ChainSelectView: View {
         case .none:
             EmptyView()
         case .selectChain:
-            grid()
+            if #available(iOS 14.0, *) {
+                grid()
+            } else {
+                Text("Please upgrade to iOS 14 to use this feature")
+            }
         case .whatIsANetwork:
             WhatIsNetworkView()
         case let .networkDetail(chain):
@@ -30,6 +33,7 @@ struct ChainSelectView: View {
         }
     }
     
+    @available(iOS 14.0, *)
     @ViewBuilder
     private func grid() -> some View {
         let numberOfColumns = calculateNumberOfColumns()
@@ -44,7 +48,6 @@ struct ChainSelectView: View {
                         gridElement(for: chain)
                     }
                 }
-                
             }
             .frame(height: numberOfRows * 96 + (numberOfRows - 1) * Spacing.l)
             .padding(Spacing.s)

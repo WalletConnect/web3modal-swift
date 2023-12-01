@@ -4,7 +4,7 @@ public struct W3MListItemButtonStyle<ImageContent: View>: ButtonStyle {
     @Environment(\.sizeCategory) var sizeCategory
     @Environment(\.isEnabled) var isEnabled
 
-    @ScaledMetric var scale: CGFloat = 1
+    @Backport.ScaledMetric var scale: CGFloat = 1
 
     var imageContent: () -> ImageContent
     var showChevron: Bool = false

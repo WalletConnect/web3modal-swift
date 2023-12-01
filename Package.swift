@@ -6,9 +6,7 @@ import PackageDescription
 let package = Package(
     name: "swift-web3modal",
     platforms: [
-        .iOS(.v14),
-        .macOS(.v12),
-        .tvOS(.v15)
+        .iOS(.v13),
     ],
     products: [
         .library(

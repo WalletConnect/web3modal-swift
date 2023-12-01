@@ -24,7 +24,11 @@ struct Web3ModalView: View {
         case .connectWallet:
             ConnectWalletView()
         case .allWallets:
-            AllWalletsView()
+            if #available(iOS 14.0, *) {
+                AllWalletsView()
+            } else {
+                Text("Please upgrade to iOS 14 to use this feature")
+            }
         case .qr:
             ConnectWithQRCode()
         case .whatIsAWallet:

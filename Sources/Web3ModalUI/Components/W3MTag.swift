@@ -2,13 +2,13 @@ import SwiftUI
 
 public struct W3MTag: View {
     public enum Variant: String, CaseIterable, Identifiable {
-        case main
-        case info
-        case success
-        case error
-        case inProgress
-        case warning
-        case disabled
+        case main = "MAIN"
+        case info = "INFO"
+        case success = "SUCCESS"
+        case error = "ERROR"
+        case inProgress = "IN PROGRESS"
+        case warning = "WARNING"
+        case disabled = "DISABLED"
 
         var backgroundColor: Color {
             switch self {
@@ -56,7 +56,7 @@ public struct W3MTag: View {
     let title: String
     let variant: Variant
     
-    @ScaledMetric var scale: CGFloat = 1
+    @Backport.ScaledMetric var scale: CGFloat = 1
 
     public init(title: String, variant: Variant) {
         self.title = title
@@ -65,7 +65,6 @@ public struct W3MTag: View {
     
     public var body: some View {
         Text(title)
-            .textCase(.uppercase)
             .font(.micro700)
             .lineLimit(1)
             .foregroundColor(variant.textColor)

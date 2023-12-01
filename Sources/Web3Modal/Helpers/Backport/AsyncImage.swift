@@ -1,7 +1,55 @@
 import SwiftUI
 
+@available(iOS, deprecated: 14.0)
+public extension UIColor {
+
+    convenience init(_ color: Color) {
+        self.init(
+            red: color.redComponent ?? 0,
+            green: color.greenComponent ?? 0,
+            blue: color.blueComponent ?? 0,
+            alpha: color.opacityComponent ?? 0
+        )
+    }
+}
+
+@available(iOS, deprecated: 14.0)
+private extension SwiftUI.Color {
+    var redComponent: Double? {
+        let val = description
+        guard val.hasPrefix("#") else { return nil }
+        let r1 = val.index(val.startIndex, offsetBy: 1)
+        let r2 = val.index(val.startIndex, offsetBy: 2)
+        return Double(Int(val[r1...r2], radix: 16)!) / 255.0
+    }
+
+    var greenComponent: Double? {
+        let val = description
+        guard val.hasPrefix("#") else { return nil }
+        let g1 = val.index(val.startIndex, offsetBy: 3)
+        let g2 = val.index(val.startIndex, offsetBy: 4)
+        return Double(Int(val[g1...g2], radix: 16)!) / 255.0
+    }
+
+    var blueComponent: Double? {
+        let val = description
+        guard val.hasPrefix("#") else { return nil }
+        let b1 = val.index(val.startIndex, offsetBy: 5)
+        let b2 = val.index(val.startIndex, offsetBy: 6)
+        return Double(Int(val[b1...b2], radix: 16)!) / 255.0
+    }
+
+    var opacityComponent: Double? {
+        let val = description
+        guard val.hasPrefix("#") else { return nil }
+        let b1 = val.index(val.startIndex, offsetBy: 7)
+        let b2 = val.index(val.startIndex, offsetBy: 8)
+        return Double(Int(val[b1...b2], radix: 16)!) / 255.0
+    }
+}
+
 @available(iOS, deprecated: 15.0)
-public extension Backport where Wrapped == Any {
+extension Backport where Wrapped == Any {
 
     /// Loads and displays an image from the specified URL.
     ///
@@ -217,7 +265,7 @@ import Combine
 @available(macOS, deprecated: 12.0)
 @available(tvOS, deprecated: 15.0)
 @available(watchOS, deprecated: 8.0)
-public extension Backport where Wrapped: View {
+extension Backport where Wrapped: View {
 
     /// Adds an asynchronous task to perform when this view appears.
     ///
@@ -384,7 +432,7 @@ private struct TaskModifier<ID: Equatable>: ViewModifier {
 @available(macOS, deprecated: 11.0)
 @available(tvOS, deprecated: 14.0)
 @available(watchOS, deprecated: 7.0)
-public extension Backport where Wrapped: View {
+extension Backport where Wrapped: View {
 
     /// Adds a modifier for this view that fires an action when a specific
     /// value changes.

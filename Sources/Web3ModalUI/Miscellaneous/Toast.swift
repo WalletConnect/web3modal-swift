@@ -74,7 +74,7 @@ public struct ToastModifier: ViewModifier {
                 }
                 .animation(.spring(), value: toast)
             )
-            .onChange(of: toast) { _ in
+            .backport.onChange(of: toast) { _ in
                 showToast()
             }
     }

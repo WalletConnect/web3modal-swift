@@ -4,7 +4,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.sizeCategory) var sizeCategory
 
-    @ScaledMetric var scale: CGFloat = 1
+    @Backport.ScaledMetric var scale: CGFloat = 1
 
     var imageContent: (CGFloat) -> ImageContent
     var tag: W3MTag?

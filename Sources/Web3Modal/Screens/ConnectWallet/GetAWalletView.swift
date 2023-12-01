@@ -27,10 +27,10 @@ struct GetAWalletView: View {
                                     .padding(Spacing.xxs)
                             }
                         }
-                        .backport.background {
+                        .background(
                             RoundedRectangle(cornerRadius: Radius.xxxs)
                                 .fill(.Overgray005)
-                        }
+                        )
                         .backport.overlay {
                             RoundedRectangle(cornerRadius: Radius.xxxs)
                                 .stroke(.Overgray010, lineWidth: 1)
