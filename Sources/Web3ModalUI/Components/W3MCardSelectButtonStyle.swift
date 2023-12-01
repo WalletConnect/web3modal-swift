@@ -60,6 +60,7 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                 .foregroundColor(foregroundColor)
                 .frame(maxWidth: .infinity)
                 .opacity(isLoading ? 0 : 1)
+                .backport
                 .overlay {
                     RoundedRectangle(cornerRadius: Radius.xs)
                         .stroke(.Overgray010, lineWidth: 1)
@@ -93,6 +94,7 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                     $0.clipShape(RoundedRectangle(cornerRadius: Radius.xs))
                 }
             }
+            .backport
             .overlay {
                 switch variant {
                 case .network:
@@ -216,7 +218,7 @@ public struct W3MCardSelectStyle<ImageContent: View>: ButtonStyle {
                 }
             }
             .padding()
-            .background(.Overgray002)
+            .background(Color.Overgray002)
         }
     }
 

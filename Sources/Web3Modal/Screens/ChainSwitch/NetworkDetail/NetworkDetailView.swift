@@ -37,13 +37,13 @@ struct NetworkDetailView: View {
                 .frame(width: 80, height: 80)
                 .clipShape(Polygon(count: 6, relativeCornerRadius: 0.25))
                 .cornerRadius(Radius.m)
-                .overlay(alignment: .bottomTrailing) {
+                .backport.overlay(alignment: .bottomTrailing) {
                     Image.Bold.xMark
                         .resizable()
                         .foregroundColor(.Error100)
                         .frame(width: 10, height: 10)
                         .padding(5)
-                        .background(.Error100.opacity(0.15))
+                        .background(Color.Error100.opacity(0.15))
                         .clipShape(Circle())
                         .padding(2)
                         .background(Color.Background125)

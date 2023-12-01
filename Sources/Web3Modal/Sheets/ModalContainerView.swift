@@ -33,7 +33,7 @@ struct ModalContainerView: View {
             
             VStack(spacing: 0) {
                 Spacer()
-                    .background(.clear)
+                    .background(Color.clear)
                 
                 if store.isModalShown {
                     Group {

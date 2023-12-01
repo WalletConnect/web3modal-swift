@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 class WalletDetailViewModel: ObservableObject {
     enum Platform: String, CaseIterable, Identifiable {
@@ -23,6 +24,8 @@ class WalletDetailViewModel: ObservableObject {
     @Published var preferredPlatform: Platform = .mobile
     @Published var retryShown = false
     
+    private var disposeBag = Set<AnyCancellable>()
+    
     var showToggle: Bool {
         hasWebAppLink && hasMobileLink && wallet.isInstalled != true
     }
@@ -46,12 +49,16 @@ class WalletDetailViewModel: ObservableObject {
     }
     
     func startObserving() {
-        Task { @MainActor in
-            for await (_, _) in Web3Modal.instance.sessionRejectionPublisher.values {
-                retryShown = true
-                try await signInteractor.createPairingAndConnect()
+        Web3Modal.instance.sessionRejectionPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { _, _ in
+                self.retryShown = true
+                
+                Task {
+                    try await self.signInteractor.createPairingAndConnect()
+                }
             }
-        }
+            .store(in: &disposeBag)
     }
     
     func handle(_ event: Event) {

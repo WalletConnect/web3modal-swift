@@ -24,7 +24,7 @@ public struct Web3ModalNetworkButton: View {
                         if let storedImage = store.chainImages[selectedChain.imageId] {
                             Circle()
                                 .fill(.GrayGlass005)
-                                .overlay {
+                                .backport.overlay {
                                     Image(uiImage: storedImage)
                                         .resizable()
                                         .frame(width: 22, height: 22)
@@ -56,7 +56,7 @@ public struct Web3ModalNetworkButton: View {
     
     private func networkImagePlaceholder() -> some View {
         Circle().fill(.GrayGlass010, strokeBorder: .GrayGlass005, lineWidth: 2)
-            .overlay {
+            .backport.overlay {
                 Image.Bold.network
                     .foregroundColor(.Foreground200)
                     .padding(Spacing.xs)

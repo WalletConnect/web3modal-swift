@@ -112,7 +112,7 @@ struct AccountView: View {
                     .frame(width: 14, height: 14)
                     .padding(Spacing.xxxs)
                     .frame(width: 32, height: 32)
-                    .background(.GrayGlass010)
+                    .background(Color.GrayGlass010)
                     .clipShape(Circle())
             }))
             
@@ -152,7 +152,7 @@ struct AccountView: View {
     @ViewBuilder
     func avatar() -> some View {
         if let avatarUrlString = store.identity?.avatar, let url = URL(string: avatarUrlString) {
-            AsyncImage(url: url)
+            Backport.AsyncImage(url: url)
                 .frame(width: 64, height: 64)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(.GrayGlass010, lineWidth: 8))

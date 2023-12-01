@@ -271,7 +271,7 @@ public struct W3MButtonStyle: ButtonStyle {
                 }
             }
             .padding()
-            .background(.Overgray002)
+            .background(Color.Overgray002)
         }
     }
 

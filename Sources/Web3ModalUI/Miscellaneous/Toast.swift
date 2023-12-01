@@ -49,8 +49,9 @@ struct ToastView: View {
         .padding(.leading, Spacing.xs)
         .padding(.trailing, Spacing.l)
         .padding(.vertical, Spacing.xs)
-        .background(.Background125)
+        .background(Color.Background125)
         .cornerRadius(Radius.l)
+        .backport
         .overlay {
             RoundedRectangle(cornerRadius: Radius.l)
                 .stroke(.GrayGlass005, lineWidth: 1)
@@ -142,7 +143,7 @@ public struct ToastViewPreviewView: View {
             ToastView(style: .success, message: "Address copied", onCancelTapped: {})
         }
         .padding()
-        .background(.Overgray002)
+        .background(Color.Overgray002)
     }
 }
 

@@ -90,6 +90,66 @@ struct ConnectWalletView: View {
         .padding(Spacing.s)
         .padding(.bottom)
     }
+    
+    @ViewBuilder
+    private func featuredWallets() -> some View {
+        ForEach(wallets, id: \.self) { wallet in
+            Group {
+                let isRecent: Bool = wallet.lastTimeUsed != nil
+                let tagTitle: String? = isRecent ? "Recent" : nil
+                
+                Button(action: {
+                    router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+                }, label: {
+                    Text(wallet.name)
+                })
+                .buttonStyle(W3MListSelectStyle(
+                    imageContent: { _ in
+                        Group {
+                            if let storedImage = store.walletImages[wallet.imageId] {
+                                Image(uiImage: storedImage)
+                                    .resizable()
+                            } else {
+                                Image.Regular.wallet
+                                    .resizable()
+                                    .padding(Spacing.xxs)
+                            }
+                        }
+                        .background(Color.Overgray005)
+                        .backport.overlay {
+                            RoundedRectangle(cornerRadius: Radius.xxxs)
+                                .stroke(.Overgray010, lineWidth: 1)
+                        }
+                    },
+                    tag: tagTitle != nil ? .init(title: tagTitle!, variant: .info) : nil
+                ))
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func wcConnection() -> some View {
+        if displayWCConnection {
+            Button(action: {
+                router.setRoute(Router.ConnectingSubpage.qr)
+            }, label: {
+                Text("WalletConnect")
+            })
+            .buttonStyle(W3MListSelectStyle(
+                imageContent: { _ in
+                    ZStack {
+                        Color.Blue100
+                        
+                        Image.imageLogo
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .foregroundColor(.white)
+                    }
+                },
+                tag: W3MTag(title: "QR Code", variant: .main)
+            ))
+        }
+    }
 }
 
 struct ConnectWalletView_Previews: PreviewProvider {

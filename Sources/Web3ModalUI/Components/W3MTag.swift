@@ -86,7 +86,7 @@ public struct W3MTag: View {
                 }
             }
             .padding()
-            .background(.Overgray002)
+            .background(Color.Overgray002)
         }
     }
 

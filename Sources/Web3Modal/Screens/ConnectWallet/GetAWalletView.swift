@@ -27,11 +27,11 @@ struct GetAWalletView: View {
                                     .padding(Spacing.xxs)
                             }
                         }
-                        .background {
+                        .backport.background {
                             RoundedRectangle(cornerRadius: Radius.xxxs)
                                 .fill(.Overgray005)
                         }
-                        .overlay {
+                        .backport.overlay {
                             RoundedRectangle(cornerRadius: Radius.xxxs)
                                 .stroke(.Overgray010, lineWidth: 1)
                         }
@@ -49,7 +49,7 @@ struct GetAWalletView: View {
                     Image.optionAll
                 }
             ))
-            .overlay(alignment: .trailing) {
+            .backport.overlay(alignment: .trailing) {
                 Image.Bold.externalLink
                     .resizable()
                     .frame(width: 14, height: 14)

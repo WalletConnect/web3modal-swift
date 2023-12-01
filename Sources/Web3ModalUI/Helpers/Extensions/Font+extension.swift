@@ -62,7 +62,8 @@ public enum W3MFont {
 }
 
 struct ScaledFont: ViewModifier {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    
+//    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Environment(\.sizeCategory) var sizeCategory
     var size: Double
     var weight: Font.Weight
@@ -84,8 +85,8 @@ extension View {
 }
 
 struct FontPreviews: PreviewProvider {
+//    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     @Environment(\.sizeCategory) var sizeCategory
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     
     static var previews: some View {
         VStack(spacing: 10) {

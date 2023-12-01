@@ -1,7 +1,7 @@
 import SwiftUI
 
 public struct W3MListItemButtonStyle<ImageContent: View>: ButtonStyle {
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.sizeCategory) var sizeCategory
     @Environment(\.isEnabled) var isEnabled
 
     @ScaledMetric var scale: CGFloat = 1
@@ -28,19 +28,19 @@ public struct W3MListItemButtonStyle<ImageContent: View>: ButtonStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         AdaptiveStack(
-            condition: dynamicTypeSize.isAccessibilitySize,
+            condition: sizeCategory >= .accessibilityMedium,
             horizontalAlignment: .center,
             spacing: Spacing.s
-        
+            
         ) {
             imageComponent()
-
+            
             configuration.label
-
-            if !dynamicTypeSize.isAccessibilitySize {
+            
+            if !(sizeCategory >= .accessibilityMedium) {
                 Spacer()
             }
-
+            
             Group {
                 if isLoading {
                     DrawingProgressView(
@@ -66,7 +66,8 @@ public struct W3MListItemButtonStyle<ImageContent: View>: ButtonStyle {
         .padding(.vertical, Spacing.xs * scale)
         .padding(.leading, Spacing.s * scale)
         .padding(.trailing, Spacing.l * scale)
-        .background((isPressedOverride ?? configuration.isPressed) ? .Overgray010 : .Overgray005)
+        .backport
+        .background { (isPressedOverride ?? configuration.isPressed) ? Color.Overgray010 : Color.Overgray005 }
         .cornerRadius(Radius.s * scale)
         .allowsHitTesting(!isLoading)
     }
@@ -85,7 +86,7 @@ public struct W3MListItemButtonStyle<ImageContent: View>: ButtonStyle {
 #if DEBUG
     public struct W3MListItemButtonStylePreviewView: View {
         
-        @Environment(\.dynamicTypeSize) var dynamicTypeSize
+        @Environment(\.sizeCategory) var sizeCategory
         
         public init() {}
 
@@ -93,7 +94,7 @@ public struct W3MListItemButtonStyle<ImageContent: View>: ButtonStyle {
             ScrollView {
                 VStack {
                     Button(action: {}, label: {
-                        AdaptiveStack(condition: dynamicTypeSize.isAccessibilitySize, spacing: 5) {
+                        AdaptiveStack(condition: sizeCategory >= .accessibilityMedium, spacing: 5) {
                             Text("0.527 ETH")
                             
                             Text("607.38 USD")
@@ -112,7 +113,7 @@ public struct W3MListItemButtonStyle<ImageContent: View>: ButtonStyle {
                     ))
                     
                     Button(action: {}, label: {
-                        AdaptiveStack(condition: dynamicTypeSize.isAccessibilitySize, spacing: 5) {
+                        AdaptiveStack(condition: sizeCategory >= .accessibilityMedium, spacing: 5) {
                             Text("W/ CHEVRON")
                             
                             Text("607.38 USD")
@@ -208,7 +209,7 @@ public struct W3MListItemButtonStyle<ImageContent: View>: ButtonStyle {
                     ))
                 }
                 .padding()
-                .background(.Overgray002)
+                .background(Color.Overgray002)
             }
         }
     }

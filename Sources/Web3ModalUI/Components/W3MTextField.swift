@@ -19,11 +19,11 @@ public struct W3MTextField: View {
         TextField(self.titleKey, text: self.$text, onEditingChanged: { self.isEditing = $0 })
             .padding(.horizontal, Spacing.xxl)
             .padding(.vertical, Spacing.xxxxs)
-            .overlay(alignment: .leading) {
+            .backport.overlay(alignment: .leading) {
                 Image.Medium.magnifier
                     .foregroundColor(.Foreground275)
             }
-            .overlay(alignment: .trailing) {
+            .backport.overlay(alignment: .trailing) {
                 if !self.text.isEmpty {
                     Button(action: {
                         self.text = ""
@@ -45,7 +45,6 @@ public struct W3MTextField: View {
                 }
             }
             .foregroundColor(.Foreground100)
-            .tint(.accentColor)
             .font(.paragraph500)
             .padding(.vertical, Spacing.xs)
             .padding(.horizontal, Spacing.s)
@@ -57,7 +56,7 @@ public struct W3MTextField: View {
                 RoundedRectangle(cornerRadius: Radius.xxs)
                     .stroke(.GrayGlass005, lineWidth: 1)
             )
-            .background {
+            .backport.background {
                 if self.isEditing {
                     ZStack {
                         RoundedRectangle(cornerRadius: Radius.xxs)
@@ -81,7 +80,6 @@ struct W3MTextFieldStylePreview: PreviewProvider {
     static var previews: some View {
         VStack {
             W3MTextField("FOoo", text: .constant(""))
-//            W3MTextField("FOoo", text: .constant("Foo"), isEditing: .constant(true))
         }
         .padding()
     }

@@ -50,7 +50,7 @@ struct ChainSelectView: View {
             .padding(Spacing.s)
             
             Divider()
-                .background(.GrayGlass005)
+                .background(Color.GrayGlass005)
             
             VStack(spacing: 0) {
                 Text("Your connected wallet may not support some of the networks available for this dApp")
