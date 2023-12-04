@@ -38,7 +38,7 @@ struct ConnectWalletView: View {
                                 .foregroundColor(.white)
                         }
                     },
-                    tag: W3MTag(title: "QR Code", variant: .main)
+                    tag: W3MTag(title: "QR CODE", variant: .main)
                 ))
             }
             
@@ -146,7 +146,7 @@ struct ConnectWalletView: View {
                             .foregroundColor(.white)
                     }
                 },
-                tag: W3MTag(title: "QR Code", variant: .main)
+                tag: W3MTag(title: "QR CODE", variant: .main)
             ))
         }
     }

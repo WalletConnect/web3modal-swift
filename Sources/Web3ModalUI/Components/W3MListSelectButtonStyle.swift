@@ -107,7 +107,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                     })
                     .buttonStyle(W3MListSelectStyle(
                         imageContent: { _ in Image.mockWallet.resizable() },
-                        tag: W3MTag(title: "QR Code", variant: .main)
+                        tag: W3MTag(title: "QR CODE", variant: .main)
                     ))
 
                     Button(action: {}, label: {
@@ -121,7 +121,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                                 Image.Medium.wallet
                             }
                         },
-                        tag: W3MTag(title: "Installed", variant: .success),
+                        tag: W3MTag(title: "INSTALLED", variant: .success),
                         isPressedOverride: true
                     ))
 
@@ -146,7 +146,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                     })
                     .buttonStyle(W3MListSelectStyle(
                         imageContent: { _ in Image.mockWallet.resizable() },
-                        tag: W3MTag(title: "QR Code", variant: .main)
+                        tag: W3MTag(title: "QR CODE", variant: .main)
                     ))
                     .disabled(true)
                     
