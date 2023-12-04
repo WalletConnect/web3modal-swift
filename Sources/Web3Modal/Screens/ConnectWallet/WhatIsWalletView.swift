@@ -8,8 +8,8 @@ struct WhatIsWalletView: View {
     var body: some View {
         content()
             .onAppear {
-                UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Color.Foreground100)
-                UIPageControl.appearance().pageIndicatorTintColor = UIColor(Color.Foreground100).withAlphaComponent(0.2)
+                UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.Foreground100
+                UIPageControl.appearance().pageIndicatorTintColor = UIColor.Foreground100.withAlphaComponent(0.2)
             }
     }
 
