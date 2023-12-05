@@ -8,7 +8,7 @@ import Combine
 extension Backport where Wrapped: View {
 
     @ViewBuilder
-    func onChange<Value: Equatable>(of value: Value, perform action: @escaping (Value) -> Void) -> some View {
+    public func onChange<Value: Equatable>(of value: Value, perform action: @escaping (Value) -> Void) -> some View {
         if #available(iOS 14, tvOS 14, macOS 11, watchOS 7, *) {
             wrapped.onChange(of: value, perform: action)
         } else {

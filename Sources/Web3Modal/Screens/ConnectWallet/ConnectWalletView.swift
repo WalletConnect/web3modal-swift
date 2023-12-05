@@ -45,7 +45,7 @@ struct ConnectWalletView: View {
             ForEach(wallets, id: \.self) { wallet in
                 Group {
                     let isRecent: Bool = wallet.lastTimeUsed != nil
-                    let tagTitle: String? = isRecent ? "Recent" : nil
+                    let tagTitle: String? = isRecent ? "RECENT" : nil
                     
                     Button(action: {
                         router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
@@ -96,7 +96,7 @@ struct ConnectWalletView: View {
         ForEach(wallets, id: \.self) { wallet in
             Group {
                 let isRecent: Bool = wallet.lastTimeUsed != nil
-                let tagTitle: String? = isRecent ? "Recent" : nil
+                let tagTitle: String? = isRecent ? "RECENT" : nil
                 
                 Button(action: {
                     router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))

@@ -7,7 +7,7 @@ import SwiftUI
 @available(watchOS, deprecated: 7.0)
 extension Backport where Wrapped: ObservableObject {
 
-    @propertyWrapper struct StateObject: DynamicProperty {
+    @propertyWrapper public struct StateObject: DynamicProperty {
         private final class Wrapper: ObservableObject {
             private var subject = PassthroughSubject<Void, Never>()
 

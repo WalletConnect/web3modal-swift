@@ -61,4 +61,6 @@ public extension ShapeStyle where Self == Color {
 
 public extension UIColor {
     static var Blue100: UIColor { UIColor(named: #function, in: .module, compatibleWith: nil) ?? .blue }
+    static var Background125: UIColor { UIColor(named: #function, in: .module, compatibleWith: nil) ?? .blue }
+    static var Foreground100: UIColor { UIColor(named: #function, in: .module, compatibleWith: nil) ?? .blue }
 }

@@ -41,7 +41,8 @@ let package = Package(
                     name: "WalletConnect",
                     package: "WalletConnectSwiftV2"
                 ),
-                "Web3ModalUI"
+                "Web3ModalUI",
+                "Web3ModalBackport"
             ],
             resources: [
                 .process("Resources/Assets.xcassets"),
@@ -50,9 +51,15 @@ let package = Package(
         ),
         .target(
             name: "Web3ModalUI",
+            dependencies: [
+                "Web3ModalBackport"
+            ],
             resources: [
                 .process("Resources/Assets.xcassets")
             ]
+        ),
+        .target(
+            name: "Web3ModalBackport"
         ),
 
         // MARK: - Test Targets
