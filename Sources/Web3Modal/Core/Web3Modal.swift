@@ -55,7 +55,7 @@ public class Web3Modal {
                 return "undefined"
             }
                     
-            return version
+            return "swift-\(version)"
         }()
         static let sdkType = "w3m"
         
