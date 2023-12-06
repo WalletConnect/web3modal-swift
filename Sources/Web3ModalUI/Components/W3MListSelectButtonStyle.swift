@@ -2,9 +2,9 @@ import SwiftUI
 
 public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
+    @Environment(\.sizeCategory) var sizeCategory
 
-    @ScaledMetric var scale: CGFloat = 1
+    @Backport.ScaledMetric var scale: CGFloat = 1
 
     var imageContent: (CGFloat) -> ImageContent
     var tag: W3MTag?
@@ -37,8 +37,8 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
     #endif
 
     public func makeBody(configuration: Configuration) -> some View {
-        let layoutBreakCondition = dynamicTypeSize >= .accessibility2
-
+        let layoutBreakCondition = sizeCategory >= .accessibilityMedium
+        
         AdaptiveStack(
             condition: layoutBreakCondition,
             horizontalAlignment: .center,
@@ -49,18 +49,18 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                     .scaledToFill()
                     .foregroundColor(.Foreground100)
                     .layoutPriority(3)
-
+                
                 configuration.label
                     .lineLimit(1)
                     .scaledToFill()
                     .font(.paragraph500)
                     .foregroundColor(.Foreground100)
                     .layoutPriority(5)
-
+                
                 if !layoutBreakCondition {
                     Spacer()
                 }
-
+                
                 if let tag {
                     tag
                         .saturation(isEnabled ? 1 : 0)
@@ -79,7 +79,8 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
         .padding(.vertical, Spacing.xs * scale)
         .padding(.leading, Spacing.xs * scale)
         .padding(.trailing, Spacing.l * scale)
-        .background((isPressedOverride ?? configuration.isPressed) ? .Overgray010 : .Overgray002)
+        .backport
+        .background { (isPressedOverride ?? configuration.isPressed) ? Color.Overgray010 : Color.Overgray002 }
         .cornerRadius(Radius.xs * scale)
     }
 
@@ -106,7 +107,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                     })
                     .buttonStyle(W3MListSelectStyle(
                         imageContent: { _ in Image.mockWallet.resizable() },
-                        tag: W3MTag(title: "QR Code", variant: .main)
+                        tag: W3MTag(title: "QR CODE", variant: .main)
                     ))
 
                     Button(action: {}, label: {
@@ -120,7 +121,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                                 Image.Medium.wallet
                             }
                         },
-                        tag: W3MTag(title: "Installed", variant: .success),
+                        tag: W3MTag(title: "INSTALLED", variant: .success),
                         isPressedOverride: true
                     ))
 
@@ -145,7 +146,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                     })
                     .buttonStyle(W3MListSelectStyle(
                         imageContent: { _ in Image.mockWallet.resizable() },
-                        tag: W3MTag(title: "QR Code", variant: .main)
+                        tag: W3MTag(title: "QR CODE", variant: .main)
                     ))
                     .disabled(true)
                     
@@ -167,7 +168,7 @@ public struct W3MListSelectStyle<ImageContent: View>: ButtonStyle {
                     .disabled(true)
                 }
                 .padding()
-                .background(.Overgray002)
+                .background(Color.Overgray002)
             }
         }
     }

@@ -525,7 +525,7 @@ public extension W3MChipButtonStyle where TrailingImageContent == EmptyView {
                     }
                 }
                 .padding()
-                .background(.Overgray002)
+                .background(Color.Overgray002)
             }
         }
     }

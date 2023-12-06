@@ -3,7 +3,7 @@ import UIKit
 
 public struct DrawingProgressView: UIViewRepresentable {
     var shape: DrawingProgressUIView.ShapePath
-    var color: Color
+    var color: UIColor
     var lineWidth: CGFloat
     var duration: Double
 
@@ -11,7 +11,7 @@ public struct DrawingProgressView: UIViewRepresentable {
 
     public init(
         shape: DrawingProgressUIView.ShapePath,
-        color: Color,
+        color: UIColor,
         lineWidth: CGFloat,
         duration: Double = 1.5,
         isAnimating: Binding<Bool>
@@ -26,7 +26,7 @@ public struct DrawingProgressView: UIViewRepresentable {
     public func makeUIView(context: Context) -> DrawingProgressUIView {
         let view = DrawingProgressUIView(
             shape: shape,
-            colors: [UIColor(color)],
+            colors: [color],
             lineWidth: lineWidth,
             duration: duration
         )

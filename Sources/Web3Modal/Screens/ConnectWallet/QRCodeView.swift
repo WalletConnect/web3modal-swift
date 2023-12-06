@@ -37,14 +37,14 @@ struct QRCodeView: View {
         
         doc.design.additionalQuietZonePixels = 2
         
-        doc.design.style.eye = QRCode.FillStyle.Solid(Foreground100.cgColor)
-        doc.design.style.pupil = QRCode.FillStyle.Solid(Foreground100.cgColor)
-        doc.design.style.onPixels = QRCode.FillStyle.Solid(Foreground100.cgColor)
-        doc.design.style.background = QRCode.FillStyle.Solid(Background125.cgColor)
+        doc.design.style.eye = QRCode.FillStyle.Solid(UIColor.Foreground100.cgColor)
+        doc.design.style.pupil = QRCode.FillStyle.Solid(UIColor.Foreground100.cgColor)
+        doc.design.style.onPixels = QRCode.FillStyle.Solid(UIColor.Foreground100.cgColor)
+        doc.design.style.background = QRCode.FillStyle.Solid(UIColor.Background125.cgColor)
         
         let uiImage = imageData != nil ?
             UIImage(data: imageData!) :
-            UIImage(named: "imageLogo", in: .coreModule, compatibleWith: nil)?.withColor(UIColor(.Blue100))
+            UIImage(named: "imageLogo", in: .coreModule, compatibleWith: nil)?.withColor(UIColor.Blue100)
         
         if let uiImage = uiImage {
             let cgImage = uiImage.cgImage!
@@ -80,16 +80,6 @@ private extension UIImage {
         let tintedImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return tintedImage!
-    }
-}
-
-private extension QRCodeView {
-    var Foreground100: UIColor {
-        UIColor(Color.Foreground100)
-    }
-    
-    var Background125: UIColor {
-        UIColor(Color.Background125)
     }
 }
 

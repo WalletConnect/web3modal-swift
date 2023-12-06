@@ -6,9 +6,7 @@ import PackageDescription
 let package = Package(
     name: "swift-web3modal",
     platforms: [
-        .iOS(.v15),
-        .macOS(.v12),
-        .tvOS(.v15)
+        .iOS(.v13),
     ],
     products: [
         .library(
@@ -43,7 +41,8 @@ let package = Package(
                     name: "WalletConnect",
                     package: "WalletConnectSwiftV2"
                 ),
-                "Web3ModalUI"
+                "Web3ModalUI",
+                "Web3ModalBackport"
             ],
             resources: [
                 .process("Resources/Assets.xcassets"),
@@ -52,9 +51,15 @@ let package = Package(
         ),
         .target(
             name: "Web3ModalUI",
+            dependencies: [
+                "Web3ModalBackport"
+            ],
             resources: [
                 .process("Resources/Assets.xcassets")
             ]
+        ),
+        .target(
+            name: "Web3ModalBackport"
         ),
 
         // MARK: - Test Targets

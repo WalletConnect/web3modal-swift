@@ -2,9 +2,8 @@ import SwiftUI
 
 public struct W3MActionEntryStyle: ButtonStyle {
     @Environment(\.isEnabled) var isEnabled
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
-    @ScaledMetric var scale: CGFloat = 1
+    @Backport.ScaledMetric var scale: CGFloat = 1
 
     var leftIcon: Image?
     var rightIcon: Image?
@@ -55,7 +54,8 @@ public struct W3MActionEntryStyle: ButtonStyle {
         .padding(.vertical, Spacing.xs * scale)
         .padding(.leading, Spacing.xs * scale)
         .padding(.trailing, Spacing.xs * scale)
-        .background((isPressedOverride ?? configuration.isPressed) ? .GrayGlass010 : .GrayGlass002)
+        .backport
+        .background { (isPressedOverride ?? configuration.isPressed) ? Color.GrayGlass010 : Color.GrayGlass002 }
         .cornerRadius(Radius.xs * scale)
     }
 }

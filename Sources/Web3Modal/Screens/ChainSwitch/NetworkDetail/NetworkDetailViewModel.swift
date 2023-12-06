@@ -10,6 +10,8 @@ final class NetworkDetailViewModel: ObservableObject {
     @Published var switchFailed: Bool = false
     var triedAddingChain: Bool = false
     
+    private var disposeBag = Set<AnyCancellable>()
+    
     let chain: Chain
     let router: Router
     let store: Store
@@ -23,10 +25,9 @@ final class NetworkDetailViewModel: ObservableObject {
         self.router = router
         self.store = store
     
-        Task { @MainActor [weak self] in
-            for await (event, _, _) in Web3Modal.instance.sessionEventPublisher.values {
-                guard let self = self else { return }
-                
+        Web3Modal.instance.sessionEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { event, _, _ in
                 switch event.name {
                 case "chainChanged":
                     guard let chainReference = try? event.data.get(Int.self) else {
@@ -50,14 +51,11 @@ final class NetworkDetailViewModel: ObservableObject {
                     break
                 }
             }
-        }
+            .store(in: &disposeBag)
         
-        Task { @MainActor [weak self] in
-            for await response in Web3Modal.instance.sessionResponsePublisher.values {
-                guard let self = self else {
-                    return
-                }
-                
+        Web3Modal.instance.sessionResponsePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { response in
                 switch response.result {
                 case .response:
                     self.store.selectedChain = chain
@@ -75,13 +73,15 @@ final class NetworkDetailViewModel: ObservableObject {
                         }
                         
                         self.triedAddingChain = true
-                        try? await self.addEthChain(from: from, to: chain)
+                        Task {
+                            try? await self.addEthChain(from: from, to: chain)
+                        }
                     } else {
                         self.switchFailed = true
                     }
                 }
             }
-        }
+            .store(in: &disposeBag)
     }
     
     func handle(_ event: Event) {

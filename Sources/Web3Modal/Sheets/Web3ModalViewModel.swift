@@ -22,9 +22,10 @@ class Web3ModalViewModel: ObservableObject {
         self.w3mApiInteractor = w3mApiInteractor
         self.signInteractor = signInteractor
         self.blockchainApiInteractor = blockchainApiInteractor
-        
-        Task { @MainActor in
-            for await (event, _, _) in Web3Modal.instance.sessionEventPublisher.values {
+
+        Web3Modal.instance.sessionEventPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { event, _, _ in
                 switch event.name {
                 case "chainChanged":
                     guard let chainReference = try? event.data.get(Int.self) else {
@@ -46,8 +47,8 @@ class Web3ModalViewModel: ObservableObject {
                     break
                 }
             }
-        }
-    
+            .store(in: &disposeBag)
+
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
             .sink { session in
@@ -67,7 +68,6 @@ class Web3ModalViewModel: ObservableObject {
                 self.fetchIdentity()
             }
             .store(in: &disposeBag)
-        
         
         signInteractor.sessionDeletePublisher
             .receive(on: DispatchQueue.main)
@@ -92,8 +92,6 @@ class Web3ModalViewModel: ObservableObject {
                 }
             }
             .store(in: &disposeBag)
-        
-        
         
         Task {
             try? await signInteractor.createPairingAndConnect()
@@ -150,7 +148,6 @@ class Web3ModalViewModel: ObservableObject {
     }
     
     func getMethods() -> [String] {
-        
         guard let session = store.session else {
             return []
         }

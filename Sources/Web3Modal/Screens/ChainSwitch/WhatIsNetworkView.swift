@@ -1,17 +1,15 @@
 import SwiftUI
 
-
 struct WhatIsNetworkView: View {
-
     @Environment(\.verticalSizeClass) var verticalSizeClass
-    
+
     @EnvironmentObject var router: Router
 
     var body: some View {
         content()
             .onAppear {
-                UIPageControl.appearance().currentPageIndicatorTintColor = UIColor(Color.Foreground100)
-                UIPageControl.appearance().pageIndicatorTintColor = UIColor(Color.Foreground100).withAlphaComponent(0.2)
+                UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.Foreground100
+                UIPageControl.appearance().pageIndicatorTintColor = UIColor.Foreground100.withAlphaComponent(0.2)
             }
     }
 
@@ -26,7 +24,9 @@ struct WhatIsNetworkView: View {
                 }
                 .transform {
                     #if os(iOS)
-                    $0.tabViewStyle(.page(indexDisplayMode: .always))
+                    if #available(iOS 14.0, *) {
+                        $0.tabViewStyle(.page(indexDisplayMode: .always))
+                    }
                     #endif
                 }
                 .scaledToFill()

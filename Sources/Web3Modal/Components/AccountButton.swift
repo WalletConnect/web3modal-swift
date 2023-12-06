@@ -101,7 +101,7 @@ struct AccountButtonStyle: ButtonStyle {
                     .foregroundColor(textColorInner)
             }
             .padding(Spacing.xs)
-            .background(.GrayGlass005)
+            .background(Color.GrayGlass005)
             .cornerRadius(Radius.m)
             .overlay(
                 RoundedRectangle(cornerRadius: Radius.m)
@@ -133,7 +133,7 @@ struct AccountButtonStyle: ButtonStyle {
     func avatar() -> some View {
         Group {
             if let avatarUrlString = store.identity?.avatar, let url = URL(string: avatarUrlString) {
-                AsyncImage(url: url)
+                Backport.AsyncImage(url: url)
             } else if let address = store.session?.accounts.first?.address {
                 W3MAvatarGradient(address: address)
             }

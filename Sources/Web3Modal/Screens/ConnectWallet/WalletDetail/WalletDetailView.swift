@@ -93,13 +93,13 @@ struct WalletDetailView: View {
             .resizable()
             .frame(width: 80, height: 80)
             .cornerRadius(Radius.m)
-            .overlay(alignment: .bottomTrailing) {
+            .backport.overlay(alignment: .bottomTrailing) {
                 Image.Bold.xMark
                     .resizable()
                     .foregroundColor(.Error100)
                     .frame(width: 10, height: 10)
                     .padding(5)
-                    .background(.Error100.opacity(0.15))
+                    .background(Color.Error100.opacity(0.15))
                     .clipShape(Circle())
                     .padding(2)
                     .background(Color.Background125)
@@ -184,7 +184,7 @@ struct WalletDetailView: View {
         }
         .padding()
         .frame(height: 56)
-        .background(.GrayGlass002)
+        .background(Color.GrayGlass002)
         .cornerRadius(Radius.xs)
     }
     
@@ -200,8 +200,8 @@ struct WalletDetailView: View {
             .foregroundColor(.Blue100)
             .padding([.vertical, .trailing], Spacing.xs)
             .padding(.leading, Spacing.s)
-            .background(configuration.isPressed ? .GrayGlass010 : .clear)
-            .overlay {
+            .background(configuration.isPressed ? Color.GrayGlass010 : Color.clear)
+            .backport.overlay {
                 Capsule()
                     .stroke(.GrayGlass010, lineWidth: 1)
             }

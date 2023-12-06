@@ -4,13 +4,13 @@ struct ModalContainerView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @ObservedObject var store: Store
-    @StateObject var router: Router
-    @StateObject var web3modalViewModel: Web3ModalViewModel
+    @Backport.StateObject var router: Router
+    @Backport.StateObject var web3modalViewModel: Web3ModalViewModel
     
     init(store: Store = .shared, router: Router) {
         self.store = store
-        _router = StateObject(wrappedValue: router)
-        _web3modalViewModel = StateObject(
+        _router = Backport.StateObject(wrappedValue: router)
+        _web3modalViewModel = Backport.StateObject(
             wrappedValue: Web3Modal.viewModel
         )
     }
@@ -33,7 +33,7 @@ struct ModalContainerView: View {
             
             VStack(spacing: 0) {
                 Spacer()
-                    .background(.clear)
+                    .background(Color.clear)
                 
                 if store.isModalShown {
                     Group {
@@ -64,7 +64,7 @@ struct ModalContainerView: View {
             }
         }
         .edgesIgnoringSafeArea(.all)
-        .onChange(of: store.isModalShown, perform: { newValue in
+        .backport.onChange(of: store.isModalShown, perform: { newValue in
             if newValue == false {
                 withAnimation {
                     self.dismiss()
@@ -87,6 +87,7 @@ struct ModalContainerView: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct ModalContainerView_Previews: PreviewProvider {
     static var previews: some View {
         ModalContainerView(router: Router())
