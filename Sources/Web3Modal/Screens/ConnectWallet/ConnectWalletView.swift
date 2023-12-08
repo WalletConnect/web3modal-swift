@@ -64,8 +64,8 @@ struct ConnectWalletView: View {
                                     .padding(Spacing.xxs)
                             }
                         }
-                        .background(.Overgray005)
-                        .overlay {
+                        .background(Color.Overgray005)
+                        .backport.overlay {
                             RoundedRectangle(cornerRadius: Radius.xxxs)
                                 .stroke(.Overgray010, lineWidth: 1)
                         }

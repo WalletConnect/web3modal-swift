@@ -10,10 +10,11 @@ class Store: ObservableObject {
     @Published var balance: Double?
     
     @Published var connecting: Bool = false
+    @Published var account: Account?
+    
+    // WalletConnect specific
     @Published var session: Session?
     @Published var uri: WalletConnectURI?
-    
-    @Published var simplifiedSession: SimplifiedSession?
     
     @Published var wallets: Set<Wallet> = []
     @Published var featuredWallets: [Wallet] = []
@@ -39,7 +40,29 @@ class Store: ObservableObject {
     @Published var toast: Toast? = nil
 }
 
-struct SimplifiedSession {
+struct Account {
     let address: String
-    let chainId: String
+    let networkId: UInt
+    let chainNamespace: String
+    
+    var chainIdentifier: String {
+        return "\(chainNamespace):\(networkId)"
+    }
+}
+
+extension Account {
+    
+    init?(from session: Session) {
+        guard let account = session.accounts.first else {
+            return nil
+        }
+        
+        self.init(address: account.address, networkId: 1, chainNamespace: "")
+    }
+    
+    static let stub: Self = .init(
+        address: "0x5c8877144d858e41d8c33f5baa7e67a5e0027e37",
+        networkId: 56,
+        chainNamespace: "eip155"
+    )
 }

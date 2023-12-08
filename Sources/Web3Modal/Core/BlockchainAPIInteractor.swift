@@ -8,17 +8,19 @@ class BlockchainAPIInteractor: ObservableObject {
     }
     
     func getIdentity() async throws {
-        let account = store.session?.accounts.first
-        let address = account?.address
-        let chainId = account?.blockchainIdentifier
+        
+        guard let account = store.account else { return }
+        
+        let address = account.address
+        let chainId = account.chainIdentifier
                 
         let httpClient = HTTPNetworkClient(host: "rpc.walletconnect.com")
         let response = try await httpClient.request(
             Identity.self,
             at: BlockchainAPI.getIdentity(
                 params: .init(
-                    address: address ?? "",
-                    chainId: chainId ?? "",
+                    address: address,
+                    chainId: chainId,
                     projectId: Web3Modal.config.projectId
                 )
             )
@@ -34,7 +36,7 @@ class BlockchainAPIInteractor: ObservableObject {
             case noAddress, invalidValue, noChain
         }
         
-        guard let address = store.session?.accounts.first?.address else {
+        guard let address = store.account?.address else {
             throw GetBalanceError.noAddress
         }
         

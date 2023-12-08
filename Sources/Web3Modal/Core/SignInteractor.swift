@@ -28,6 +28,7 @@ class SignInteractor: ObservableObject {
         defer {
             DispatchQueue.main.async {
                 self.store.session = nil
+                self.store.account = nil
             }
         }
         
