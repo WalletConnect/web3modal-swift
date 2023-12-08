@@ -30,7 +30,14 @@ public class Web3Modal {
             store: .shared
         )
         
-        if let session = client.getSessions().first {
+        if let account = Store.shared.account {
+            let matchingChain = ChainPresets.ethChains.first(where: {
+                $0.chainNamespace == account.chainNamespace && $0.chainReference == String(account.networkId)
+            })
+            
+            Store.shared.selectedChain = matchingChain
+            
+        } else if let session = client.getSessions().first {
             Store.shared.session = session
             
             if let blockchain = session.accounts.first?.blockchain {
@@ -174,7 +181,11 @@ public class Web3Modal {
                 case .success:
                     guard let account = account else { return }
                 
-                    store.simplifiedSession = .init(address: account.address, chainId: "eip155:\(account.chain)")
+                    store.account = .init(
+                        address: account.address,
+                        networkId: account.networkId,
+                        chainNamespace: account.chain
+                    )
                 case .failure(let error):
                     store.toast = .init(style: .error, message: error.localizedDescription)
             }
@@ -219,7 +230,7 @@ public extension Web3Modal {
         
         Store.shared.connecting = true
         
-        Web3Modal.viewModel.router.setRoute(Store.shared.session != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
+        Web3Modal.viewModel.router.setRoute(Store.shared.account != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
         
         let modal = Web3ModalSheetController(router: Web3Modal.viewModel.router)
         vc.present(modal, animated: true)

@@ -13,7 +13,7 @@ public struct Web3ModalButton: View {
     
     public var body: some View {
         Group {
-            if let _ = store.session {
+            if let _ = store.account {
                 AccountButton()
             } else {
                 ConnectButton()
@@ -28,12 +28,14 @@ struct Web3Button_Preview: PreviewProvider {
     static let store = { () -> Store in
         let store = Store()
         store.balance = 1.23
-        store.session = .stub
+        store.account = .stub
         return store
     }()
     
     static var previews: some View {
         VStack {
+            Web3ModalButton(store: Store())
+            
             Web3ModalButton(store: Web3Button_Preview.store)
             
             Web3ModalButton(store: Web3Button_Preview.store)
