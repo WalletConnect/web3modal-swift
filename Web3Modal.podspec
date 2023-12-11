@@ -31,13 +31,13 @@ Pod::Spec.new do |spec|
         ss.dependency 'Web3Modal/Web3ModalBackport'
         ss.dependency 'WalletConnectSwiftV2/WalletConnectSign', '~> 1.9.0'
         ss.dependency 'DSF_QRCode', '~> 16.1.1'
-        ss.resources = 'Sources/Web3Modal/Resources/*'
+        ss.resource_bundles = { 'Web3Modal' => ['Sources/Web3Modal/Resources/*'] }
     end
 
     spec.subspec 'Web3ModalUI' do |ss|
         ss.source_files = 'Sources/Web3ModalUI/**/*.{h,m,swift}'
         ss.dependency 'Web3Modal/Web3ModalBackport'
-        ss.resources = 'Sources/Web3ModalUI/Resources/*'
+        ss.resource_bundles = { 'Web3ModalUI' => ['Sources/Web3ModalUI/Resources/*'] }
     end
     
     spec.subspec 'Web3ModalBackport' do |ss|
