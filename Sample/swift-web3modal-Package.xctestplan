@@ -1,0 +1,44 @@
+{
+  "configurations" : [
+    {
+      "id" : "829C9690-2201-4591-80FD-185F8D8FD18F",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:",
+          "identifier" : "Web3Modal",
+          "name" : "Web3Modal"
+        },
+        {
+          "containerPath" : "container:",
+          "identifier" : "Web3ModalUI",
+          "name" : "Web3ModalUI"
+        }
+      ]
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "Web3ModalTests",
+        "name" : "Web3ModalTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "Web3ModalUITests",
+        "name" : "Web3ModalUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

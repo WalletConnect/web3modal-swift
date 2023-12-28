@@ -104,6 +104,7 @@ class Web3ModalViewModel: ObservableObject {
                 try await blockchainApiInteractor.getIdentity()
             } catch {
                 store.toast = .init(style: .error, message: "Network error")
+                Web3Modal.config.onError(error)
             }
         }
     }
@@ -114,6 +115,7 @@ class Web3ModalViewModel: ObservableObject {
                 try await blockchainApiInteractor.getBalance()
             } catch {
                 store.toast = .init(style: .error, message: "Network error")
+                Web3Modal.config.onError(error)
             }
         }
     }

@@ -55,6 +55,7 @@ public class Web3Modal {
         let includeWebWallets: Bool
         let recommendedWalletIds: [String]
         let excludedWalletIds: [String]
+        public let onError: (Error) -> Void
     }
     
     private(set) static var config: Config!
@@ -72,11 +73,10 @@ public class Web3Modal {
         sessionParams: SessionParams = .default,
         recommendedWalletIds: [String] = [],
         excludedWalletIds: [String] = [],
-        includeWebWallets: Bool = true
+        includeWebWallets: Bool = true,
+        onError: @escaping (Error) -> Void = { _ in }
     ) {
         Pair.configure(metadata: metadata)
-        
-        
         
         Web3Modal.config = Web3Modal.Config(
             projectId: projectId,
@@ -84,10 +84,9 @@ public class Web3Modal {
             sessionParams: sessionParams,
             includeWebWallets: includeWebWallets,
             recommendedWalletIds: recommendedWalletIds,
-            excludedWalletIds: excludedWalletIds
+            excludedWalletIds: excludedWalletIds,
+            onError: onError
         )
-        
-       
         
         let store = Store.shared
         let router = Router()

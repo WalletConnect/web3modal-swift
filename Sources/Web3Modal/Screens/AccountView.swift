@@ -128,6 +128,7 @@ struct AccountView: View {
                     try await blockchainApiInteractor.getBalance()
                 } catch {
                     store.toast = .init(style: .error, message: "Network error")
+                    Web3Modal.config.onError(error)
                 }
             }
             
@@ -140,6 +141,7 @@ struct AccountView: View {
                     try await blockchainApiInteractor.getIdentity()
                 } catch {
                     store.toast = .init(style: .error, message: "Network error")
+                    Web3Modal.config.onError(error)
                 }
             }
         }

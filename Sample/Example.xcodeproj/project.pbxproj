@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		23F6FD03919B41DE98CAFCD3 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = BD206AA550964C49AE94A3CA /* Sentry */; };
 		CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BCCE42AB0886400A2866C /* ContentView.swift */; };
 		CF25F3A22B40C7070030B3DC /* Web3Modal in Frameworks */ = {isa = PBXBuildFile; productRef = CF25F3A12B40C7070030B3DC /* Web3Modal */; };
 		CF25F3A42B40C7070030B3DC /* Web3ModalUI in Frameworks */ = {isa = PBXBuildFile; productRef = CF25F3A32B40C7070030B3DC /* Web3ModalUI */; };
@@ -26,6 +27,7 @@
 /* Begin PBXFileReference section */
 		CF0BCCE42AB0886400A2866C /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		CF533D032ADD411A00B3441C /* web3modal-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "web3modal-swift"; path = ..; sourceTree = "<group>"; };
+		CF74C5C62B323048007B0926 /* swift-web3modal-Package.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "swift-web3modal-Package.xctestplan"; sourceTree = "<group>"; };
 		CFA99B912AD0549F00EB5331 /* WCSocketFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WCSocketFactory.swift; sourceTree = "<group>"; };
 		CFA99B942AD054A600EB5331 /* secrets.sample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = secrets.sample.json; sourceTree = "<group>"; };
 		CFA99B952AD054A600EB5331 /* Secrets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
@@ -49,6 +51,7 @@
 				CF25F3A42B40C7070030B3DC /* Web3ModalUI in Frameworks */,
 				CF3B9AD22ACDBA3A00984D53 /* Web3ModalUI in Frameworks */,
 				CF25F3A22B40C7070030B3DC /* Web3Modal in Frameworks */,
+				23F6FD03919B41DE98CAFCD3 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,6 +71,7 @@
 		CFD7206B2A9CC60600636CAF = {
 			isa = PBXGroup;
 			children = (
+				CF74C5C62B323048007B0926 /* swift-web3modal-Package.xctestplan */,
 				CF533D032ADD411A00B3441C /* web3modal-swift */,
 				CFD720762A9CC60600636CAF /* Example */,
 				CFD720752A9CC60600636CAF /* Products */,
@@ -124,6 +128,7 @@
 				CFD720702A9CC60600636CAF /* Sources */,
 				CFD720712A9CC60600636CAF /* Frameworks */,
 				CFD720722A9CC60600636CAF /* Resources */,
+				E330D833155D4B53B676C733 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
@@ -134,6 +139,7 @@
 				CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */,
 				CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */,
 				CFD6A70E2ADE8DE2002B402C /* Atlantis */,
+				BD206AA550964C49AE94A3CA /* Sentry */,
 				CF25F3A12B40C7070030B3DC /* Web3Modal */,
 				CF25F3A32B40C7070030B3DC /* Web3ModalUI */,
 			);
@@ -168,6 +174,7 @@
 			packageReferences = (
 				CFD6A70D2ADE8DE2002B402C /* XCRemoteSwiftPackageReference "atlantis" */,
 				CF25F3A02B40C7070030B3DC /* XCLocalSwiftPackageReference ".." */,
+				F4A0329B6CFF49E682D3DFE7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 			);
 			productRefGroup = CFD720752A9CC60600636CAF /* Products */;
 			projectDirPath = "";
@@ -191,6 +198,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		E330D833155D4B53B676C733 /* Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+			);
+			name = "Upload Debug Symbols to Sentry";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script is responsable to upload debug symbols and source context for Sentry.\nif which sentry-cli >/dev/null; then\nexport SENTRY_ORG=walletconnect\nexport SENTRY_PROJECT=web3modal-sample\nERROR=$(sentry-cli debug-files upload --include-sources \"$DWARF_DSYM_FOLDER_PATH\" 2>&1 >/dev/null)\nif [ ! $? -eq 0 ]; then\necho \"warning: sentry-cli - $ERROR\"\nfi\nelse\necho \"warning: sentry-cli not installed, download from https://github.com/getsentry/sentry-cli/releases\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		CFD720702A9CC60600636CAF /* Sources */ = {
@@ -332,6 +357,7 @@
 				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 12;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Example/Preview Content\"";
 				DEVELOPMENT_TEAM = W5R8AG9K22;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -375,6 +401,7 @@
 				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 12;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Example/Preview Content\"";
 				DEVELOPMENT_TEAM = W5R8AG9K22;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -449,6 +476,14 @@
 				minimumVersion = 1.22.0;
 			};
 		};
+		F4A0329B6CFF49E682D3DFE7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -459,6 +494,11 @@
 		CF25F3A32B40C7070030B3DC /* Web3ModalUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Web3ModalUI;
+		};
+		BD206AA550964C49AE94A3CA /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F4A0329B6CFF49E682D3DFE7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
 		};
 		CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */ = {
 			isa = XCSwiftPackageProductDependency;

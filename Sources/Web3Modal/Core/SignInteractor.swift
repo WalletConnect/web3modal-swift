@@ -33,12 +33,13 @@ class SignInteractor: ObservableObject {
         
         do {
             try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
+            try await Web3Modal.instance.cleanup()
+            try await createPairingAndConnect()
         } catch {
             DispatchQueue.main.async {
                 self.store.toast = .init(style: .error, message: "Failed to disconnect.")
+                Web3Modal.config.onError(error)
             }
         }
-        try await Web3Modal.instance.cleanup()
-        try await createPairingAndConnect()
     }
 }
