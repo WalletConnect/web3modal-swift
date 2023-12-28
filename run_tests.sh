@@ -52,6 +52,7 @@ if [ -z "$XCTESTRUN" ]; then
         -derivedDataPath DerivedDataCache \
         -clonedSourcePackagesDirPath ../SourcePackagesCache \
         -resultBundlePath "test_results/$SCHEME.xcresult" \
+        -enableCodeCoverage YES \
         test \
         | tee ./test_results/xcodebuild.log \
         | xcbeautify --report junit --junit-report-filename report.junit --report-path ./test_results
@@ -72,6 +73,7 @@ else
         -derivedDataPath DerivedDataCache \
         -clonedSourcePackagesDirPath ../SourcePackagesCache \
         -resultBundlePath "test_results/$SCHEME.xcresult" \
+        -enableCodeCoverage YES \
         test-without-building \
         | tee ./test_results/xcodebuild.log \
         | xcbeautify --report junit --junit-report-filename report.junit --report-path ./test_results

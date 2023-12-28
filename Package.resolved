@@ -37,12 +37,21 @@
       }
     },
     {
+      "identity" : "wallet-mobile-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/coinbase/wallet-mobile-sdk.git",
+      "state" : {
+        "revision" : "4aa89e682f8d7ab1515d85d0797f0d25306bb56a",
+        "version" : "1.0.5"
+      }
+    },
+    {
       "identity" : "walletconnectswiftv2",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/WalletConnect/WalletConnectSwiftV2",
       "state" : {
-        "revision" : "4aa4c8229077c133730e361d0d7a17f9e56bdffd",
-        "version" : "1.9.6"
+        "revision" : "031c61bfbd4c4eed4a5cb6790152ce736a4f1fba",
+        "version" : "1.10.0"
       }
     }
   ],
