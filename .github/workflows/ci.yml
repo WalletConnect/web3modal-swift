@@ -41,10 +41,12 @@ jobs:
       shell: bash
       run: make unit_tests
 
-    - name: danger
+    - name: Danger
       env:
         DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: bundle exec danger --verbose
+      run: 
+        /opt/homebrew/opt/ruby/bin/bundle install |
+        /opt/homebrew/opt/ruby/bin/bundle exec danger --verbose
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3

@@ -48,6 +48,9 @@ GEM
       no_proxy_fix
       octokit (>= 4.0)
       terminal-table (>= 1, < 4)
+    danger-xcov (0.5.0)
+      danger (>= 2.1)
+      xcov (>= 1.7.3)
     declarative (0.0.20)
     digest-crc (0.6.5)
       rake (>= 12.0.0, < 14.0.0)
@@ -257,6 +260,7 @@ PLATFORMS
 
 DEPENDENCIES
   danger (~> 9.4)
+  danger-xcov (~> 0.5.0)
   xcov (~> 1.8)
 
 BUNDLED WITH
