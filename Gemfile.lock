@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/getyourguide/danger-xcov.git
+  revision: 10cc78b6dcbf949e460625cc9a68b5e1b786d115
+  specs:
+    danger-xcov (0.5.0)
+      danger (>= 2.1)
+      xcov (>= 1.8.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -8,7 +16,7 @@ GEM
     artifactory (3.0.15)
     atomos (0.1.3)
     aws-eventstream (1.3.0)
-    aws-partitions (1.875.0)
+    aws-partitions (1.876.0)
     aws-sdk-core (3.190.1)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.651.0)
@@ -48,9 +56,6 @@ GEM
       no_proxy_fix
       octokit (>= 4.0)
       terminal-table (>= 1, < 4)
-    danger-xcov (0.5.0)
-      danger (>= 2.1)
-      xcov (>= 1.7.3)
     declarative (0.0.20)
     digest-crc (0.6.5)
       rake (>= 12.0.0, < 14.0.0)
@@ -130,7 +135,7 @@ GEM
       xcpretty (~> 0.3.0)
       xcpretty-travis-formatter (>= 0.0.3)
     gh_inspector (1.1.3)
-    git (1.18.0)
+    git (1.19.0)
       addressable (~> 2.8)
       rchardet (~> 1.8)
     google-apis-androidpublisher_v3 (0.54.0)
@@ -260,7 +265,7 @@ PLATFORMS
 
 DEPENDENCIES
   danger (~> 9.4)
-  danger-xcov (~> 0.5.0)
+  danger-xcov!
   xcov (~> 1.8)
 
 BUNDLED WITH
