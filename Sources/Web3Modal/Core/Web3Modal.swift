@@ -126,6 +126,16 @@ public class Web3Modal {
     public static func set(sessionParams: SessionParams) {
         Web3Modal.config.sessionParams = sessionParams
     }
+
+    public func uncoveredFunc() {
+        print("uncoveredFunc")
+
+        if Int.random(in: 1...5) == 2 {
+            print("randomBranch")
+        } else {
+            print("randomBranch")
+        }
+    }
 }
 
 #if canImport(UIKit)
