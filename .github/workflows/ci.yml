@@ -1,27 +1,17 @@
 name: ci
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - develop
       - main
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request_target' && github.event.pull_request.number || github.ref_name }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request_target' }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  authorize:
-    environment:
-      ${{ (github.event_name == 'pull_request_target' &&
-      github.event.pull_request.head.repo.full_name != github.repository) &&
-      'external' || 'internal' }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo ✓
-
   test:
-    needs: authorize
     runs-on: 
       group: apple-silicon
     timeout-minutes: 15
