@@ -20,7 +20,6 @@ class WalletDetailViewModel: ObservableObject {
     let router: Router
     let store: Store
     let signInteractor: SignInteractor
-    let alternativeConnection: (() -> Void)?
     
     @Published var preferredPlatform: Platform = .mobile
     @Published var retryShown = false
@@ -38,14 +37,12 @@ class WalletDetailViewModel: ObservableObject {
         wallet: Wallet,
         router: Router,
         signInteractor: SignInteractor,
-        store: Store = .shared,
-        alternativeConnection: (() -> Void)? = nil
+        store: Store = .shared
     ) {
         self.wallet = wallet
         self.router = router
         self.store = store
         self.signInteractor = signInteractor
-        self.alternativeConnection = alternativeConnection
         preferredPlatform = wallet.mobileLink != nil ? .mobile : .browser
                 
         startObserving()
@@ -71,14 +68,14 @@ class WalletDetailViewModel: ObservableObject {
             store.toast = .init(style: .success, message: "Link copied")
         case .onAppear:
             
-            if alternativeConnection == nil {
+            if wallet.alternativeConnectionMethod == nil {
                 
                 navigateToDeepLink(
                     wallet: wallet,
                     preferBrowser: preferredPlatform == .browser
                 )
             } else {
-                alternativeConnection?()
+                wallet.alternativeConnectionMethod?()
             }
                 
             var wallet = wallet
@@ -88,13 +85,13 @@ class WalletDetailViewModel: ObservableObject {
         case .didTapOpen:
             retryShown = false
             
-            if alternativeConnection == nil {
+            if wallet.alternativeConnectionMethod == nil {
                 navigateToDeepLink(
                     wallet: wallet,
                     preferBrowser: preferredPlatform == .browser
                 )
             } else {
-                alternativeConnection?()
+                wallet.alternativeConnectionMethod?()
             }
             
         case .didTapAppStore:

@@ -30,23 +30,9 @@ public class Web3Modal {
             store: .shared
         )
         
-        if let account = Store.shared.account {
-            let matchingChain = ChainPresets.ethChains.first(where: {
-                $0.chainNamespace == account.chainNamespace && $0.chainReference == String(account.networkId)
-            })
-            
-            Store.shared.selectedChain = matchingChain
-            
-        } else if let session = client.getSessions().first {
+        if let session = client.getSessions().first {
             Store.shared.session = session
-            
-            if let blockchain = session.accounts.first?.blockchain {
-                let matchingChain = ChainPresets.ethChains.first(where: {
-                    $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
-                })
-                
-                Store.shared.selectedChain = matchingChain
-            }
+            Store.shared.account = .init(from: session)
         }
         
         return client
@@ -169,27 +155,40 @@ public class Web3Modal {
             name: "Coinbase",
             homepage: "https://www.coinbase.com/wallet/",
             imageId: "a5ebc364-8f91-4200-fcc6-be81310a0000",
-            order: 4090,
+            order: 4,
             mobileLink: nil,
             desktopLink: nil,
             webappLink: nil,
-            appStore: "https://apps.apple.com/us/app/coinbase-wallet-nfts-crypto/id1278383455"
-        )
-        
-        CoinbaseWalletSDK.shared.initiateHandshake { result, account in
-            switch result {
-                case .success:
-                    guard let account = account else { return }
-                
-                    store.account = .init(
-                        address: account.address,
-                        networkId: account.networkId,
-                        chainNamespace: account.chain
-                    )
-                case .failure(let error):
-                    store.toast = .init(style: .error, message: error.localizedDescription)
+            appStore: "https://apps.apple.com/us/app/coinbase-wallet-nfts-crypto/id1278383455",
+            alternativeConnectionMethod: {
+                CoinbaseWalletSDK.shared.initiateHandshake { result, account in
+                    switch result {
+                        case .success:
+                            guard 
+                                let account = account,
+                                let blockchain = Blockchain(
+                                    namespace: account.chain == "eth" ? "eip155" : "",
+                                    reference: String(account.networkId)
+                                )
+                            else { return }
+                        
+                            store.connectedWith = .cb
+                            store.account = .init(
+                                address: account.address,
+                                chain: blockchain
+                            )
+                            
+                            let matchingChain = ChainPresets.ethChains.first(where: {
+                                $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
+                            })
+                        
+                            store.selectedChain = matchingChain
+                        case .failure(let error):
+                            store.toast = .init(style: .error, message: error.localizedDescription)
+                    }
+                }
             }
-        }
+        )
             
         wallet.isInstalled = CoinbaseWalletSDK.isCoinbaseWalletInstalled()
             
