@@ -48,21 +48,12 @@ struct ContentView: View {
     }
     
     func requestPersonalSign() {
-        guard
-            let session = Web3Modal.instance.getSessions().first,
-            let chain = Web3Modal.instance.getSelectedChain(),
-            let blockchain = Blockchain(namespace: chain.chainNamespace, reference: chain.chainReference)
-        else { return }
-        
         Task {
-            try await Web3Modal.instance.request(
-                params: .init(
-                    topic: session.topic,
-                    method: "personal_sign",
-                    params: AnyCodable(any: [session.accounts.first?.address ?? "", "Hello world!"]),
-                    chainId: blockchain
-                )
-            )
+            do {
+                try await Web3Modal.instance.personal_sign(message: "Hello there!")
+            } catch {
+                print(error)
+            }
         }
     }
 }

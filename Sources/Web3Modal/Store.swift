@@ -1,6 +1,11 @@
 import Combine
 import SwiftUI
 
+enum ConnectionProviderType {
+    case wc
+    case cb
+}
+
 class Store: ObservableObject {
     static var shared: Store = .init()
     
@@ -9,11 +14,30 @@ class Store: ObservableObject {
     @Published var identity: Identity?
     @Published var balance: Double?
     
+    @Published var connectedWith: ConnectionProviderType?
     @Published var connecting: Bool = false
-    @Published var account: Account?
+    @Published var account: Account? {
+        didSet {
+            let matchingChain = ChainPresets.ethChains.first(where: {
+                $0.chainNamespace == account?.chain.namespace && $0.chainReference == account?.chain.reference
+            })
+            
+            Store.shared.selectedChain = matchingChain
+        }
+    }
     
     // WalletConnect specific
-    @Published var session: Session?
+    @Published var session: Session? {
+        didSet {
+            if let blockchain = session?.accounts.first?.blockchain {
+                let matchingChain = ChainPresets.ethChains.first(where: {
+                    $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
+                })
+                
+                Store.shared.selectedChain = matchingChain
+            }
+        }
+    }
     @Published var uri: WalletConnectURI?
     
     @Published var wallets: Set<Wallet> = []
@@ -42,12 +66,7 @@ class Store: ObservableObject {
 
 struct Account {
     let address: String
-    let networkId: UInt
-    let chainNamespace: String
-    
-    var chainIdentifier: String {
-        return "\(chainNamespace):\(networkId)"
-    }
+    let chain: Blockchain
 }
 
 extension Account {
@@ -57,12 +76,11 @@ extension Account {
             return nil
         }
         
-        self.init(address: account.address, networkId: 1, chainNamespace: "")
+        self.init(address: account.address, chain: account.blockchain)
     }
     
     static let stub: Self = .init(
         address: "0x5c8877144d858e41d8c33f5baa7e67a5e0027e37",
-        networkId: 56,
-        chainNamespace: "eip155"
+        chain: Blockchain(namespace: "eip155", reference: "56")!
     )
 }

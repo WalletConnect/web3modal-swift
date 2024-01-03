@@ -8,14 +8,24 @@ struct ConnectWalletView: View {
     let displayWCConnection = false
     
     var wallets: [Wallet] {
-        var uniqueValues: [Wallet] = []
-        (store.recentWallets + store.featuredWallets).forEach { item in
-            guard !uniqueValues.contains(where: { wallet in
-                item.id == wallet.id
-            }) else { return }
-            uniqueValues.append(item)
+        var recentWallets = store.recentWallets
+        
+        let result = store.featuredWallets.map { featuredWallet in
+            var featuredWallet = featuredWallet
+            let (index, matchingRecentWallet) = recentWallets.enumerated().first { (index, recentWallet) in
+                featuredWallet.id == recentWallet.id
+            } ?? (nil, nil)
+            
+            
+            if let match = matchingRecentWallet, let matchingIndex = index  {
+                featuredWallet.lastTimeUsed = match.lastTimeUsed
+                recentWallets.remove(at: matchingIndex)
+            }
+            
+            return featuredWallet
         }
-        return uniqueValues
+        
+        return (result + recentWallets)
     }
     
     var body: some View {

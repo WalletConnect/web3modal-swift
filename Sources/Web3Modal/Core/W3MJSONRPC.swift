@@ -1,16 +1,10 @@
-//
-
 import Foundation
-
-import CoinbaseWalletSDK
 
 public typealias EthAddress = String
 public typealias EthTxData = String
 public typealias BigInt = String
 
-public let unsupportedHandShakeMethod: [String] = ["eth_signTransaction", "eth_sendTransaction"]
-
-public enum Web3JSONRPC: Codable {
+public enum W3MJSONRPC: Codable {
     case eth_requestAccounts
     
     case personal_sign(
@@ -20,12 +14,12 @@ public enum Web3JSONRPC: Codable {
     
     case eth_signTypedData_v3(
         address: EthAddress,
-        typedDataJson: AnyCodable
+        typedDataJson: JSONString
     )
 
     case eth_signTypedData_v4(
         address: EthAddress,
-        typedDataJson: AnyCodable
+        typedDataJson: JSONString
     )
     
     case eth_signTransaction(
@@ -108,24 +102,52 @@ public struct WatchAssetOptions: Codable {
     }
 }
 
-
-protocol RequestClientProtocol {
-    func request(actions: [Action], account: Account) async throws
+public struct JSONString {
+    public let rawValue: String
+    
+    // MARK: Encode
+    
+    public init?<T: Encodable>(encode value: T) {
+        guard let encoded = try? JSONEncoder().encode(value) else { return nil }
+        self.init(encodedData: encoded)
+    }
+    
+    public init?(encode value: [String: Any]) {
+        guard let encoded = try? JSONSerialization.data(withJSONObject: value, options: .fragmentsAllowed) else { return nil }
+        self.init(encodedData: encoded)
+    }
+    
+    private init?(encodedData: Data) {
+        guard let string = String(data: encodedData, encoding: .utf8) else { return nil }
+        self.rawValue = string
+    }
+    
+    // MARK: Decode
+    
+    private var data: Data? { self.rawValue.data(using: .utf8) }
+    
+    public func decode() -> Any? {
+        guard
+            let data = self.data,
+            let object = try? JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
+        else {
+            return nil
+        }
+        return object
+    }
+    
+    public func decode<T: Decodable>(as type: T.Type) throws -> T? {
+        guard let data = self.data else { return nil }
+        return try JSONDecoder().decode(type, from: data)
+    }
 }
 
-class CoinbaseClient: RequestClientProtocol {
+extension JSONString: RawRepresentable, Codable, CustomStringConvertible {
+    public init?(rawValue: String) {
+        self.rawValue = rawValue
+    }
     
-    func request(actions: [Action], account: Account) async throws {
-        let request = Request(
-            actions: actions,
-            account: .init(
-                chain: account.chainNamespace,
-                networkId: account.networkId,
-                address: account.address
-            ))
-        
-        CoinbaseWalletSDK.shared.makeRequest(request) { response in
-            
-        }
+    public var description: String {
+        self.rawValue
     }
 }

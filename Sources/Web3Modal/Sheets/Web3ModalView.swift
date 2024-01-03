@@ -33,14 +33,13 @@ struct Web3ModalView: View {
             ConnectWithQRCode()
         case .whatIsAWallet:
             WhatIsWalletView()
-        case let .walletDetail(wallet, alternativeConnection):
+        case let .walletDetail(wallet):
             WalletDetailView(
                 viewModel: .init(
                     wallet: wallet,
                     router: router,
                     signInteractor: signInteractor,
-                    store: store,
-                    alternativeConnection: alternativeConnection
+                    store: store
                 )
             )
         case .getWallet:
@@ -119,7 +118,7 @@ extension Router.ConnectingSubpage {
             return "All wallets"
         case .whatIsAWallet:
             return "What is a wallet?"
-        case let .walletDetail(wallet, _):
+        case let .walletDetail(wallet):
             return "\(wallet.name)"
         case .getWallet:
             return "Get wallet"

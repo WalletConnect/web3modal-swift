@@ -127,7 +127,7 @@ final class W3MAPIInteractor: ObservableObject {
             }
             
             self.store.totalNumberOfWallets = response.count
-            self.store.featuredWallets = wallets
+            self.store.featuredWallets.append(contentsOf: wallets)
         }
     }
     

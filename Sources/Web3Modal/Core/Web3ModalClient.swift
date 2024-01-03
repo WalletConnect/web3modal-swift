@@ -1,7 +1,7 @@
+import CoinbaseWalletSDK
 import Combine
 import Foundation
 import UIKit
-import CoinbaseWalletSDK
 
 // Web3 Modal Client
 ///
@@ -158,6 +158,41 @@ public class Web3ModalClient {
         }
     }
     
+    public func request(_ request: W3MJSONRPC) async throws {
+        switch store.connectedWith {
+        case .wc:
+            guard
+                let session = getSessions().first,
+                let chain = getSelectedChain(),
+                let blockchain = Blockchain(namespace: chain.chainNamespace, reference: chain.chainReference)
+            else { return }
+            
+            try await signClient.request(
+                params: .init(
+                    topic: session.topic,
+                    method: request.rawValues.method,
+                    params: AnyCodable(any: request.rawValues.params),
+                    chainId: blockchain
+                )
+            )
+        case .cb:
+                    
+            guard let jsonRpc = request.toCbAction() else { return }
+                    
+            CoinbaseWalletSDK.shared.makeRequest(
+                .init(
+                    actions: [
+                        Action(jsonRpc: jsonRpc)
+                    ]
+                )
+            ) { result in
+                print(result)
+            }
+        case .none:
+            break
+        }
+    }
+    
     /// For sending JSON-RPC requests to wallet.
     /// - Parameters:
     ///   - params: Parameters defining request and related session
@@ -244,6 +279,45 @@ public class Web3ModalClient {
         } catch {
             store.toast = .init(style: .error, message: error.localizedDescription)
             return false
+        }
+    }
+}
+
+public extension Web3ModalClient {
+    func personal_sign(message: String) async throws {
+        try await Web3Modal.instance.request(
+            .personal_sign(address: store.account?.address ?? "", message: message)
+        )
+    }
+    
+//    func eth_signTransaction() async throws {
+//        try await Web3Modal.instance.request(
+//            .eth_signTransaction(
+//                fromAddress: EthAddress,
+//                toAddress: EthAddress?,
+//                weiValue: BigInt,
+//                data: EthTxData,
+//                nonce: Int?,
+//                gasPriceInWei: BigInt?,
+//                maxFeePerGas: BigInt?,
+//                maxPriorityFeePerGas: BigInt?,
+//                gasLimit: BigInt?,
+//                chainId: BigInt
+//            )
+//        )
+//    }
+}
+
+extension W3MJSONRPC {
+    func toCbAction() -> Web3JSONRPC? {
+        switch self {
+        case let .personal_sign(address, message):
+            return .personal_sign(
+                address: address,
+                message: message
+            )
+        default:
+            return nil
         }
     }
 }

@@ -8,11 +8,13 @@ class BlockchainAPIInteractor: ObservableObject {
     }
     
     func getIdentity() async throws {
-        
-        guard let account = store.account else { return }
+        guard 
+            let account = store.account,
+            store.connectedWith == .wc
+        else { return }
         
         let address = account.address
-        let chainId = account.chainIdentifier
+        let chainId = account.chain.absoluteString
                 
         let httpClient = HTTPNetworkClient(host: "rpc.walletconnect.com")
         let response = try await httpClient.request(

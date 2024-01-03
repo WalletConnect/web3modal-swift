@@ -57,7 +57,7 @@ class Web3ModalViewModel: ObservableObject {
                 }
                 router.setRoute(Router.AccountSubpage.profile)
                 store.session = session
-                store
+                store.account = .init(from: session)
                 
                 if
                     let blockchain = session.accounts.first?.blockchain,
