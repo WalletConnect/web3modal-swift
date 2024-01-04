@@ -110,6 +110,7 @@ class WalletDetailViewModel: ObservableObject {
             }
         } catch {
             store.toast = .init(style: .error, message: error.localizedDescription)
+            Web3Modal.config.onError(error)
         }
     }
 

@@ -12,7 +12,7 @@ struct Wallet: Codable, Identifiable, Hashable {
     let appStore: String?
     
     var lastTimeUsed: Date?
-    var isInstalled: Bool? = false
+    var isInstalled: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -28,6 +28,47 @@ struct Wallet: Codable, Identifiable, Hashable {
         // Decorated
         case lastTimeUsed
         case isInstalled
+    }
+    
+    internal init(
+        id: String, 
+        name: String, 
+        homepage: String, 
+        imageId: String, 
+        order: Int, 
+        mobileLink: String? = nil, 
+        desktopLink: String? = nil, 
+        webappLink: String? = nil, 
+        appStore: String? = nil, 
+        lastTimeUsed: Date? = nil, 
+        isInstalled: Bool = false
+    ) {
+        self.id = id
+        self.name = name
+        self.homepage = homepage
+        self.imageId = imageId
+        self.order = order
+        self.mobileLink = mobileLink
+        self.desktopLink = desktopLink
+        self.webappLink = webappLink
+        self.appStore = appStore
+        self.lastTimeUsed = lastTimeUsed
+        self.isInstalled = isInstalled
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.homepage = try container.decode(String.self, forKey: .homepage)
+        self.imageId = try container.decode(String.self, forKey: .imageId)
+        self.order = try container.decode(Int.self, forKey: .order)
+        self.mobileLink = try container.decodeIfPresent(String.self, forKey: .mobileLink)
+        self.desktopLink = try container.decodeIfPresent(String.self, forKey: .desktopLink)
+        self.webappLink = try container.decodeIfPresent(String.self, forKey: .webappLink)
+        self.appStore = try container.decodeIfPresent(String.self, forKey: .appStore)
+        self.lastTimeUsed = try container.decodeIfPresent(Date.self, forKey: .lastTimeUsed)
+        self.isInstalled = try container.decodeIfPresent(Bool.self, forKey: .isInstalled) ?? false
     }
 }
 

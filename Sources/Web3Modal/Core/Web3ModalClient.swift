@@ -75,7 +75,12 @@ public class Web3ModalClient {
     
     /// For creating new pairing
     public func createPairing() async throws -> WalletConnectURI {
-        try await pairingClient.create()
+        do {
+            return try await pairingClient.create()
+        } catch {
+            Web3Modal.config.onError(error)
+            throw error
+        }
     }
     
     /// For proposing a session to a wallet.
@@ -86,24 +91,29 @@ public class Web3ModalClient {
     public func connect(
         topic: String?
     ) async throws -> WalletConnectURI? {
-        if let topic = topic {
-            try pairingClient.validatePairingExistance(topic)
-            try await signClient.connect(
-                requiredNamespaces: Web3Modal.config.sessionParams.requiredNamespaces,
-                optionalNamespaces: Web3Modal.config.sessionParams.optionalNamespaces,
-                sessionProperties: Web3Modal.config.sessionParams.sessionProperties,
-                topic: topic
-            )
-            return nil
-        } else {
-            let pairingURI = try await pairingClient.create()
-            try await signClient.connect(
-                requiredNamespaces: Web3Modal.config.sessionParams.requiredNamespaces,
-                optionalNamespaces: Web3Modal.config.sessionParams.optionalNamespaces,
-                sessionProperties: Web3Modal.config.sessionParams.sessionProperties,
-                topic: pairingURI.topic
-            )
-            return pairingURI
+        do {
+            if let topic = topic {
+                try pairingClient.validatePairingExistance(topic)
+                try await signClient.connect(
+                    requiredNamespaces: Web3Modal.config.sessionParams.requiredNamespaces,
+                    optionalNamespaces: Web3Modal.config.sessionParams.optionalNamespaces,
+                    sessionProperties: Web3Modal.config.sessionParams.sessionProperties,
+                    topic: topic
+                )
+                return nil
+            } else {
+                let pairingURI = try await pairingClient.create()
+                try await signClient.connect(
+                    requiredNamespaces: Web3Modal.config.sessionParams.requiredNamespaces,
+                    optionalNamespaces: Web3Modal.config.sessionParams.optionalNamespaces,
+                    sessionProperties: Web3Modal.config.sessionParams.sessionProperties,
+                    topic: pairingURI.topic
+                )
+                return pairingURI
+            }
+        } catch {
+            Web3Modal.config.onError(error)
+            throw error
         }
     }
     
@@ -118,12 +128,17 @@ public class Web3ModalClient {
         sessionProperties: [String: String]? = nil,
         topic: String
     ) async throws {
-        try await signClient.connect(
-            requiredNamespaces: requiredNamespaces,
-            optionalNamespaces: optionalNamespaces,
-            sessionProperties: sessionProperties,
-            topic: topic
-        )
+        do {
+            try await signClient.connect(
+                requiredNamespaces: requiredNamespaces,
+                optionalNamespaces: optionalNamespaces,
+                sessionProperties: sessionProperties,
+                topic: topic
+            )
+        } catch {
+            Web3Modal.config.onError(error)
+            throw error
+        }
     }
     
     /// Ping method allows to check if peer client is online and is subscribing for given topic
@@ -134,14 +149,24 @@ public class Web3ModalClient {
     /// - Parameters:
     ///   - topic: Topic of a session
     public func ping(topic: String) async throws {
-        try await pairingClient.ping(topic: topic)
+        do {
+            try await pairingClient.ping(topic: topic)
+        } catch {
+            Web3Modal.config.onError(error)
+            throw error
+        }
     }
     
     /// For sending JSON-RPC requests to wallet.
     /// - Parameters:
     ///   - params: Parameters defining request and related session
     public func request(params: Request) async throws {
-        try await signClient.request(params: params)
+        do {
+            try await signClient.request(params: params)
+        } catch {
+            Web3Modal.config.onError(error)
+            throw error
+        }
     }
     
     /// For a terminating a session
@@ -151,7 +176,12 @@ public class Web3ModalClient {
     /// - Parameters:
     ///   - topic: Session topic that you want to delete
     public func disconnect(topic: String) async throws {
-        try await signClient.disconnect(topic: topic)
+        do {
+            try await signClient.disconnect(topic: topic)
+        } catch {
+            Web3Modal.config.onError(error)
+            throw error
+        }
     }
     
     /// Query sessions
@@ -170,7 +200,12 @@ public class Web3ModalClient {
     ///
     /// - Note: Will unsubscribe from all topics
     public func cleanup() async throws {
-        try await signClient.cleanup()
+        do {
+            try await signClient.cleanup()
+        } catch {
+            Web3Modal.config.onError(error)
+            throw error
+        }
     }
     
     public func getSelectedChain() -> Chain? {

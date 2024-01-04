@@ -15,7 +15,7 @@ struct ConnectWithQRCode: View {
             } else {
                 RoundedRectangle(cornerRadius: Radius.l)
                     .fill(.Overgray015)
-                    .aspectRatio(1, contentMode: .fill)
+                    .aspectRatio(1, contentMode: .fit)
                     .modifier(ShimmerBackground())
             }
             

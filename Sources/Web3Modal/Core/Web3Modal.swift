@@ -45,18 +45,7 @@ public class Web3Modal {
     }()
     
     struct Config {
-        static let sdkVersion: String = {
-            guard
-                let fileURL = Bundle.coreModule.url(forResource: "PackageConfig", withExtension: "json"),
-                let data = try? Data(contentsOf: fileURL),
-                let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                let version = jsonObject["version"] as? String
-            else {
-                return "undefined"
-            }
-                    
-            return "swift-\(version)"
-        }()
+        static let sdkVersion: String = EnvironmentInfo.sdkVersion
         static let sdkType = "w3m"
         
         let projectId: String
@@ -66,6 +55,7 @@ public class Web3Modal {
         let includeWebWallets: Bool
         let recommendedWalletIds: [String]
         let excludedWalletIds: [String]
+        public let onError: (Error) -> Void
     }
     
     private(set) static var config: Config!
@@ -83,11 +73,10 @@ public class Web3Modal {
         sessionParams: SessionParams = .default,
         recommendedWalletIds: [String] = [],
         excludedWalletIds: [String] = [],
-        includeWebWallets: Bool = true
+        includeWebWallets: Bool = true,
+        onError: @escaping (Error) -> Void = { _ in }
     ) {
         Pair.configure(metadata: metadata)
-        
-        
         
         Web3Modal.config = Web3Modal.Config(
             projectId: projectId,
@@ -95,10 +84,9 @@ public class Web3Modal {
             sessionParams: sessionParams,
             includeWebWallets: includeWebWallets,
             recommendedWalletIds: recommendedWalletIds,
-            excludedWalletIds: excludedWalletIds
+            excludedWalletIds: excludedWalletIds,
+            onError: onError
         )
-        
-       
         
         let store = Store.shared
         let router = Router()
