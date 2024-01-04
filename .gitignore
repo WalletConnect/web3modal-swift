@@ -95,3 +95,7 @@ DerivedDataCache/
 
 test_results/
 Sample/Example/Secrets/secrets.json
+
+fastlane/xcov_report/
+
+xcov_report/

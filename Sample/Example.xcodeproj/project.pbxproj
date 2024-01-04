@@ -3,11 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BCCE42AB0886400A2866C /* ContentView.swift */; };
+		CF25F3A22B40C7070030B3DC /* Web3Modal in Frameworks */ = {isa = PBXBuildFile; productRef = CF25F3A12B40C7070030B3DC /* Web3Modal */; };
+		CF25F3A42B40C7070030B3DC /* Web3ModalUI in Frameworks */ = {isa = PBXBuildFile; productRef = CF25F3A32B40C7070030B3DC /* Web3ModalUI */; };
 		CF3B9AD02ACDBA3A00984D53 /* Web3Modal in Frameworks */ = {isa = PBXBuildFile; productRef = CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */; };
 		CF3B9AD22ACDBA3A00984D53 /* Web3ModalUI in Frameworks */ = {isa = PBXBuildFile; productRef = CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */; };
 		CFA99B922AD0549F00EB5331 /* WCSocketFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA99B912AD0549F00EB5331 /* WCSocketFactory.swift */; };
@@ -44,7 +46,9 @@
 			files = (
 				CF3B9AD02ACDBA3A00984D53 /* Web3Modal in Frameworks */,
 				CFD6A70F2ADE8DE2002B402C /* Atlantis in Frameworks */,
+				CF25F3A42B40C7070030B3DC /* Web3ModalUI in Frameworks */,
 				CF3B9AD22ACDBA3A00984D53 /* Web3ModalUI in Frameworks */,
+				CF25F3A22B40C7070030B3DC /* Web3Modal in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,6 +134,8 @@
 				CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */,
 				CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */,
 				CFD6A70E2ADE8DE2002B402C /* Atlantis */,
+				CF25F3A12B40C7070030B3DC /* Web3Modal */,
+				CF25F3A32B40C7070030B3DC /* Web3ModalUI */,
 			);
 			productName = Example;
 			productReference = CFD720742A9CC60600636CAF /* Example.app */;
@@ -161,6 +167,7 @@
 			mainGroup = CFD7206B2A9CC60600636CAF;
 			packageReferences = (
 				CFD6A70D2ADE8DE2002B402C /* XCRemoteSwiftPackageReference "atlantis" */,
+				CF25F3A02B40C7070030B3DC /* XCLocalSwiftPackageReference ".." */,
 			);
 			productRefGroup = CFD720752A9CC60600636CAF /* Products */;
 			projectDirPath = "";
@@ -426,6 +433,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		CF25F3A02B40C7070030B3DC /* XCLocalSwiftPackageReference ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		CFD6A70D2ADE8DE2002B402C /* XCRemoteSwiftPackageReference "atlantis" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -438,6 +452,14 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		CF25F3A12B40C7070030B3DC /* Web3Modal */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Web3Modal;
+		};
+		CF25F3A32B40C7070030B3DC /* Web3ModalUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Web3ModalUI;
+		};
 		CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Web3Modal;

@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "atlantis",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ProxymanApp/atlantis",
+      "state" : {
+        "revision" : "131d757cf8e6e368ad338728379174f7cfff9326",
+        "version" : "1.23.0"
+      }
+    },
+    {
       "identity" : "qrcode",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/WalletConnect/QRCode",
@@ -23,8 +32,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
       "state" : {
-        "revision" : "dc46eeb3928a75390651fac6c1ef7f93ad59a73b",
-        "version" : "1.11.1"
+        "revision" : "59b663f68e69f27a87b45de48cb63264b8194605",
+        "version" : "1.15.1"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-syntax.git",
+      "state" : {
+        "revision" : "6ad4ea24b01559dde0773e3d091f1b9e36175036",
+        "version" : "509.0.2"
       }
     },
     {
