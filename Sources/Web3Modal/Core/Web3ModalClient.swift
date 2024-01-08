@@ -290,24 +290,21 @@ public extension Web3ModalClient {
         )
     }
     
-//    func eth_signTransaction() async throws {
-//        try await Web3Modal.instance.request(
-//            .eth_signTransaction(
-//                fromAddress: EthAddress,
-//                toAddress: EthAddress?,
-//                weiValue: BigInt,
-//                data: EthTxData,
-//                nonce: Int?,
-//                gasPriceInWei: BigInt?,
-//                maxFeePerGas: BigInt?,
-//                maxPriorityFeePerGas: BigInt?,
-//                gasLimit: BigInt?,
-//                chainId: BigInt
-//            )
-//        )
-//    }
+    func eth_requestAccounts() async throws {
+        try await Web3Modal.instance.request(.eth_requestAccounts)
+    }
+    
+    func eth_signTypedData_v3(typedDataJson: JSONString) async throws {
+        try await Web3Modal.instance.request(
+            .eth_signTypedData_v3(
+                address: store.account?.address ?? "",
+                typedDataJson: typedDataJson
+            )
+        )
+    }
 }
 
+// MARK: - Mapping
 extension W3MJSONRPC {
     func toCbAction() -> Web3JSONRPC? {
         switch self {
@@ -316,8 +313,77 @@ extension W3MJSONRPC {
                 address: address,
                 message: message
             )
-        default:
-            return nil
+        case .eth_requestAccounts:
+            return .eth_requestAccounts
+        case let .eth_signTypedData_v3(address, typedDataJson):
+            guard
+                let dict = typedDataJson.decode() as? [String: Any]
+            else { return nil }
+            
+            return .eth_signTypedData_v3(
+                address: address,
+                typedDataJson: .init(encode: dict)!
+            )
+        case let .eth_signTypedData_v4(address, typedDataJson):
+            guard
+                let dict = typedDataJson.decode() as? [String: Any]
+            else { return nil }
+            
+            return .eth_signTypedData_v4(
+                address: address,
+                typedDataJson: .init(encode: dict)!
+            )
+        case let .eth_signTransaction(fromAddress, toAddress, weiValue, data, nonce, gasPriceInWei, maxFeePerGas, maxPriorityFeePerGas, gasLimit, chainId):
+            return .eth_signTransaction(
+                fromAddress: fromAddress,
+                toAddress: toAddress,
+                weiValue: weiValue,
+                data: data,
+                nonce: nonce,
+                gasPriceInWei: gasPriceInWei,
+                maxFeePerGas: maxFeePerGas,
+                maxPriorityFeePerGas: maxPriorityFeePerGas,
+                gasLimit: gasLimit,
+                chainId: chainId
+            )
+        case let .eth_sendTransaction(fromAddress, toAddress, weiValue, data, nonce, gasPriceInWei, maxFeePerGas, maxPriorityFeePerGas, gasLimit, chainId):
+            return .eth_sendTransaction(
+                fromAddress: fromAddress,
+                toAddress: toAddress,
+                weiValue: weiValue,
+                data: data,
+                nonce: nonce,
+                gasPriceInWei: gasPriceInWei,
+                maxFeePerGas: maxFeePerGas,
+                maxPriorityFeePerGas: maxPriorityFeePerGas,
+                gasLimit: gasLimit,
+                chainId: chainId
+            )
+        case let .wallet_switchEthereumChain(chainId):
+            return .wallet_switchEthereumChain(chainId: chainId)
+        case let .wallet_addEthereumChain(chainId, blockExplorerUrls, chainName, iconUrls, nativeCurrency, rpcUrls):
+            return .wallet_addEthereumChain(
+                chainId: chainId,
+                blockExplorerUrls: blockExplorerUrls,
+                chainName: chainName,
+                iconUrls: iconUrls,
+                nativeCurrency: nativeCurrency != nil ? .init(
+                    name: nativeCurrency!.name,
+                    symbol: nativeCurrency!.symbol,
+                    decimals: nativeCurrency!.decimals
+                ) : nil,
+                rpcUrls: rpcUrls
+            )
+        case let .wallet_watchAsset(type, options):
+            return .wallet_watchAsset(
+                type: type,
+                options: .init(
+                    address: options.address,
+                    symbol: options.symbol,
+                    decimals: options.decimals,
+                    image: options.image
+                )
+            )
         }
     }
 }
