@@ -60,10 +60,14 @@ final class W3MAPIInteractor: ObservableObject {
             }
             
             if !search.isEmpty {
-                self.store.searchedWallets = wallets
+                let matchingCustomWallets = store.customWallets.filter { wallet in
+                    wallet.name.contains(search)
+                }
+                
+                self.store.searchedWallets = wallets + matchingCustomWallets
             } else {
                 self.store.searchedWallets = []
-                self.store.wallets.formUnion(wallets)
+                self.store.wallets.formUnion(wallets + store.customWallets)
                 self.totalEntries = response.count
                 self.store.totalPages = Int(ceil(Double(response.count) / Double(entriesPerPage)))
             }
@@ -136,33 +140,45 @@ final class W3MAPIInteractor: ObservableObject {
         
         try await wallets.concurrentMap { wallet in
             
-            guard !self.store.walletImages.contains(where: { key, _ in
-                key == wallet.imageId
-            }) else {
+            // Build URL
+            var imageUrl: URL?
+            if let imageId = wallet.imageId {
+                imageUrl = URL(string: "https://api.web3modal.com/getWalletImage/\(imageId)")
+            } else if let customImageUrl = wallet.imageUrl {
+                imageUrl = URL(string: customImageUrl)
+            }
+            
+            // Check whether we have some url and not fetched already
+            guard
+                let imageUrl,
+                !self.store.walletImages.contains(where: { key, _ in key == wallet.id })
+            else {
                 return ("", UIImage?.none)
             }
             
-            let url = URL(string: "https://api.web3modal.com/getWalletImage/\(wallet.imageId)")!
-            var request = URLRequest(url: url)
+            var request = URLRequest(url: imageUrl)
             request.setW3MHeaders()
             
             do {
                 let (data, _) = try await URLSession.shared.data(for: request)
-                return (wallet.imageId, UIImage(data: data))
+                let image = UIImage(data: data)
+                return (wallet.id, image)
             } catch {
                 print(error.localizedDescription)
             }
             
             return ("", UIImage?.none)
         }
-        .forEach { key, value in
-            if value == nil {
+        // Assign to outside dictionary
+        .forEach { (key: String, value: UIImage?) in
+            if value == nil || key == "" {
                 return
             }
             
             walletImages[key] = value
         }
         
+        // Update images in Store
         DispatchQueue.main.async { [walletImages] in
             self.store.walletImages.merge(walletImages) { _, new in
                 new
@@ -205,7 +221,6 @@ final class W3MAPIInteractor: ObservableObject {
 }
 
 private extension URLRequest {
-    
     mutating func setW3MHeaders() {
         setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")
         setValue(Web3Modal.Config.sdkType, forHTTPHeaderField: "x-sdk-type")

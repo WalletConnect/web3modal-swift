@@ -1,10 +1,11 @@
 import Foundation
 
-struct Wallet: Codable, Identifiable, Hashable {
-    let id: String
+public struct Wallet: Codable, Identifiable, Hashable {
+    public let id: String
     let name: String
     let homepage: String
-    let imageId: String
+    let imageId: String?
+    let imageUrl: String?
     let order: Int
     let mobileLink: String?
     let desktopLink: String?
@@ -19,6 +20,7 @@ struct Wallet: Codable, Identifiable, Hashable {
         case name
         case homepage
         case imageId = "image_id"
+        case imageUrl = "image_url"
         case order
         case mobileLink = "mobile_link"
         case desktopLink = "desktop_link"
@@ -30,13 +32,14 @@ struct Wallet: Codable, Identifiable, Hashable {
         case isInstalled
     }
     
-    internal init(
-        id: String, 
+    public init(
+        id: String,
         name: String, 
         homepage: String, 
-        imageId: String, 
-        order: Int, 
-        mobileLink: String? = nil, 
+        imageId: String? = nil,
+        imageUrl: String? = nil,
+        order: Int,
+        mobileLink: String?, 
         desktopLink: String? = nil, 
         webappLink: String? = nil, 
         appStore: String? = nil, 
@@ -47,6 +50,7 @@ struct Wallet: Codable, Identifiable, Hashable {
         self.name = name
         self.homepage = homepage
         self.imageId = imageId
+        self.imageUrl = imageUrl
         self.order = order
         self.mobileLink = mobileLink
         self.desktopLink = desktopLink
@@ -56,12 +60,13 @@ struct Wallet: Codable, Identifiable, Hashable {
         self.isInstalled = isInstalled
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self, forKey: .id)
         self.name = try container.decode(String.self, forKey: .name)
         self.homepage = try container.decode(String.self, forKey: .homepage)
-        self.imageId = try container.decode(String.self, forKey: .imageId)
+        self.imageUrl = try container.decodeIfPresent(String.self, forKey: .imageUrl)
+        self.imageId = try container.decodeIfPresent(String.self, forKey: .imageId)
         self.order = try container.decode(Int.self, forKey: .order)
         self.mobileLink = try container.decodeIfPresent(String.self, forKey: .mobileLink)
         self.desktopLink = try container.decodeIfPresent(String.self, forKey: .desktopLink)
