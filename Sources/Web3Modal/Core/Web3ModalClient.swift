@@ -202,7 +202,8 @@ public class Web3ModalClient {
                     
             guard let jsonRpc = request.toCbAction() else { return }
                     
-            try await withCheckedThrowingContinuation { continuation in
+            // Execute on main as Coinbase SDK is not dispatching on main when calling UIApplication.openUrl()
+            DispatchQueue.main.async {
                 CoinbaseWalletSDK.shared.makeRequest(
                     .init(
                         actions: [
@@ -210,33 +211,26 @@ public class Web3ModalClient {
                         ]
                     )
                 ) { result in
+                    let response: W3MResponse
                     switch result {
-                    case .success:
-                        continuation.resume()
-                        return
+                    case let .success(payload):
+                        
+                        if let actionResult: String = try? payload.content.first?.get().rawValue {
+                            response = .init(result: .response(AnyCodable(any: actionResult)))
+                        } else {
+                            response = .init(result: .error(.init(code: -1, message: "Invalid response")))
+                        }
                     case let .failure(error):
                         Web3Modal.config.onError(error)
                         
-                        let response: W3MResponse
                         if let cbError = error as? ActionError {
-                            response = .init(
-                                id: nil,
-                                topic: nil,
-                                chainId: nil,
-                                result: RPCResult.error(.init(code: cbError.code, message: cbError.message))
-                            )
+                            response = .init(result: .error(.init(code: cbError.code, message: cbError.message)))
                         } else {
-                            response = .init(
-                                id: nil,
-                                topic: nil,
-                                chainId: nil,
-                                result: RPCResult.error(.init(code: -1, message: error.localizedDescription))
-                            )
+                            response = .init(result: .error(.init(code: -1, message: error.localizedDescription)))
                         }
-                        
-                        self.coinbaseResponseSubject.send(response)
-                        continuation.resume(with: .failure(error))
                     }
+                    
+                    self.coinbaseResponseSubject.send(response)
                 }
             }
         case .none:
@@ -340,14 +334,6 @@ public class Web3ModalClient {
     }
 }
 
-public extension Web3ModalClient {
-    func personal_sign(message: String) async throws {
-        try await Web3Modal.instance.request(
-            .personal_sign(address: store.account?.address ?? "", message: message)
-        )
-    }
-}
-
 // MARK: - Mapping
 
 extension W3MJSONRPC {
@@ -416,6 +402,13 @@ extension W3MJSONRPC {
 }
 
 public struct W3MResponse: Codable {
+    init(id: RPCID? = nil, topic: String? = nil, chainId: String? = nil, result: RPCResult) {
+        self.id = id
+        self.topic = topic
+        self.chainId = chainId
+        self.result = result
+    }
+    
     public let id: RPCID?
     public let topic: String?
     public let chainId: String?

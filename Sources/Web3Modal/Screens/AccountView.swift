@@ -8,7 +8,7 @@ struct AccountView: View {
     @EnvironmentObject var store: Store
     
     var addressFormatted: String? {
-        guard let address = store.session?.accounts.first?.address else {
+        guard let address = store.account?.address else {
             return nil
         }
         
