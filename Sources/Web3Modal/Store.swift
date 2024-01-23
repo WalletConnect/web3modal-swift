@@ -16,6 +16,8 @@ class Store: ObservableObject {
     @Published var wallets: Set<Wallet> = []
     @Published var featuredWallets: [Wallet] = []
     @Published var searchedWallets: [Wallet] = []
+    @Published var customWallets: [Wallet] = []
+    
     var totalNumberOfWallets: Int = 0
     var currentPage: Int = 0
     var totalPages: Int = .max

@@ -31,7 +31,7 @@ struct ExampleApp: App {
         let metadata = AppMetadata(
             name: "Web3Modal Swift Dapp",
             description: "Web3Modal DApp sample",
-            url: "wallet.connect",
+            url: "www.web3modal.com",
             icons: ["https://avatars.githubusercontent.com/u/37784886"],
             redirect: .init(native: "w3mdapp://", universal: nil)
         )
@@ -43,7 +43,17 @@ struct ExampleApp: App {
 
         Web3Modal.configure(
             projectId: projectId,
-            metadata: metadata
+            metadata: metadata,
+            customWallets: [
+                .init(
+                     id: "swift-sample",
+                     name: "Swift Sample Wallet",
+                     homepage: "https://walletconnect.com/",
+                     imageUrl: "https://avatars.githubusercontent.com/u/37784886?s=200&v=4",
+                     order: 1,
+                     mobileLink: "walletapp://"
+                 )
+            ]
         ) { error in
             SentrySDK.capture(error: error)
         }

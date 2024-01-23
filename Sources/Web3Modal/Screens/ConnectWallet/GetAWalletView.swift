@@ -18,7 +18,7 @@ struct GetAWalletView: View {
                 .buttonStyle(W3MListSelectStyle(
                     imageContent: { _ in
                         Group {
-                            if let storedImage = store.walletImages[wallet.imageId] {
+                            if let storedImage = store.walletImages[wallet.id] {
                                 Image(uiImage: storedImage)
                                     .resizable()
                             } else {
@@ -69,7 +69,7 @@ struct GetAWalletView_Previews: PreviewProvider {
         let store = Store()
         store.featuredWallets = Wallet.stubList
 
-        for id in Wallet.stubList.map(\.imageId).prefix(2) {
+        for id in Wallet.stubList.map(\.imageId).compactMap({ $0 }).prefix(2) {
             store.walletImages[id] = UIImage(
                 named: "MockWalletImage", in: .coreModule, compatibleWith: nil
             )

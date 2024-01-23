@@ -29,7 +29,11 @@ struct WalletDetailView: View {
                 copyLink()
             }
             
-            if viewModel.preferredPlatform == .mobile && viewModel.wallet.isInstalled != true {
+            if 
+                viewModel.preferredPlatform == .mobile,
+                viewModel.wallet.isInstalled != true,
+                viewModel.wallet.appStore != nil
+            {
                 appStoreRow()
             }
         }
@@ -88,7 +92,7 @@ struct WalletDetailView: View {
     private func walletImage() -> some View {
         return ZStack {
             Image(
-                uiImage: store.walletImages[viewModel.wallet.imageId] ?? UIImage()
+                uiImage: store.walletImages[viewModel.wallet.id] ?? UIImage()
             )
             .resizable()
             .frame(width: 80, height: 80)

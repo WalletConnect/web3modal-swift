@@ -141,7 +141,7 @@ struct AllWalletsView: View {
         .buttonStyle(W3MCardSelectStyle(
             variant: .wallet,
             imageContent: {
-                if let storedImage = store.walletImages[wallet.imageId] {
+                if let storedImage = store.walletImages[wallet.id] {
                     Image(uiImage: storedImage)
                         .resizable()
                 } else {

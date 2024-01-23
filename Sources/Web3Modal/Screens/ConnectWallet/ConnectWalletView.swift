@@ -10,7 +10,7 @@ struct ConnectWalletView: View {
     var wallets: [Wallet] {
         
         var uniqueValues: [Wallet] = []
-        (store.recentWallets + store.featuredWallets).forEach { item in
+        (store.recentWallets + store.featuredWallets + store.customWallets).forEach { item in
             guard !uniqueValues.contains(where: { wallet in
                 item.id == wallet.id
             }) else { return }
@@ -55,7 +55,7 @@ struct ConnectWalletView: View {
                     .buttonStyle(W3MListSelectStyle(
                         imageContent: { scale in
                             Group {
-                                if let storedImage = store.walletImages[wallet.imageId] {
+                                if let storedImage = store.walletImages[wallet.id] {
                                     Image(uiImage: storedImage)
                                         .resizable()
                                 } else {
@@ -106,7 +106,7 @@ struct ConnectWalletView: View {
                 .buttonStyle(W3MListSelectStyle(
                     imageContent: { _ in
                         Group {
-                            if let storedImage = store.walletImages[wallet.imageId] {
+                            if let storedImage = store.walletImages[wallet.id] {
                                 Image(uiImage: storedImage)
                                     .resizable()
                             } else {
