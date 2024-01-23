@@ -224,10 +224,6 @@ public class Web3ModalClient {
         store.selectedChain = chain
     }
     
-    public func injectCustomWallet(_ wallet: Wallet) {
-        store.customWallets.append(wallet)
-    }
-    
     public func launchCurrentWallet() {
         guard
             let session = store.session,

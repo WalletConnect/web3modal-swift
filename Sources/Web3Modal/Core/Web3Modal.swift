@@ -55,6 +55,7 @@ public class Web3Modal {
         let includeWebWallets: Bool
         let recommendedWalletIds: [String]
         let excludedWalletIds: [String]
+        let customWallets: [Wallet]
         public let onError: (Error) -> Void
     }
     
@@ -71,9 +72,10 @@ public class Web3Modal {
         projectId: String,
         metadata: AppMetadata,
         sessionParams: SessionParams = .default,
+        includeWebWallets: Bool = true,
         recommendedWalletIds: [String] = [],
         excludedWalletIds: [String] = [],
-        includeWebWallets: Bool = true,
+        customWallets: [Wallet] = [],
         onError: @escaping (Error) -> Void = { _ in }
     ) {
         Pair.configure(metadata: metadata)
@@ -85,6 +87,7 @@ public class Web3Modal {
             includeWebWallets: includeWebWallets,
             recommendedWalletIds: recommendedWalletIds,
             excludedWalletIds: excludedWalletIds,
+            customWallets: customWallets,
             onError: onError
         )
         
@@ -95,6 +98,8 @@ public class Web3Modal {
         let blockchainApiInteractor = BlockchainAPIInteractor(store: store)
         let interactor = W3MAPIInteractor()
         
+        store.customWallets = customWallets
+        
         Web3Modal.viewModel = Web3ModalViewModel(
             router: router,
             store: store,
@@ -104,7 +109,7 @@ public class Web3Modal {
         )
         
         Task {
-            try? await interactor.fetchWalletImages(for: Store.shared.recentWallets)
+            try? await interactor.fetchWalletImages(for: store.recentWallets + store.customWallets)
             try? await interactor.fetchAllWalletMetadata()
             try? await interactor.fetchFeaturedWallets()
             try? await interactor.prefetchChainImages()

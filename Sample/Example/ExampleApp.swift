@@ -43,20 +43,20 @@ struct ExampleApp: App {
 
         Web3Modal.configure(
             projectId: projectId,
-            metadata: metadata
+            metadata: metadata,
+            customWallets: [
+                .init(
+                     id: "swift-sample",
+                     name: "Swift Sample Wallet",
+                     homepage: "https://walletconnect.com/",
+                     imageUrl: "https://avatars.githubusercontent.com/u/37784886?s=200&v=4",
+                     order: 1,
+                     mobileLink: "walletapp://"
+                 )
+            ]
         ) { error in
             SentrySDK.capture(error: error)
         }
-        
-        Web3Modal.instance.injectCustomWallet(
-            .init(
-                 id: "swift-sample",
-                 name: "Swift Sample Wallet",
-                 homepage: "https://walletconnect.com/",
-                 imageUrl: "https://avatars.githubusercontent.com/u/37784886?s=200&v=4",
-                 order: 1,
-                 mobileLink: "walletapp://"
-             ))
     }
 
     var body: some Scene {
