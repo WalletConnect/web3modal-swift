@@ -42,9 +42,21 @@ public class Web3ModalClient {
     /// Publisher that sends response for session request
     ///
     /// In most cases that event will be emited on dApp client.
-    public var sessionResponsePublisher: AnyPublisher<Response, Never> {
-        signClient.sessionResponsePublisher.eraseToAnyPublisher()
+    public var sessionResponsePublisher: AnyPublisher<W3MResponse, Never> {
+        signClient.sessionResponsePublisher
+            .map { response in
+                W3MResponse(
+                    id: response.id,
+                    topic: response.topic,
+                    chainId: response.chainId,
+                    result: response.result
+                )
+            }
+            .merge(with: coinbaseResponseSubject)
+            .eraseToAnyPublisher()
     }
+    
+    public var coinbaseResponseSubject = PassthroughSubject<W3MResponse, Never>()
     
     /// Publisher that sends web socket connection status
     public var socketConnectionStatusPublisher: AnyPublisher<SocketConnectionStatus, Never> {
@@ -167,26 +179,65 @@ public class Web3ModalClient {
                 let blockchain = Blockchain(namespace: chain.chainNamespace, reference: chain.chainReference)
             else { return }
             
-            try await signClient.request(
-                params: .init(
-                    topic: session.topic,
-                    method: request.rawValues.method,
-                    params: AnyCodable(any: request.rawValues.params),
-                    chainId: blockchain
+            if case let .personal_sign(address, message) = request {
+                try await signClient.request(
+                    params: .init(
+                        topic: session.topic,
+                        method: request.rawValues.method,
+                        params: AnyCodable(any: [message, address]),
+                        chainId: blockchain
+                    )
                 )
-            )
+            } else {
+                try await signClient.request(
+                    params: .init(
+                        topic: session.topic,
+                        method: request.rawValues.method,
+                        params: AnyCodable(any: request.rawValues.params),
+                        chainId: blockchain
+                    )
+                )
+            }
         case .cb:
                     
             guard let jsonRpc = request.toCbAction() else { return }
                     
-            CoinbaseWalletSDK.shared.makeRequest(
-                .init(
-                    actions: [
-                        Action(jsonRpc: jsonRpc)
-                    ]
-                )
-            ) { result in
-                print(result)
+            try await withCheckedThrowingContinuation { continuation in
+                CoinbaseWalletSDK.shared.makeRequest(
+                    .init(
+                        actions: [
+                            Action(jsonRpc: jsonRpc)
+                        ]
+                    )
+                ) { result in
+                    switch result {
+                    case .success:
+                        continuation.resume()
+                        return
+                    case let .failure(error):
+                        Web3Modal.config.onError(error)
+                        
+                        let response: W3MResponse
+                        if let cbError = error as? ActionError {
+                            response = .init(
+                                id: nil,
+                                topic: nil,
+                                chainId: nil,
+                                result: RPCResult.error(.init(code: cbError.code, message: cbError.message))
+                            )
+                        } else {
+                            response = .init(
+                                id: nil,
+                                topic: nil,
+                                chainId: nil,
+                                result: RPCResult.error(.init(code: -1, message: error.localizedDescription))
+                            )
+                        }
+                        
+                        self.coinbaseResponseSubject.send(response)
+                        continuation.resume(with: .failure(error))
+                    }
+                }
             }
         case .none:
             break
@@ -244,6 +295,12 @@ public class Web3ModalClient {
         }
     }
     
+    public func getAddress() -> String? {
+        guard let account = store.account else { return nil }
+        
+        return account.address
+    }
+    
     public func getSelectedChain() -> Chain? {
         guard let chain = store.selectedChain else {
             return nil
@@ -289,22 +346,10 @@ public extension Web3ModalClient {
             .personal_sign(address: store.account?.address ?? "", message: message)
         )
     }
-    
-    func eth_requestAccounts() async throws {
-        try await Web3Modal.instance.request(.eth_requestAccounts)
-    }
-    
-    func eth_signTypedData_v3(typedDataJson: JSONString) async throws {
-        try await Web3Modal.instance.request(
-            .eth_signTypedData_v3(
-                address: store.account?.address ?? "",
-                typedDataJson: typedDataJson
-            )
-        )
-    }
 }
 
 // MARK: - Mapping
+
 extension W3MJSONRPC {
     func toCbAction() -> Web3JSONRPC? {
         switch self {
@@ -315,45 +360,27 @@ extension W3MJSONRPC {
             )
         case .eth_requestAccounts:
             return .eth_requestAccounts
-        case let .eth_signTypedData_v3(address, typedDataJson):
-            guard
-                let dict = typedDataJson.decode() as? [String: Any]
-            else { return nil }
-            
-            return .eth_signTypedData_v3(
-                address: address,
-                typedDataJson: .init(encode: dict)!
-            )
-        case let .eth_signTypedData_v4(address, typedDataJson):
-            guard
-                let dict = typedDataJson.decode() as? [String: Any]
-            else { return nil }
-            
-            return .eth_signTypedData_v4(
-                address: address,
-                typedDataJson: .init(encode: dict)!
-            )
-        case let .eth_signTransaction(fromAddress, toAddress, weiValue, data, nonce, gasPriceInWei, maxFeePerGas, maxPriorityFeePerGas, gasLimit, chainId):
+        case let .eth_signTransaction(from, to, value, data, nonce, _, gasPrice, maxFeePerGas, maxPriorityFeePerGas, gasLimit, chainId):
             return .eth_signTransaction(
-                fromAddress: fromAddress,
-                toAddress: toAddress,
-                weiValue: weiValue,
+                fromAddress: from,
+                toAddress: to,
+                weiValue: value,
                 data: data,
                 nonce: nonce,
-                gasPriceInWei: gasPriceInWei,
+                gasPriceInWei: gasPrice,
                 maxFeePerGas: maxFeePerGas,
                 maxPriorityFeePerGas: maxPriorityFeePerGas,
                 gasLimit: gasLimit,
                 chainId: chainId
             )
-        case let .eth_sendTransaction(fromAddress, toAddress, weiValue, data, nonce, gasPriceInWei, maxFeePerGas, maxPriorityFeePerGas, gasLimit, chainId):
+        case let .eth_sendTransaction(from, to, value, data, nonce, _, gasPrice, maxFeePerGas, maxPriorityFeePerGas, gasLimit, chainId):
             return .eth_sendTransaction(
-                fromAddress: fromAddress,
-                toAddress: toAddress,
-                weiValue: weiValue,
+                fromAddress: from,
+                toAddress: to,
+                weiValue: value,
                 data: data,
                 nonce: nonce,
-                gasPriceInWei: gasPriceInWei,
+                gasPriceInWei: gasPrice,
                 maxFeePerGas: maxFeePerGas,
                 maxPriorityFeePerGas: maxPriorityFeePerGas,
                 gasLimit: gasLimit,
@@ -386,4 +413,11 @@ extension W3MJSONRPC {
             )
         }
     }
+}
+
+public struct W3MResponse: Codable {
+    public let id: RPCID?
+    public let topic: String?
+    public let chainId: String?
+    public let result: RPCResult
 }

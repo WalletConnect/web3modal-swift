@@ -8,7 +8,7 @@ class SignInteractor: ObservableObject {
     
     lazy var sessionsPublisher: AnyPublisher<[Session], Never> = Web3Modal.instance.sessionsPublisher
     lazy var sessionSettlePublisher: AnyPublisher<Session, Never> = Web3Modal.instance.sessionSettlePublisher
-    lazy var sessionResponsePublisher: AnyPublisher<Response, Never> = Web3Modal.instance.sessionResponsePublisher
+    lazy var sessionResponsePublisher: AnyPublisher<W3MResponse, Never> = Web3Modal.instance.sessionResponsePublisher
     lazy var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never> = Web3Modal.instance.sessionRejectionPublisher
     lazy var sessionDeletePublisher: AnyPublisher<(String, Reason), Never> = Web3Modal.instance.sessionDeletePublisher
     lazy var sessionEventPublisher: AnyPublisher<(event: Session.Event, sessionTopic: String, chainId: Blockchain?), Never> = Web3Modal.instance.sessionEventPublisher

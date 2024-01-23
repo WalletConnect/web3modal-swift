@@ -16,13 +16,15 @@ class Store: ObservableObject {
     
     @Published var connectedWith: ConnectionProviderType?
     @Published var connecting: Bool = false
-    @Published var account: Account? {
+    @Published var account: W3MAccount? {
         didSet {
             let matchingChain = ChainPresets.ethChains.first(where: {
                 $0.chainNamespace == account?.chain.namespace && $0.chainReference == account?.chain.reference
             })
             
             Store.shared.selectedChain = matchingChain
+            
+            AccountStorage.save(account)
         }
     }
     
@@ -66,12 +68,12 @@ class Store: ObservableObject {
     @Published var toast: Toast? = nil
 }
 
-struct Account {
+struct W3MAccount: Codable {
     let address: String
     let chain: Blockchain
 }
 
-extension Account {
+extension W3MAccount {
     
     init?(from session: Session) {
         guard let account = session.accounts.first else {

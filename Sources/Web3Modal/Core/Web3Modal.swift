@@ -30,9 +30,19 @@ public class Web3Modal {
             store: .shared
         )
         
+        let store = Store.shared
+        
         if let session = client.getSessions().first {
-            Store.shared.session = session
-            Store.shared.account = .init(from: session)
+            store.session = session
+            store.connectedWith = .wc
+            store.account = .init(from: session)
+        } else if CoinbaseWalletSDK.shared.isConnected() {
+            
+            let storedAccount = AccountStorage.read()
+            store.connectedWith = .cb
+            store.account = storedAccount
+        } else {
+            AccountStorage.clear()
         }
         
         return client
@@ -109,18 +119,18 @@ public class Web3Modal {
         
         store.customWallets = customWallets
         
+        configureCoinbaseIfNeeded(
+            store: store,
+            metadata: metadata,
+            w3mApiInteractor: w3mApiInteractor
+        )
+        
         Web3Modal.viewModel = Web3ModalViewModel(
             router: router,
             store: store,
             w3mApiInteractor: w3mApiInteractor,
             signInteractor: signInteractor,
             blockchainApiInteractor: blockchainApiInteractor
-        )
-        
-        configureCoinbaseIfNeeded(
-            store: store,
-            metadata: metadata,
-            w3mApiInteractor: w3mApiInteractor
         )
         
         Task {
@@ -164,7 +174,7 @@ public class Web3Modal {
                 CoinbaseWalletSDK.shared.initiateHandshake { result, account in
                     switch result {
                         case .success:
-                            guard 
+                            guard
                                 let account = account,
                                 let blockchain = Blockchain(
                                     namespace: account.chain == "eth" ? "eip155" : "",
@@ -177,6 +187,11 @@ public class Web3Modal {
                                 address: account.address,
                                 chain: blockchain
                             )
+                        
+                            withAnimation {
+                                store.isModalShown = false
+                            }
+                            Web3Modal.viewModel.router.setRoute(Router.AccountSubpage.profile)
                             
                             let matchingChain = ChainPresets.ethChains.first(where: {
                                 $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference

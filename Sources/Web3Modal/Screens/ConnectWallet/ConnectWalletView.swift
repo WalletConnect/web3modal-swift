@@ -25,7 +25,7 @@ struct ConnectWalletView: View {
             return featuredWallet
         }
         
-        return (result + recentWallets)
+        return (recentWallets + result)
     }
     
     var body: some View {
