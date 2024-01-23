@@ -31,7 +31,7 @@ struct ExampleApp: App {
         let metadata = AppMetadata(
             name: "Web3Modal Swift Dapp",
             description: "Web3Modal DApp sample",
-            url: "wallet.connect",
+            url: "www.web3modal.com",
             icons: ["https://avatars.githubusercontent.com/u/37784886"],
             redirect: .init(native: "w3mdapp://", universal: nil)
         )
