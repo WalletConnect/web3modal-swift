@@ -260,11 +260,18 @@ public class Web3ModalClient {
     /// - Parameters:
     ///   - topic: Session topic that you want to delete
     public func disconnect(topic: String) async throws {
-        do {
-            try await signClient.disconnect(topic: topic)
-        } catch {
-            Web3Modal.config.onError(error)
-            throw error
+        switch store.connectedWith {
+        case .wc:
+            do {
+                try await signClient.disconnect(topic: topic)
+            } catch {
+                Web3Modal.config.onError(error)
+                throw error
+            }
+        case .cb:
+            CoinbaseWalletSDK.shared.resetSession()
+        case .none:
+            break
         }
     }
     

@@ -1,6 +1,5 @@
 import Foundation
 import Combine
-import CoinbaseWalletSDK
 
 class SignInteractor: ObservableObject {
     
@@ -33,22 +32,15 @@ class SignInteractor: ObservableObject {
             }
         }
         
-        switch store.connectedWith {
-        case .wc:
-            do {
-                try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
-            } catch {
-                DispatchQueue.main.async {
-                    self.store.toast = .init(style: .error, message: "Failed to disconnect.")
-                }
-                Web3Modal.config.onError(error)
+        do {
+            try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
+        } catch {
+            DispatchQueue.main.async {
+                self.store.toast = .init(style: .error, message: "Failed to disconnect.")
             }
-            try await Web3Modal.instance.cleanup()
-            try await createPairingAndConnect()
-        case .cb:
-            CoinbaseWalletSDK.shared.resetSession()
-        case .none:
-            break
+            Web3Modal.config.onError(error)
         }
+        try await Web3Modal.instance.cleanup()
+        try await createPairingAndConnect()
     }
 }

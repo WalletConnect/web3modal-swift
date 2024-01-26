@@ -1,4 +1,3 @@
-import CoinbaseWalletSDK
 import SwiftUI
 
 struct ModalContainerView: View {

@@ -1,6 +1,5 @@
 import Combine
 import SwiftUI
-import CoinbaseWalletSDK
 
 final class NetworkDetailViewModel: ObservableObject {
     enum Event {
@@ -133,8 +132,6 @@ final class NetworkDetailViewModel: ObservableObject {
         to: Chain
     ) async throws {
         guard let chainIdNumber = Int(to.chainReference) else { return }
-    
-        print(#function, "from: \(from.chainName), to: \(to.chainName)")
         
         switch store.connectedWith {
         case .wc:
@@ -167,8 +164,6 @@ final class NetworkDetailViewModel: ObservableObject {
         guard let addChainParams = createAddEthChainParams(chain: to) else {
             return
         }
-        
-        print(#function, "from: \(from.chainName), to: \(to.chainName)")
         
         switch store.connectedWith {
         case .wc:

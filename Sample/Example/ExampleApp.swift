@@ -1,4 +1,3 @@
-import CoinbaseWalletSDK
 import Combine
 import Sentry
 import SwiftUI
@@ -43,7 +42,7 @@ struct ExampleApp: App {
         )
 
         Networking.configure(
-            groupIdentifier: "",
+            groupIdentifier: "group.com.walletconnect.web3modal",
             projectId: projectId,
             socketFactory: WalletConnectSocketClientFactory()
         )
@@ -63,6 +62,8 @@ struct ExampleApp: App {
             ]
         ) { error in
             SentrySDK.capture(error: error)
+            
+            print(error)
         }
     }
 
