@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import CoinbaseWalletSDK
 
 final class NetworkDetailViewModel: ObservableObject {
     enum Event {
@@ -12,22 +13,24 @@ final class NetworkDetailViewModel: ObservableObject {
     
     private var disposeBag = Set<AnyCancellable>()
     
-    let chain: Chain
+    var chain: Chain
     let router: Router
     let store: Store
+    
     
     init(
         chain: Chain,
         router: Router,
         store: Store = .shared
     ) {
+        
         self.chain = chain
         self.router = router
         self.store = store
     
         Web3Modal.instance.sessionEventPublisher
             .receive(on: DispatchQueue.main)
-            .sink { event, _, _ in
+            .sink { [unowned self] event, _, _ in
                 switch event.name {
                 case "chainChanged":
                     guard let chainReference = try? event.data.get(Int.self) else {
@@ -55,14 +58,19 @@ final class NetworkDetailViewModel: ObservableObject {
         
         Web3Modal.instance.sessionResponsePublisher
             .receive(on: DispatchQueue.main)
-            .sink { response in
+            .sink { [unowned self] response in
+                
                 switch response.result {
                 case .response:
+                    
+                    print("Switch/Add chain success switching to: \(chain.chainName)")
+                    
                     self.store.selectedChain = chain
                     self.router.setRoute(Router.AccountSubpage.profile)
                 case let .error(error):
                     
                     if error.message.contains("4001") {
+                        // User declined
                         self.switchFailed = true
                         return
                     }
@@ -86,17 +94,12 @@ final class NetworkDetailViewModel: ObservableObject {
     
     func handle(_ event: Event) {
         switch event {
-        case .onAppear:
-            Task { @MainActor in
-                // Switch chain
-                await switchChain(chain)
-            }
-        case .didTapRetry:
-            
+        case .onAppear, .didTapRetry:
             triedAddingChain = false
             switchFailed = false
+            
             Task { @MainActor in
-                // Retry switch chain
+                // Switch chain
                 await switchChain(chain)
             }
         }
@@ -105,13 +108,14 @@ final class NetworkDetailViewModel: ObservableObject {
     @MainActor
     func switchChain(_ to: Chain) async {
         guard let from = store.selectedChain else { return }
-        guard let session = store.session else { return }
         
         do {
             try await switchEthChain(from: from, to: to)
         } catch {
-            print(error)
+            Web3Modal.config.onError(error)
         }
+        
+        guard let session = store.session else { return }
         
         if
             let urlString = session.peer.redirect?.native ?? session.peer.redirect?.universal,
@@ -128,18 +132,30 @@ final class NetworkDetailViewModel: ObservableObject {
         from: Chain,
         to: Chain
     ) async throws {
-        guard let session = store.session else { return }
         guard let chainIdNumber = Int(to.chainReference) else { return }
+    
+        print(#function, "from: \(from.chainName), to: \(to.chainName)")
         
-        let chainHex = String(format: "%X", chainIdNumber)
-        try await Web3Modal.instance.request(params:
-            .init(
-                topic: session.topic,
-                method: EthUtils.walletSwitchEthChain,
-                params: AnyCodable([AnyCodable(ChainSwitchParams(chainId: "0x\(chainHex)"))]),
-                chainId: .init(from.id)!
+        switch store.connectedWith {
+        case .wc:
+            
+            let chainHex = String(format: "%X", chainIdNumber)
+            
+            guard let session = store.session else { return }
+            
+            try await Web3Modal.instance.request(params:
+                    .init(
+                        topic: session.topic,
+                        method: EthUtils.walletSwitchEthChain,
+                        params: AnyCodable([AnyCodable(ChainSwitchParams(chainId: "0x\(chainHex)"))]),
+                        chainId: .init(from.id)!
+                    )
             )
-        )
+        case .cb:
+            try await Web3Modal.instance.request(.wallet_switchEthereumChain(chainId: to.chainReference))
+        case .none:
+            break
+        }
     }
 
     @MainActor
@@ -147,16 +163,43 @@ final class NetworkDetailViewModel: ObservableObject {
         from: Chain,
         to: Chain
     ) async throws {
-        guard let session = store.session else { return }
-                
-        try await Web3Modal.instance.request(params:
-            .init(
-                topic: session.topic,
-                method: EthUtils.walletAddEthChain,
-                params: AnyCodable([AnyCodable(createAddEthChainParams(chain: to))]),
-                chainId: .init(from.id)!
+        
+        guard let addChainParams = createAddEthChainParams(chain: to) else {
+            return
+        }
+        
+        print(#function, "from: \(from.chainName), to: \(to.chainName)")
+        
+        switch store.connectedWith {
+        case .wc:
+            
+            guard let session = store.session else { return }
+            
+            try await Web3Modal.instance.request(params:
+                .init(
+                    topic: session.topic,
+                    method: EthUtils.walletAddEthChain,
+                    params: AnyCodable([AnyCodable(addChainParams)]),
+                    chainId: .init(from.id)!
+                )
             )
-        )
+        case .cb:
+            try await Web3Modal.instance.request(
+                .wallet_addEthereumChain(
+                    chainId: addChainParams.chainId,
+                    blockExplorerUrls: addChainParams.blockExplorerUrls,
+                     chainName: addChainParams.chainName,
+                     iconUrls: addChainParams.iconUrls,
+                    nativeCurrency: .init(
+                        name: addChainParams.nativeCurrency.name,
+                        symbol: addChainParams.nativeCurrency.symbol,
+                        decimals: addChainParams.nativeCurrency.decimals
+                    ),
+                     rpcUrls: addChainParams.rpcUrls
+                 ))
+        case .none:
+            break
+        }
     }
 
     func createAddEthChainParams(chain: Chain) -> ChainAddParams? {
@@ -201,34 +244,5 @@ final class NetworkDetailViewModel: ObservableObject {
     
     struct ChainSwitchParams: Codable {
         let chainId: String
-    }
-}
-
-private extension AnyPublisher {
-    enum AsyncError: Error {
-        case finishedWithoutValue
-    }
-    
-    func async() async throws -> Output {
-        try await withCheckedThrowingContinuation { continuation in
-            var cancellable: AnyCancellable?
-            var finishedWithoutValue = true
-            cancellable = first()
-                .receive(on: DispatchQueue.main)
-                .sink { result in
-                    switch result {
-                    case .finished:
-                        if finishedWithoutValue {
-                            continuation.resume(throwing: AsyncError.finishedWithoutValue)
-                        }
-                    case let .failure(error):
-                        continuation.resume(throwing: error)
-                    }
-                    cancellable?.cancel()
-                } receiveValue: { value in
-                    finishedWithoutValue = false
-                    continuation.resume(with: .success(value))
-                }
-        }
     }
 }

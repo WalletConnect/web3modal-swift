@@ -267,6 +267,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -329,6 +330,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -357,6 +359,7 @@
 				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 12;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Example/Preview Content\"";
 				DEVELOPMENT_TEAM = W5R8AG9K22;
@@ -401,6 +404,7 @@
 				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 12;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Example/Preview Content\"";
 				DEVELOPMENT_TEAM = W5R8AG9K22;
@@ -487,6 +491,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		BD206AA550964C49AE94A3CA /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F4A0329B6CFF49E682D3DFE7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
+		};
 		CF25F3A12B40C7070030B3DC /* Web3Modal */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Web3Modal;
@@ -494,11 +503,6 @@
 		CF25F3A32B40C7070030B3DC /* Web3ModalUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Web3ModalUI;
-		};
-		BD206AA550964C49AE94A3CA /* Sentry */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F4A0329B6CFF49E682D3DFE7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
-			productName = Sentry;
 		};
 		CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */ = {
 			isa = XCSwiftPackageProductDependency;
