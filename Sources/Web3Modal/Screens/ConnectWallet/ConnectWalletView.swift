@@ -6,6 +6,8 @@ struct ConnectWalletView: View {
     
     let displayWCConnection = false
     
+    @State var email: String = "radek@walletconnect.com"
+    
     var wallets: [Wallet] {
         var recentWallets = store.recentWallets
         
@@ -29,6 +31,10 @@ struct ConnectWalletView: View {
     
     var body: some View {
         VStack {
+            emailInput()
+            
+            Divider()
+            
             wcConnection()
             
             featuredWallets()
@@ -47,6 +53,28 @@ struct ConnectWalletView: View {
         }
         .padding(Spacing.s)
         .padding(.bottom)
+    }
+    
+    @ViewBuilder
+    private func emailInput() -> some View {
+        TextField("Enter your email", text: $email)
+            .font(.body)
+            .padding(.bottom, Spacing.s)
+            .backport.overlay {
+                RoundedRectangle(cornerRadius: Radius.xxs)
+                    .stroke(Color.Overgray010, lineWidth: 1)
+            }
+            .backport.overlay(alignment: .trailing) {
+                Button(action: {
+                    Task {
+                       await Web3Modal.magicService?.connectEmail(email: email)
+                    }
+                }, label: {
+                    Image(systemName: "chevron.right.circle.fill")
+                })
+                .disabled(email.count < 5) // TODO: Regex prolly?
+            }
+            
     }
     
     @ViewBuilder

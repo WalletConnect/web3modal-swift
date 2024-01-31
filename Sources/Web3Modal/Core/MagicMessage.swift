@@ -32,7 +32,7 @@ class MagicMessage {
         return params
     }
 
-    var description: String { return "{type: \"\(type)\"}" }
+    var toString: String { return "{type: \"\(type)\"}" }
 
     // @w3m-frame events
     var syncThemeSuccess: Bool { type == "@w3m-frame/SYNC_THEME_SUCCESS" }
@@ -66,7 +66,7 @@ class SwitchNetwork: MagicMessage {
         super.init(type: "@w3m-app/SWITCH_NETWORK")
     }
 
-    override var description: String {
+    override var toString: String {
         "{type:'\(type)',payload:{chainId:\(chainId)}}"
     }
 }
@@ -79,7 +79,7 @@ class ConnectEmail: MagicMessage {
         super.init(type: "@w3m-app/CONNECT_EMAIL")
     }
     
-    override var description: String {
+    override var toString: String {
         "{type:'\(type)',payload:{email:'\(email)'}}"
     }
 }
@@ -98,7 +98,7 @@ class ConnectOtp: MagicMessage {
         super.init(type: "@w3m-app/CONNECT_OTP")
     }
     
-    override var description: String {
+    override var toString: String {
         "{type:'\(type)',payload:{otp:'\(otp)'}}"
     }
 }
@@ -107,12 +107,12 @@ class GetUser: MagicMessage {
     
     let chainId: String?
 
-    init(chainId: String) {
+    init(chainId: String?) {
         self.chainId = chainId
         super.init(type: "@w3m-app/GET_USER")
     }
 
-    override var description: String {
+    override var toString: String {
         if let chainId {
             return "{type:'\(type)',payload:{chainId:\(chainId)}}"
         } else {
@@ -143,7 +143,7 @@ class RpcRequest: MagicMessage {
         super.init(type: "@w3m-app/RPC_REQUEST")
     }
 
-    override var description: String {
+    override var toString: String {
         let m = "method:'\(method)'"
         let p = params.map { "'\($0)'" }.joined(separator: ",")
         return "{type:'\(type)',payload:{\(m),params:[\(p)]}}"
@@ -165,7 +165,7 @@ class SyncTheme: MagicMessage {
         super.init(type: "@w3m-app/SYNC_THEME")
     }
 
-    override var description: String {
+    override var toString: String {
         let tm = "themeMode:'\(mode)'"
         return "{type:'\(type)',payload:{\(tm)}}"
     }
@@ -190,7 +190,7 @@ class SyncAppData: MagicMessage {
         super.init(type: "@w3m-app/SYNC_DAPP_DATA")
     }
 
-    override var description: String {
+    override var toString: String {
         let v = "verified: true"
         let p1 = "projectId:'\(projectId)'"
         let p2 = "sdkVersion:'\(sdkVersion)'"

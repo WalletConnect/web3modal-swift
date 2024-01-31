@@ -80,6 +80,8 @@ public class Web3Modal {
     private(set) static var config: Config!
     
     private(set) static var viewModel: Web3ModalViewModel!
+    
+    private(set) static var magicService: MagicService?
 
     private init() {}
 
@@ -124,6 +126,8 @@ public class Web3Modal {
             metadata: metadata,
             w3mApiInteractor: w3mApiInteractor
         )
+        
+        Web3Modal.magicService = MagicService()
         
         Web3Modal.viewModel = Web3ModalViewModel(
             router: router,
