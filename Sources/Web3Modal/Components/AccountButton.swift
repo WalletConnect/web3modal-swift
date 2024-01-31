@@ -203,10 +203,7 @@ public struct AccountButtonPreviewView: View {
         let store = Store()
         store.balance = balance
         store.session = .stub
-        store.account = W3MAccount(
-            address: Session.stub.accounts.first!.address,
-            chain: Session.stub.accounts.first!.blockchain
-        )
+        store.account = .stub
     
         return store
     }
