@@ -1,60 +1,85 @@
 import Foundation
 
-class MagicMessage {
-    var type: String
-    var payload: Any?
+
+protocol MagicMessageType: Codable {
+    var rawValue: String { get }
+}
+
+enum MagicMessageResponseType: String, MagicMessageType, Codable {
+    case syncThemeSuccess = "@w3m-frame/SYNC_THEME_SUCCESS"
+    case syncDataSuccess = "@w3m-frame/SYNC_DAPP_DATA_SUCCESS"
+    case connectEmailSuccess = "@w3m-frame/CONNECT_EMAIL_SUCCESS"
+    case connectEmailError = "@w3m-frame/CONNECT_EMAIL_ERROR"
+    case isConnectSuccess = "@w3m-frame/IS_CONNECTED_SUCCESS"
+    case isConnectError = "@w3m-frame/IS_CONNECTED_ERROR"
+    case connectOtpSuccess = "@w3m-frame/CONNECT_OTP_SUCCESS"
+    case connectOtpError = "@w3m-frame/CONNECT_OTP_ERROR"
+    case getUserSuccess = "@w3m-frame/GET_USER_SUCCESS"
+    case getUserError = "@w3m-frame/GET_USER_ERROR"
+    case sessionUpdate = "@w3m-frame/SESSION_UPDATE"
+    case switchNetworkSuccess = "@w3m-frame/SWITCH_NETWORK_SUCCESS"
+    case switchNetworkError = "@w3m-frame/SWITCH_NETWORK_ERROR"
+    case rpcRequestSuccess = "@w3m-frame/RPC_REQUEST_SUCCESS"
+    case rpcRequestError = "@w3m-frame/RPC_REQUEST_ERROR"
+}
+
+enum MagicMessageRequestType: String, MagicMessageType, Codable {
+    case syncTheme = "@w3m-app/SYNC_THEME"
+    case syncData = "@w3m-app/SYNC_DAPP_DATA"
+    case connectEmail = "@w3m-app/CONNECT_EMAIL"
+    case connectDevice = "@w3m-app/CONNECT_DEVICE"
+    case isConnected = "@w3m-app/IS_CONNECTED"
+    case connectOtp = "@w3m-app/CONNECT_OTP"
+    case switchNetwork = "@w3m-app/SWITCH_NETWORK"
+    case rpcRequest = "@w3m-app/RPC_REQUEST"
+    case signOut = "@w3m-app/SIGN_OUT"
+    case getUser = "@w3m-app/GET_USER"
+    case getChainId = "@w3m-app/GET_CHAIN_ID"
+    case updateEmail = "@w3m-app/UPDATE_EMAIL"
+}
+
+class MagicMessage: Decodable {
+    var type: MagicMessageType
+    var payload: AnyCodable?
     var rt: String?
     var jwt: String?
     var action: String?
+    
+    enum CodingKeys: CodingKey {
+        case type
+        case payload
+        case rt
+        case jwt
+        case action
+    }
 
-    init(type: String, payload: Any? = nil, rt: String? = nil, jwt: String? = nil, action: String? = nil) {
+    init(type: MagicMessageType, payload: AnyCodable? = nil, rt: String? = nil, jwt: String? = nil, action: String? = nil) {
         self.type = type
         self.payload = payload
         self.rt = rt
         self.jwt = jwt
         self.action = action
     }
-
-    func toJson() -> [String: Any] {
-        var params: [String: Any] = ["type": type]
-        if let payload = payload {
-            params["payload"] = payload
-        }
-        if let rt = rt, !rt.isEmpty {
-            params["rt"] = rt
-        }
-        if let jwt = jwt, !jwt.isEmpty {
-            params["jwt"] = jwt
-        }
-        if let action = action, !action.isEmpty {
-            params["action"] = action
-        }
-        return params
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.type = try container.decode(MagicMessageResponseType.self, forKey: .type)
+        self.payload = try container.decodeIfPresent(AnyCodable.self, forKey: .payload)
+        self.rt = try container.decodeIfPresent(String.self, forKey: .rt)
+        self.jwt = try container.decodeIfPresent(String.self, forKey: .jwt)
+        self.action = try container.decodeIfPresent(String.self, forKey: .action)
     }
 
     var toString: String { return "{type: \"\(type)\"}" }
-
-    // @w3m-frame events
-    var syncThemeSuccess: Bool { type == "@w3m-frame/SYNC_THEME_SUCCESS" }
-    var syncDataSuccess: Bool { type == "@w3m-frame/SYNC_DAPP_DATA_SUCCESS" }
-    var connectEmailSuccess: Bool { type == "@w3m-frame/CONNECT_EMAIL_SUCCESS" }
-    var connectEmailError: Bool { type == "@w3m-frame/CONNECT_EMAIL_ERROR" }
-    var isConnectSuccess: Bool { type == "@w3m-frame/IS_CONNECTED_SUCCESS" }
-    var isConnectError: Bool { type == "@w3m-frame/IS_CONNECTED_ERROR" }
-    var connectOtpSuccess: Bool { type == "@w3m-frame/CONNECT_OTP_SUCCESS" }
-    var connectOtpError: Bool { type == "@w3m-frame/CONNECT_OTP_ERROR" }
-    var getUserSuccess: Bool { type == "@w3m-frame/GET_USER_SUCCESS" }
-    var getUserError: Bool { type == "@w3m-frame/GET_USER_ERROR" }
-    var sessionUpdate: Bool { type == "@w3m-frame/SESSION_UPDATE" }
-    var switchNetworkSuccess: Bool { type == "@w3m-frame/SWITCH_NETWORK_SUCCESS" }
-    var switchNetworkError: Bool { type == "@w3m-frame/SWITCH_NETWORK_ERROR" }
-    var rpcRequestSuccess: Bool { type == "@w3m-frame/RPC_REQUEST_SUCCESS" }
-    var rpcRequestError: Bool { type == "@w3m-frame/RPC_REQUEST_ERROR" }
 }
 
 class IsConnected: MagicMessage {
     init() {
-        super.init(type: "@w3m-app/IS_CONNECTED")
+        super.init(type: MagicMessageRequestType.isConnected)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 }
 
@@ -63,11 +88,16 @@ class SwitchNetwork: MagicMessage {
 
     init(chainId: String) {
         self.chainId = chainId
-        super.init(type: "@w3m-app/SWITCH_NETWORK")
+        super.init(type: MagicMessageRequestType.switchNetwork)
     }
 
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+    }
+    
     override var toString: String {
-        "{type:'\(type)',payload:{chainId:\(chainId)}}"
+        "{type:'\(type.rawValue)',payload:{chainId:\(chainId)}}"
     }
 }
 
@@ -76,7 +106,11 @@ class ConnectEmail: MagicMessage {
     
     init(email: String) {
         self.email = email
-        super.init(type: "@w3m-app/CONNECT_EMAIL")
+        super.init(type: MagicMessageRequestType.connectEmail)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
     
     override var toString: String {
@@ -86,7 +120,11 @@ class ConnectEmail: MagicMessage {
 
 class ConnectDevice: MagicMessage {
     init() {
-        super.init(type: "@w3m-app/CONNECT_DEVICE")
+        super.init(type: MagicMessageRequestType.connectDevice)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 }
 
@@ -95,7 +133,11 @@ class ConnectOtp: MagicMessage {
     
     init(otp: String) {
         self.otp = otp
-        super.init(type: "@w3m-app/CONNECT_OTP")
+        super.init(type: MagicMessageRequestType.connectOtp)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
     
     override var toString: String {
@@ -109,7 +151,11 @@ class GetUser: MagicMessage {
 
     init(chainId: String?) {
         self.chainId = chainId
-        super.init(type: "@w3m-app/GET_USER")
+        super.init(type: MagicMessageRequestType.getUser)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 
     override var toString: String {
@@ -123,13 +169,21 @@ class GetUser: MagicMessage {
 
 class SignOut: MagicMessage {
     init() {
-        super.init(type: "@w3m-app/SIGN_OUT")
+        super.init(type: MagicMessageRequestType.signOut)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 }
 
 class GetChainId: MagicMessage {
     init() {
-        super.init(type: "@w3m-app/GET_CHAIN_ID")
+        super.init(type: MagicMessageRequestType.getChainId)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 }
 
@@ -140,7 +194,11 @@ class RpcRequest: MagicMessage {
     init(method: String, params: [Any]) {
         self.method = method
         self.params = params
-        super.init(type: "@w3m-app/RPC_REQUEST")
+        super.init(type: MagicMessageRequestType.rpcRequest)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 
     override var toString: String {
@@ -153,7 +211,11 @@ class RpcRequest: MagicMessage {
 // readonly APP_AWAIT_UPDATE_EMAIL: "@w3m-app/AWAIT_UPDATE_EMAIL";
 class UpdateEmail: MagicMessage {
     init() {
-        super.init(type: "@w3m-app/UPDATE_EMAIL")
+        super.init(type: MagicMessageRequestType.updateEmail)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 }
 
@@ -162,9 +224,13 @@ class SyncTheme: MagicMessage {
 
     init(mode: String = "light") {
         self.mode = mode
-        super.init(type: "@w3m-app/SYNC_THEME")
+        super.init(type: MagicMessageRequestType.syncTheme)
     }
 
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+    }
+    
     override var toString: String {
         let tm = "themeMode:'\(mode)'"
         return "{type:'\(type)',payload:{\(tm)}}"
@@ -187,7 +253,11 @@ class SyncAppData: MagicMessage {
         self.metadata = metadata
         self.sdkVersion = sdkVersion
         self.projectId = projectId
-        super.init(type: "@w3m-app/SYNC_DAPP_DATA")
+        super.init(type: MagicMessageRequestType.syncData)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
     }
 
     override var toString: String {

@@ -165,7 +165,15 @@ class MagicService {
 
 class MessageHandler: NSObject, WKScriptMessageHandler {
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print(message.body)
+        guard let bodyString = message.body as? String,
+              let data = bodyString.data(using: .utf8) else { return }
+
+        do {
+            let jsonMessage = try JSONDecoder().decode(MagicMessage.self, from: data)
+            // Handle the decoded message
+        } catch {
+            print("Error decoding message: \(error)")
+        }
     }
 }
 

@@ -48,6 +48,7 @@ class Router: ObservableObject {
 
     enum ConnectingSubpage: SubPage {
         case connectWallet
+        case otp
         case qr
         case allWallets
         case whatIsAWallet

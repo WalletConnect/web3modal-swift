@@ -23,6 +23,8 @@ struct Web3ModalView: View {
             EmptyView()
         case .connectWallet:
             ConnectWalletView()
+        case .otp:
+            EnterOTPView()
         case .allWallets:
             if #available(iOS 14.0, *) {
                 AllWalletsView()
@@ -114,6 +116,8 @@ extension Router.ConnectingSubpage {
             return "Connect wallet"
         case .qr:
             return "WalletConnect"
+        case .otp:
+            return "Confirm Email"
         case .allWallets:
             return "All wallets"
         case .whatIsAWallet:
