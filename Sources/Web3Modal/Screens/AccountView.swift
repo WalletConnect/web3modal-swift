@@ -8,7 +8,7 @@ struct AccountView: View {
     @EnvironmentObject var store: Store
     
     var addressFormatted: String? {
-        guard let address = store.session?.accounts.first?.address else {
+        guard let address = store.account?.address else {
             return nil
         }
         
@@ -158,7 +158,7 @@ struct AccountView: View {
                 .frame(width: 64, height: 64)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(.GrayGlass010, lineWidth: 8))
-        } else if let address = store.session?.accounts.first?.address {
+        } else if let address = store.account?.address {
             W3MAvatarGradient(address: address)
                 .frame(width: 64, height: 64)
                 .overlay(Circle().stroke(.GrayGlass010, lineWidth: 8))

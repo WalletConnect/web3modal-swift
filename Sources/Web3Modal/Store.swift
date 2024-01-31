@@ -1,6 +1,11 @@
 import Combine
 import SwiftUI
 
+enum ConnectionProviderType {
+    case wc
+    case cb
+}
+
 class Store: ObservableObject {
     static var shared: Store = .init()
     
@@ -9,8 +14,32 @@ class Store: ObservableObject {
     @Published var identity: Identity?
     @Published var balance: Double?
     
+    @Published var connectedWith: ConnectionProviderType?
     @Published var connecting: Bool = false
-    @Published var session: Session?
+    @Published var account: W3MAccount? {
+        didSet {
+            let matchingChain = ChainPresets.ethChains.first(where: {
+                $0.chainNamespace == account?.chain.namespace && $0.chainReference == account?.chain.reference
+            })
+            
+            Store.shared.selectedChain = matchingChain
+            
+            AccountStorage.save(account)
+        }
+    }
+    
+    // WalletConnect specific
+    @Published var session: Session? {
+        didSet {
+            if let blockchain = session?.accounts.first?.blockchain {
+                let matchingChain = ChainPresets.ethChains.first(where: {
+                    $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
+                })
+                
+                Store.shared.selectedChain = matchingChain
+            }
+        }
+    }
     @Published var uri: WalletConnectURI?
     
     @Published var wallets: Set<Wallet> = []
@@ -37,4 +66,25 @@ class Store: ObservableObject {
     @Published var chainImages: [String: UIImage] = [:]
     
     @Published var toast: Toast? = nil
+}
+
+struct W3MAccount: Codable {
+    let address: String
+    let chain: Blockchain
+}
+
+extension W3MAccount {
+    
+    init?(from session: Session) {
+        guard let account = session.accounts.first else {
+            return nil
+        }
+        
+        self.init(address: account.address, chain: account.blockchain)
+    }
+    
+    static let stub: Self = .init(
+        address: "0x5c8877144d858e41d8c33f5baa7e67a5e0027e37",
+        chain: Blockchain(namespace: "eip155", reference: "56")!
+    )
 }

@@ -67,11 +67,17 @@ class WalletDetailViewModel: ObservableObject {
             UIPasteboard.general.string = store.uri?.absoluteString ?? ""
             store.toast = .init(style: .success, message: "Link copied")
         case .onAppear:
-            navigateToDeepLink(
-                wallet: wallet,
-                preferBrowser: preferredPlatform == .browser
-            )
             
+            if wallet.alternativeConnectionMethod == nil {
+                
+                navigateToDeepLink(
+                    wallet: wallet,
+                    preferBrowser: preferredPlatform == .browser
+                )
+            } else {
+                wallet.alternativeConnectionMethod?()
+            }
+                
             var wallet = wallet
             wallet.lastTimeUsed = Date()
             
@@ -79,10 +85,14 @@ class WalletDetailViewModel: ObservableObject {
         case .didTapOpen:
             retryShown = false
             
-            navigateToDeepLink(
-                wallet: wallet,
-                preferBrowser: preferredPlatform == .browser
-            )
+            if wallet.alternativeConnectionMethod == nil {
+                navigateToDeepLink(
+                    wallet: wallet,
+                    preferBrowser: preferredPlatform == .browser
+                )
+            } else {
+                wallet.alternativeConnectionMethod?()
+            }
             
         case .didTapAppStore:
             openAppstore(wallet: wallet)

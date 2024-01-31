@@ -1,3 +1,4 @@
+import CoinbaseWalletSDK
 import Foundation
 import SwiftUI
 
@@ -29,23 +30,38 @@ public class Web3Modal {
             store: .shared
         )
         
+        let store = Store.shared
+        
         if let session = client.getSessions().first {
-            Store.shared.session = session
+            store.session = session
+            store.connectedWith = .wc
+            store.account = .init(from: session)
+        } else if CoinbaseWalletSDK.shared.isConnected() {
             
-            if let blockchain = session.accounts.first?.blockchain {
-                let matchingChain = ChainPresets.ethChains.first(where: {
-                    $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
-                })
-                
-                Store.shared.selectedChain = matchingChain
-            }
+            let storedAccount = AccountStorage.read()
+            store.connectedWith = .cb
+            store.account = storedAccount
+        } else {
+            AccountStorage.clear()
         }
         
         return client
     }()
     
     struct Config {
-        static let sdkVersion: String = EnvironmentInfo.sdkVersion
+        static let sdkVersion: String = {
+            guard
+                let fileURL = Bundle.coreModule.url(forResource: "PackageConfig", withExtension: "json"),
+                let data = try? Data(contentsOf: fileURL),
+                let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                let version = jsonObject["version"] as? String
+            else {
+                return "undefined"
+            }
+                    
+            return "swift-\(version)"
+        }()
+
         static let sdkType = "w3m"
         
         let projectId: String
@@ -56,7 +72,9 @@ public class Web3Modal {
         let recommendedWalletIds: [String]
         let excludedWalletIds: [String]
         let customWallets: [Wallet]
-        public let onError: (Error) -> Void
+        let coinbaseEnabled: Bool
+
+        let onError: (Error) -> Void
     }
     
     private(set) static var config: Config!
@@ -76,6 +94,7 @@ public class Web3Modal {
         recommendedWalletIds: [String] = [],
         excludedWalletIds: [String] = [],
         customWallets: [Wallet] = [],
+        coinbaseEnabled: Bool = true,
         onError: @escaping (Error) -> Void = { _ in }
     ) {
         Pair.configure(metadata: metadata)
@@ -88,6 +107,7 @@ public class Web3Modal {
             recommendedWalletIds: recommendedWalletIds,
             excludedWalletIds: excludedWalletIds,
             customWallets: customWallets,
+            coinbaseEnabled: coinbaseEnabled,
             onError: onError
         )
         
@@ -96,9 +116,14 @@ public class Web3Modal {
         let w3mApiInteractor = W3MAPIInteractor(store: store)
         let signInteractor = SignInteractor(store: store)
         let blockchainApiInteractor = BlockchainAPIInteractor(store: store)
-        let interactor = W3MAPIInteractor()
         
         store.customWallets = customWallets
+        
+        configureCoinbaseIfNeeded(
+            store: store,
+            metadata: metadata,
+            w3mApiInteractor: w3mApiInteractor
+        )
         
         Web3Modal.viewModel = Web3ModalViewModel(
             router: router,
@@ -109,23 +134,90 @@ public class Web3Modal {
         )
         
         Task {
-            try? await interactor.fetchWalletImages(for: store.recentWallets + store.customWallets)
-            try? await interactor.fetchAllWalletMetadata()
-            try? await interactor.fetchFeaturedWallets()
-            try? await interactor.prefetchChainImages()
+            try? await w3mApiInteractor.fetchWalletImages(for: store.recentWallets + store.customWallets)
+            try? await w3mApiInteractor.fetchAllWalletMetadata()
+            try? await w3mApiInteractor.fetchFeaturedWallets()
+            try? await w3mApiInteractor.prefetchChainImages()
         }
     }
     
     public static func set(sessionParams: SessionParams) {
         Web3Modal.config.sessionParams = sessionParams
     }
+    
+    private static func configureCoinbaseIfNeeded(
+        store: Store,
+        metadata: AppMetadata,
+        w3mApiInteractor: W3MAPIInteractor
+    ) {
+        guard Web3Modal.config.coinbaseEnabled else { return }
+        
+        if let redirectLink = metadata.redirect?.universal ?? metadata.redirect?.native {
+            CoinbaseWalletSDK.configure(callback: URL(string: redirectLink)!)
+        } else {
+            CoinbaseWalletSDK.configure(
+                callback: URL(string: "w3mdapp://")!
+            )
+        }
+            
+        var wallet: Wallet = .init(
+            id: "fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa",
+            name: "Coinbase",
+            homepage: "https://www.coinbase.com/wallet/",
+            imageId: "a5ebc364-8f91-4200-fcc6-be81310a0000",
+            order: 4,
+            mobileLink: nil,
+            desktopLink: nil,
+            webappLink: nil,
+            appStore: "https://apps.apple.com/us/app/coinbase-wallet-nfts-crypto/id1278383455",
+            alternativeConnectionMethod: {
+                CoinbaseWalletSDK.shared.initiateHandshake { result, account in
+                    switch result {
+                        case .success:
+                            guard
+                                let account = account,
+                                let blockchain = Blockchain(
+                                    namespace: account.chain == "eth" ? "eip155" : "",
+                                    reference: String(account.networkId)
+                                )
+                            else { return }
+                        
+                            store.connectedWith = .cb
+                            store.account = .init(
+                                address: account.address,
+                                chain: blockchain
+                            )
+                        
+                            withAnimation {
+                                store.isModalShown = false
+                            }
+                            Web3Modal.viewModel.router.setRoute(Router.AccountSubpage.profile)
+                            
+                            let matchingChain = ChainPresets.ethChains.first(where: {
+                                $0.chainNamespace == blockchain.namespace && $0.chainReference == blockchain.reference
+                            })
+                        
+                            store.selectedChain = matchingChain
+                        case .failure(let error):
+                            store.toast = .init(style: .error, message: error.localizedDescription)
+                    }
+                }
+            }
+        )
+            
+        wallet.isInstalled = CoinbaseWalletSDK.isCoinbaseWalletInstalled()
+            
+        store.customWallets.append(wallet)
+            
+        Task { [wallet] in
+            try? await w3mApiInteractor.fetchWalletImages(for: [wallet])
+        }
+    }
 }
 
 #if canImport(UIKit)
 
 public extension Web3Modal {
-    
-    
     static func selectChain(from presentingViewController: UIViewController? = nil) {
         guard let vc = presentingViewController ?? topViewController() else {
             assertionFailure("No controller found for presenting modal")
@@ -152,7 +244,7 @@ public extension Web3Modal {
         
         Store.shared.connecting = true
         
-        Web3Modal.viewModel.router.setRoute(Store.shared.session != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
+        Web3Modal.viewModel.router.setRoute(Store.shared.account != nil ? Router.AccountSubpage.profile : Router.ConnectingSubpage.connectWallet)
         
         let modal = Web3ModalSheetController(router: Web3Modal.viewModel.router)
         vc.present(modal, animated: true)

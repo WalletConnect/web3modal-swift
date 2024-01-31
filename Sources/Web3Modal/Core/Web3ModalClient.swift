@@ -1,3 +1,4 @@
+import CoinbaseWalletSDK
 import Combine
 import Foundation
 import UIKit
@@ -41,9 +42,21 @@ public class Web3ModalClient {
     /// Publisher that sends response for session request
     ///
     /// In most cases that event will be emited on dApp client.
-    public var sessionResponsePublisher: AnyPublisher<Response, Never> {
-        signClient.sessionResponsePublisher.eraseToAnyPublisher()
+    public var sessionResponsePublisher: AnyPublisher<W3MResponse, Never> {
+        signClient.sessionResponsePublisher
+            .map { response in
+                W3MResponse(
+                    id: response.id,
+                    topic: response.topic,
+                    chainId: response.chainId,
+                    result: response.result
+                )
+            }
+            .merge(with: coinbaseResponseSubject)
+            .eraseToAnyPublisher()
     }
+    
+    public var coinbaseResponseSubject = PassthroughSubject<W3MResponse, Never>()
     
     /// Publisher that sends web socket connection status
     public var socketConnectionStatusPublisher: AnyPublisher<SocketConnectionStatus, Never> {
@@ -157,10 +170,81 @@ public class Web3ModalClient {
         }
     }
     
+    public func request(_ request: W3MJSONRPC) async throws {
+        switch store.connectedWith {
+        case .wc:
+            guard
+                let session = getSessions().first,
+                let chain = getSelectedChain(),
+                let blockchain = Blockchain(namespace: chain.chainNamespace, reference: chain.chainReference)
+            else { return }
+            
+            if case let .personal_sign(address, message) = request {
+                try await signClient.request(
+                    params: .init(
+                        topic: session.topic,
+                        method: request.rawValues.method,
+                        params: AnyCodable(any: [message, address]),
+                        chainId: blockchain
+                    )
+                )
+            } else {
+                try await signClient.request(
+                    params: .init(
+                        topic: session.topic,
+                        method: request.rawValues.method,
+                        params: AnyCodable(any: request.rawValues.params),
+                        chainId: blockchain
+                    )
+                )
+            }
+        case .cb:
+                    
+            guard let jsonRpc = request.toCbAction() else { return }
+                    
+            // Execute on main as Coinbase SDK is not dispatching on main when calling UIApplication.openUrl()
+            DispatchQueue.main.async {
+                CoinbaseWalletSDK.shared.makeRequest(
+                    .init(
+                        actions: [
+                            Action(jsonRpc: jsonRpc)
+                        ]
+                    )
+                ) { result in
+                    let response: W3MResponse
+                    switch result {
+                    case let .success(payload):
+                        
+                        switch payload.content.first {
+                        case let .success(JSONString):
+                            response = .init(result: .response(AnyCodable(JSONString)))
+                        case let .failure(error):
+                            response = .init(result: .error(.init(code: error.code, message: error.message)))
+                        case .none:
+                            response = .init(result: .error(.init(code: -1, message: "Empty response")))
+                        }
+                    case let .failure(error):
+                        Web3Modal.config.onError(error)
+                        
+                        if let cbError = error as? ActionError {
+                            response = .init(result: .error(.init(code: cbError.code, message: cbError.message)))
+                        } else {
+                            response = .init(result: .error(.init(code: -1, message: error.localizedDescription)))
+                        }
+                    }
+                    
+                    self.coinbaseResponseSubject.send(response)
+                }
+            }
+        case .none:
+            break
+        }
+    }
+    
     /// For sending JSON-RPC requests to wallet.
     /// - Parameters:
     ///   - params: Parameters defining request and related session
-    public func request(params: Request) async throws {
+    public func request(params: WalletConnectSign.Request) async throws {
         do {
             try await signClient.request(params: params)
         } catch {
@@ -176,11 +260,18 @@ public class Web3ModalClient {
     /// - Parameters:
     ///   - topic: Session topic that you want to delete
     public func disconnect(topic: String) async throws {
-        do {
-            try await signClient.disconnect(topic: topic)
-        } catch {
-            Web3Modal.config.onError(error)
-            throw error
+        switch store.connectedWith {
+        case .wc:
+            do {
+                try await signClient.disconnect(topic: topic)
+            } catch {
+                Web3Modal.config.onError(error)
+                throw error
+            }
+        case .cb:
+            CoinbaseWalletSDK.shared.resetSession()
+        case .none:
+            break
         }
     }
     
@@ -208,6 +299,12 @@ public class Web3ModalClient {
         }
     }
     
+    public func getAddress() -> String? {
+        guard let account = store.account else { return nil }
+        
+        return account.address
+    }
+    
     public func getSelectedChain() -> Chain? {
         guard let chain = store.selectedChain else {
             return nil
@@ -233,6 +330,16 @@ public class Web3ModalClient {
         
         DispatchQueue.main.async {
             UIApplication.shared.open(url, completionHandler: nil)
+        }
+    }
+    
+    @discardableResult
+    public func handleDeeplink(_ url: URL) -> Bool {
+        do {
+            return try CoinbaseWalletSDK.shared.handleResponse(url)
+        } catch {
+            store.toast = .init(style: .error, message: error.localizedDescription)
+            return false
         }
     }
 }

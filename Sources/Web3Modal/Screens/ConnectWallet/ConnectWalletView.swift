@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 struct ConnectWalletView: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var router: Router
@@ -8,72 +7,31 @@ struct ConnectWalletView: View {
     let displayWCConnection = false
     
     var wallets: [Wallet] {
+        var recentWallets = store.recentWallets
         
-        var uniqueValues: [Wallet] = []
-        (store.recentWallets + store.featuredWallets + store.customWallets).forEach { item in
-            guard !uniqueValues.contains(where: { wallet in
-                item.id == wallet.id
-            }) else { return }
-            uniqueValues.append(item)
+        let result = (store.featuredWallets + store.customWallets).map { featuredWallet in
+            var featuredWallet = featuredWallet
+            let (index, matchingRecentWallet) = recentWallets.enumerated().first { (index, recentWallet) in
+                featuredWallet.id == recentWallet.id
+            } ?? (nil, nil)
+            
+            
+            if let match = matchingRecentWallet, let matchingIndex = index  {
+                featuredWallet.lastTimeUsed = match.lastTimeUsed
+                recentWallets.remove(at: matchingIndex)
+            }
+            
+            return featuredWallet
         }
-        return uniqueValues
+        
+        return (recentWallets + result)
     }
     
     var body: some View {
         VStack {
-            if displayWCConnection {
-                Button(action: {
-                    router.setRoute(Router.ConnectingSubpage.qr)
-                }, label: {
-                    Text("WalletConnect")
-                })
-                .buttonStyle(W3MListSelectStyle(
-                    imageContent: { _ in 
-                        ZStack {
-                            Color.Blue100
-                            
-                            Image.imageLogo
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .foregroundColor(.white)
-                        }
-                    },
-                    tag: W3MTag(title: "QR CODE", variant: .main)
-                ))
-            }
+            wcConnection()
             
-            ForEach(wallets, id: \.self) { wallet in
-                Group {
-                    let isRecent: Bool = wallet.lastTimeUsed != nil
-                    let tagTitle: String? = isRecent ? "RECENT" : nil
-                    
-                    Button(action: {
-                        router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
-                    }, label: {
-                        Text(wallet.name)
-                    })
-                    .buttonStyle(W3MListSelectStyle(
-                        imageContent: { scale in
-                            Group {
-                                if let storedImage = store.walletImages[wallet.id] {
-                                    Image(uiImage: storedImage)
-                                        .resizable()
-                                } else {
-                                    Image.Regular.wallet
-                                        .resizable()
-                                        .padding(Spacing.xxs)
-                                }
-                            }
-                            .background(Color.Overgray005)
-                            .backport.overlay {
-                                RoundedRectangle(cornerRadius: Radius.xxxs)
-                                    .stroke(.Overgray010, lineWidth: 1)
-                            }
-                        },
-                        tag: tagTitle != nil ? .init(title: tagTitle!, variant: .info) : nil
-                    ))
-                }
-            }
+            featuredWallets()
                 
             Button(action: {
                 router.setRoute(Router.ConnectingSubpage.allWallets)

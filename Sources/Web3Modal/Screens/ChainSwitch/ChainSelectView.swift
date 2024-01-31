@@ -90,10 +90,10 @@ struct ChainSelectView: View {
         let currentChains = viewModel.getChains()
         let currentMethods = viewModel.getMethods()
         let needToSendSwitchRequest = currentMethods.contains("wallet_switchEthereumChain")
-        let isChainApproved = store.session != nil ? currentChains.contains(chain) : true
+        let isChainApproved = store.account != nil ? currentChains.contains(chain) : true
         
         return Button(action: {
-            if store.session == nil {
+            if store.account == nil {
                 store.selectedChain = chain
                 router.setRoute(Router.ConnectingSubpage.connectWallet)
             } else if isChainApproved, !needToSendSwitchRequest {

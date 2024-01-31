@@ -16,12 +16,12 @@ struct ContentView: View {
                 
                 Spacer()
                 
-                Button("Sign transaction") {
+                Button("Personal sign") {
                     requestPersonalSign()
                     Web3Modal.instance.launchCurrentWallet()
                 }
                 .buttonStyle(W3MButtonStyle())
-                    
+                
                 NavigationLink(destination: ComponentLibraryView(), isActive: $showUIComponents) {
                     Button("UI components") {
                         showUIComponents = true
@@ -41,28 +41,21 @@ struct ContentView: View {
                 },
                 alignment: .top
             )
-            .onReceive(Web3Modal.instance.socketConnectionStatusPublisher.receive(on: RunLoop.main), perform: { status in
+            .onReceive(Web3Modal.instance.socketConnectionStatusPublisher, perform: { status in
                 socketConnected = status == .connected
+                print("🧦 \(status)")
             })
         }
     }
     
     func requestPersonalSign() {
-        guard
-            let session = Web3Modal.instance.getSessions().first,
-            let chain = Web3Modal.instance.getSelectedChain(),
-            let blockchain = Blockchain(namespace: chain.chainNamespace, reference: chain.chainReference)
-        else { return }
-        
         Task {
-            try await Web3Modal.instance.request(
-                params: .init(
-                    topic: session.topic,
-                    method: "personal_sign",
-                    params: AnyCodable(any: [session.accounts.first?.address ?? "", "Hello world!"]),
-                    chainId: blockchain
-                )
-            )
+            do {
+                guard let address = Web3Modal.instance.getAddress() else { return }
+                try await Web3Modal.instance.request(.personal_sign(address: address, message: "Hello there!"))
+            } catch {
+                print(error)
+            }
         }
     }
 }

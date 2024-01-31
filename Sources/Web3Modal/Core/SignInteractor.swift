@@ -7,7 +7,7 @@ class SignInteractor: ObservableObject {
     
     lazy var sessionsPublisher: AnyPublisher<[Session], Never> = Web3Modal.instance.sessionsPublisher
     lazy var sessionSettlePublisher: AnyPublisher<Session, Never> = Web3Modal.instance.sessionSettlePublisher
-    lazy var sessionResponsePublisher: AnyPublisher<Response, Never> = Web3Modal.instance.sessionResponsePublisher
+    lazy var sessionResponsePublisher: AnyPublisher<W3MResponse, Never> = Web3Modal.instance.sessionResponsePublisher
     lazy var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never> = Web3Modal.instance.sessionRejectionPublisher
     lazy var sessionDeletePublisher: AnyPublisher<(String, Reason), Never> = Web3Modal.instance.sessionDeletePublisher
     lazy var sessionEventPublisher: AnyPublisher<(event: Session.Event, sessionTopic: String, chainId: Blockchain?), Never> = Web3Modal.instance.sessionEventPublisher
@@ -28,18 +28,19 @@ class SignInteractor: ObservableObject {
         defer {
             DispatchQueue.main.async {
                 self.store.session = nil
+                self.store.account = nil
             }
         }
         
         do {
             try await Web3Modal.instance.disconnect(topic: store.session?.topic ?? "")
-            try await Web3Modal.instance.cleanup()
-            try await createPairingAndConnect()
         } catch {
             DispatchQueue.main.async {
                 self.store.toast = .init(style: .error, message: "Failed to disconnect.")
-                Web3Modal.config.onError(error)
             }
+            Web3Modal.config.onError(error)
         }
+        try await Web3Modal.instance.cleanup()
+        try await createPairingAndConnect()
     }
 }

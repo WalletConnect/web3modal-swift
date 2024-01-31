@@ -20,7 +20,7 @@ struct AccountButtonStyle: ButtonStyle {
     var isPressedOverride: Bool?
     
     var addressFormatted: String? {
-        guard let address = store.session?.accounts.first?.address else {
+        guard let address = store.account?.address else {
             return nil
         }
         
@@ -134,7 +134,7 @@ struct AccountButtonStyle: ButtonStyle {
         Group {
             if let avatarUrlString = store.identity?.avatar, let url = URL(string: avatarUrlString) {
                 Backport.AsyncImage(url: url)
-            } else if let address = store.session?.accounts.first?.address {
+            } else if let address = store.account?.address {
                 W3MAvatarGradient(address: address)
             }
         }
@@ -203,6 +203,10 @@ public struct AccountButtonPreviewView: View {
         let store = Store()
         store.balance = balance
         store.session = .stub
+        store.account = W3MAccount(
+            address: Session.stub.accounts.first!.address,
+            chain: Session.stub.accounts.first!.blockchain
+        )
     
         return store
     }

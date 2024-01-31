@@ -1,6 +1,7 @@
+import Combine
 import Sentry
 import SwiftUI
-
+import UIKit
 import WalletConnectSign
 import Web3Modal
 
@@ -10,20 +11,24 @@ import Atlantis
 
 @main
 struct ExampleApp: App {
+    private var disposeBag = Set<AnyCancellable>()
+
+    @State var alertMessage: String = ""
+
     init() {
         #if DEBUG
         Atlantis.start()
         #endif
 
         let projectId = Secrets.load().projectID
-        
+
         // We're tracking Crash Reports / Issues from the Demo App to keep improving the SDK
         SentrySDK.start { options in
             options.dsn = "https://8b29c857724b94a32ac07ced45452702@o1095249.ingest.sentry.io/4506394479099904"
             options.debug = false
             options.enableTracing = true
         }
-        
+
         SentrySDK.configureScope { scope in
             scope.setContext(value: ["projectId": projectId], key: "Project")
         }
@@ -37,6 +42,7 @@ struct ExampleApp: App {
         )
 
         Networking.configure(
+            groupIdentifier: "group.com.walletconnect.web3modal",
             projectId: projectId,
             socketFactory: WalletConnectSocketClientFactory()
         )
@@ -56,12 +62,36 @@ struct ExampleApp: App {
             ]
         ) { error in
             SentrySDK.capture(error: error)
+            
+            print(error)
         }
     }
 
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onOpenURL { url in
+                    Web3Modal.instance.handleDeeplink(url)
+                }
+                .alert(
+                    "Response",
+                    isPresented: .init(
+                        get: { !alertMessage.isEmpty },
+                        set: { _ in alertMessage = "" }
+                    )
+                ) {
+                    Button("Dismiss", role: .cancel) {}
+                } message: {
+                    Text(alertMessage)
+                }
+                .onReceive(Web3Modal.instance.sessionResponsePublisher, perform: { response in
+                    switch response.result {
+                    case let .response(value):
+                        alertMessage = "Session response: \(value.stringRepresentation)"
+                    case let .error(error):
+                        alertMessage = "Session error: \(error)"
+                    }
+                })
         }
     }
 }
