@@ -39,6 +39,7 @@
 		CFD7207B2A9CC60700636CAF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CFD7207D2A9CC60700636CAF /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		CFD7207F2A9CC60700636CAF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		CFEAAF082B6C0A58001565F5 /* Configuration.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +96,7 @@
 				CFA99B912AD0549F00EB5331 /* WCSocketFactory.swift */,
 				CFD720772A9CC60600636CAF /* ExampleApp.swift */,
 				CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */,
+				CFEAAF082B6C0A58001565F5 /* Configuration.xcconfig */,
 				CF0BCCE42AB0886400A2866C /* ContentView.swift */,
 				CFD7207B2A9CC60700636CAF /* Assets.xcassets */,
 				CFD7207D2A9CC60700636CAF /* Example.entitlements */,
