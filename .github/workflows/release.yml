@@ -1,0 +1,34 @@
+name: release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: 
+      group: apple-silicon
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/cache@v3
+      with:
+        path: |
+          .build
+          SourcePackagesCache
+          DerivedDataCache
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+
+    - name: Release
+      shell: bash
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_USER: ${{ secrets.GH_USER }}
+        APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+        APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+        APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
+      run: |
+        make release TOKEN=$(echo -n $GH_USER:$GH_TOKEN | base64) PROJECT_ID=${{ secrets.RELEASE_PROJECT_ID }} 
