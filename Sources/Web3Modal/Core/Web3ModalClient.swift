@@ -1,4 +1,6 @@
-import CoinbaseWalletSDK
+import class CoinbaseWalletSDK.CoinbaseWalletSDK
+import struct CoinbaseWalletSDK.Action
+import struct CoinbaseWalletSDK.ActionError
 import Combine
 import Foundation
 import UIKit
@@ -244,7 +246,7 @@ public class Web3ModalClient {
     /// For sending JSON-RPC requests to wallet.
     /// - Parameters:
     ///   - params: Parameters defining request and related session
-    public func request(params: WalletConnectSign.Request) async throws {
+    public func request(params: Request) async throws {
         do {
             try await signClient.request(params: params)
         } catch {

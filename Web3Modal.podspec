@@ -31,6 +31,7 @@ Pod::Spec.new do |spec|
         ss.dependency 'Web3Modal/Web3ModalBackport'
         ss.dependency 'WalletConnectSwiftV2/WalletConnectSign', '~> 1.9.0'
         ss.dependency 'DSF_QRCode', '~> 16.1.1'
+        ss.dependency 'CoinbaseWalletSDK', '~> 1.0.4'
         ss.resource_bundles = { 'Web3Modal' => ['Sources/Web3Modal/Resources/*'] }
     end
 
