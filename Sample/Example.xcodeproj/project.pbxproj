@@ -14,14 +14,12 @@
 		CF3B9AD02ACDBA3A00984D53 /* Web3Modal in Frameworks */ = {isa = PBXBuildFile; productRef = CF3B9ACF2ACDBA3A00984D53 /* Web3Modal */; };
 		CF3B9AD22ACDBA3A00984D53 /* Web3ModalUI in Frameworks */ = {isa = PBXBuildFile; productRef = CF3B9AD12ACDBA3A00984D53 /* Web3ModalUI */; };
 		CFA99B922AD0549F00EB5331 /* WCSocketFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA99B912AD0549F00EB5331 /* WCSocketFactory.swift */; };
-		CFA99B962AD054A600EB5331 /* secrets.sample.json in Resources */ = {isa = PBXBuildFile; fileRef = CFA99B942AD054A600EB5331 /* secrets.sample.json */; };
-		CFA99B972AD054A600EB5331 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA99B952AD054A600EB5331 /* Secrets.swift */; };
-		CFA99B992AD054CD00EB5331 /* secrets.json in Resources */ = {isa = PBXBuildFile; fileRef = CFA99B982AD054CD00EB5331 /* secrets.json */; };
 		CFD6A70F2ADE8DE2002B402C /* Atlantis in Frameworks */ = {isa = PBXBuildFile; productRef = CFD6A70E2ADE8DE2002B402C /* Atlantis */; };
 		CFD720782A9CC60600636CAF /* ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720772A9CC60600636CAF /* ExampleApp.swift */; };
 		CFD7207A2A9CC60600636CAF /* ComponentLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */; };
 		CFD7207C2A9CC60700636CAF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFD7207B2A9CC60700636CAF /* Assets.xcassets */; };
 		CFD720802A9CC60700636CAF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFD7207F2A9CC60700636CAF /* Preview Assets.xcassets */; };
+		CFEAAF0A2B6C0B3A001565F5 /* InputConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFEAAF092B6C0B3A001565F5 /* InputConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,9 +27,6 @@
 		CF533D032ADD411A00B3441C /* web3modal-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "web3modal-swift"; path = ..; sourceTree = "<group>"; };
 		CF74C5C62B323048007B0926 /* swift-web3modal-Package.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "swift-web3modal-Package.xctestplan"; sourceTree = "<group>"; };
 		CFA99B912AD0549F00EB5331 /* WCSocketFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WCSocketFactory.swift; sourceTree = "<group>"; };
-		CFA99B942AD054A600EB5331 /* secrets.sample.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = secrets.sample.json; sourceTree = "<group>"; };
-		CFA99B952AD054A600EB5331 /* Secrets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
-		CFA99B982AD054CD00EB5331 /* secrets.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = secrets.json; sourceTree = "<group>"; };
 		CFD6A7102ADE8E26002B402C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		CFD720742A9CC60600636CAF /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFD720772A9CC60600636CAF /* ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleApp.swift; sourceTree = "<group>"; };
@@ -39,6 +34,8 @@
 		CFD7207B2A9CC60700636CAF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CFD7207D2A9CC60700636CAF /* Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Example.entitlements; sourceTree = "<group>"; };
 		CFD7207F2A9CC60700636CAF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		CFEAAF082B6C0A58001565F5 /* Configuration.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration.xcconfig; sourceTree = "<group>"; };
+		CFEAAF092B6C0B3A001565F5 /* InputConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,16 +55,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CFA99B932AD054A600EB5331 /* Secrets */ = {
-			isa = PBXGroup;
-			children = (
-				CFA99B942AD054A600EB5331 /* secrets.sample.json */,
-				CFA99B982AD054CD00EB5331 /* secrets.json */,
-				CFA99B952AD054A600EB5331 /* Secrets.swift */,
-			);
-			path = Secrets;
-			sourceTree = "<group>";
-		};
 		CFD7206B2A9CC60600636CAF = {
 			isa = PBXGroup;
 			children = (
@@ -91,14 +78,15 @@
 			isa = PBXGroup;
 			children = (
 				CFD6A7102ADE8E26002B402C /* Info.plist */,
-				CFA99B932AD054A600EB5331 /* Secrets */,
 				CFA99B912AD0549F00EB5331 /* WCSocketFactory.swift */,
 				CFD720772A9CC60600636CAF /* ExampleApp.swift */,
 				CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */,
+				CFEAAF082B6C0A58001565F5 /* Configuration.xcconfig */,
 				CF0BCCE42AB0886400A2866C /* ContentView.swift */,
 				CFD7207B2A9CC60700636CAF /* Assets.xcassets */,
 				CFD7207D2A9CC60700636CAF /* Example.entitlements */,
 				CFD7207E2A9CC60700636CAF /* Preview Content */,
+				CFEAAF092B6C0B3A001565F5 /* InputConfig.swift */,
 			);
 			path = Example;
 			sourceTree = "<group>";
@@ -191,9 +179,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CFD720802A9CC60700636CAF /* Preview Assets.xcassets in Resources */,
-				CFA99B992AD054CD00EB5331 /* secrets.json in Resources */,
 				CFD7207C2A9CC60700636CAF /* Assets.xcassets in Resources */,
-				CFA99B962AD054A600EB5331 /* secrets.sample.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,8 +208,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CFEAAF0A2B6C0B3A001565F5 /* InputConfig.swift in Sources */,
 				CFD7207A2A9CC60600636CAF /* ComponentLibraryView.swift in Sources */,
-				CFA99B972AD054A600EB5331 /* Secrets.swift in Sources */,
 				CFD720782A9CC60600636CAF /* ExampleApp.swift in Sources */,
 				CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */,
 				CFA99B922AD0549F00EB5331 /* WCSocketFactory.swift in Sources */,
@@ -235,6 +221,7 @@
 /* Begin XCBuildConfiguration section */
 		CFD720972A9CC60800636CAF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CFEAAF082B6C0A58001565F5 /* Configuration.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -298,6 +285,7 @@
 		};
 		CFD720982A9CC60800636CAF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CFEAAF082B6C0A58001565F5 /* Configuration.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -353,6 +341,7 @@
 		};
 		CFD7209A2A9CC60800636CAF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CFEAAF082B6C0A58001565F5 /* Configuration.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -387,6 +376,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3modal.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROJECT_ID = "$(PROJECT_ID)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -398,6 +388,7 @@
 		};
 		CFD7209B2A9CC60800636CAF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = CFEAAF082B6C0A58001565F5 /* Configuration.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -432,6 +423,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.walletconnect.web3modal.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROJECT_ID = "$(PROJECT_ID)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

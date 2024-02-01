@@ -20,7 +20,7 @@ struct ExampleApp: App {
         Atlantis.start()
         #endif
 
-        let projectId = Secrets.load().projectID
+        let projectId = InputConfig.projectId
 
         // We're tracking Crash Reports / Issues from the Demo App to keep improving the SDK
         SentrySDK.start { options in
