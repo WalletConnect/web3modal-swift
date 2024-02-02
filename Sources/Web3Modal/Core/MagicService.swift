@@ -7,6 +7,7 @@ enum Web3ModalTheme: String {
 }
 
 class MagicService {
+    
     private let injectScript = """
     window.addEventListener('message', ({ data }) => {
         window.webkit.messageHandlers.nativeProcess.postMessage(JSON.stringify(data))
@@ -21,15 +22,15 @@ class MagicService {
     private let projectId: String = Web3Modal.config.projectId
     private let metadata: AppMetadata = Web3Modal.config.metadata
 
-    private let messageHandler: MessageHandler
+    private let messageHandler: MagicMessageHandler
     private let navigationDelegate: NavigationDelegate
     private let webview: WKWebView
     private let contentController: WKUserContentController
 
     private var attachedToViewHierarchy = false
 
-    init() {
-        self.messageHandler = MessageHandler()
+    init(router: Router, store: Store = .shared) {
+        self.messageHandler = MagicMessageHandler(router: router, store: store)
         self.navigationDelegate = NavigationDelegate()
 
         self.contentController = WKUserContentController()
@@ -79,7 +80,7 @@ class MagicService {
         attachedToViewHierarchy = true
     }
 
-    func connectEmail(email: String) async {
+    public func connectEmail(email: String) async {
         let message = MagicRequest.ConnectEmail(email: email).toString
         await runJavaScript("sendMessage(\(message))")
     }
@@ -165,59 +166,6 @@ class MagicService {
             print("JavaScript execution error: \(error)")
         }
     }
-}
-
-class MessageHandler: NSObject, WKScriptMessageHandler {
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard let bodyString = message.body as? String,
-              let data = bodyString.data(using: .utf8) else { return }
-
-        do {
-            let response = try JSONDecoder().decode(MagicResponse.self, from: data)
-            handleMagicResponse(response)
-        } catch {
-            print("Error decoding message: \(error)")
-        }
-    }
-    
-    func handleMagicResponse(_ response: MagicResponse) {
-        
-        print(response)
-        
-        switch response.type {
-        case .syncThemeSuccess:
-            break
-        case .syncDataSuccess:
-            break
-        case .connectEmailSuccess:
-            break
-        case .connectEmailError:
-            break
-        case .isConnectSuccess:
-            break
-        case .isConnectError:
-            break
-        case .connectOtpSuccess:
-            break
-        case .connectOtpError:
-            break
-        case .getUserSuccess:
-            break
-        case .getUserError:
-            break
-        case .sessionUpdate:
-            break
-        case .switchNetworkSuccess:
-            break
-        case .switchNetworkError:
-            break
-        case .rpcRequestSuccess:
-            break
-        case .rpcRequestError:
-            break
-        }
-    }
-    
 }
 
 class NavigationDelegate: NSObject, WKNavigationDelegate {

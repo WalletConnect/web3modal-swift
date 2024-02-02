@@ -23,7 +23,7 @@ struct Web3ModalView: View {
             EmptyView()
         case .connectWallet:
             ConnectWalletView()
-        case .otp:
+        case .otpInput:
             EnterOTPView()
         case .allWallets:
             if #available(iOS 14.0, *) {
@@ -46,6 +46,12 @@ struct Web3ModalView: View {
             )
         case .getWallet:
             GetAWalletView()
+        case let .otpResult(success):
+            Text("verify OTP \(success ? "success" : "failed")")
+        case .some(.verifyDevice):
+            Text("Please verify your device first to continue, by going to the magic link sent to your email.")
+        case .some(.magicWebview):
+            Text("Magic webview here 🧚")
         }
     }
     
@@ -116,7 +122,7 @@ extension Router.ConnectingSubpage {
             return "Connect wallet"
         case .qr:
             return "WalletConnect"
-        case .otp:
+        case .otpInput, .otpResult:
             return "Confirm Email"
         case .allWallets:
             return "All wallets"
@@ -126,20 +132,88 @@ extension Router.ConnectingSubpage {
             return "\(wallet.name)"
         case .getWallet:
             return "Get wallet"
+        case .verifyDevice:
+            return "Verify Device"
+        case .magicWebview:
+            return "Magic webview TBD"
         }
     }
 }
 
 struct Web3ModalView_Previews: PreviewProvider {
+    class MockWebSocketConnecting: WebSocketConnecting {
+        init() {
+            self.onConnect = nil
+            self.onDisconnect = nil
+            self.onText = nil
+            self.request = URLRequest(url: URL(string: "www.google.com")!)
+        }
+        
+        var isConnected: Bool { false }
+        var onConnect: (() -> Void)?
+        var onDisconnect: ((Error?) -> Void)?
+        var onText: ((String) -> Void)?
+        var request: URLRequest
+        func connect() {}
+        func disconnect() {}
+        func write(string: String, completion: (() -> Void)?) {}
+    }
+    
+    struct MockSockFactory: WebSocketFactory {
+        public init() {}
+        
+        public func create(with url: URL) -> WebSocketConnecting {
+            return MockWebSocketConnecting()
+        }
+    }
+    
+    static let viewModel: Web3ModalViewModel = {
+        let projectId = Bundle.main.object(forInfoDictionaryKey: "PROJECT_ID") as? String ?? ""
+
+        let metadata = AppMetadata(
+            name: "Web3Modal Swift Dapp",
+            description: "Web3Modal DApp sample",
+            url: "www.web3modal.com",
+            icons: ["https://avatars.githubusercontent.com/u/37784886"],
+            redirect: .init(native: "w3mdapp://", universal: nil)
+        )
+
+        Networking.configure(
+            groupIdentifier: "group.com.walletconnect.web3modal",
+            projectId: projectId,
+            socketFactory: MockSockFactory()
+        )
+
+        Web3Modal.configure(
+            projectId: projectId,
+            metadata: metadata
+        )
+        
+        return .init(
+            router: router,
+            store: store,
+            w3mApiInteractor: W3MAPIInteractor(store: store),
+            signInteractor: SignInteractor(store: store),
+            blockchainApiInteractor: BlockchainAPIInteractor(store: store)
+        )
+    }()
+    
+    static let router = {
+        let router = Router()
+        router.setRoute(Router.ConnectingSubpage.otpInput)
+        return router
+    }()
+    
+    static let store = {
+        let store = Store()
+        store.email = "radek@walletconnect.com"
+        return store
+    }()
+    
     static var previews: some View {
-        Web3ModalView(
-            viewModel: .init(
-                router: Router(),
-                store: Store(),
-                w3mApiInteractor: W3MAPIInteractor(store: Store()),
-                signInteractor: SignInteractor(store: Store()),
-                blockchainApiInteractor: BlockchainAPIInteractor(store: Store())
-            ))
+        Web3ModalView(viewModel: viewModel)
+            .environmentObject(router)
+            .environmentObject(store)
             .previewLayout(.sizeThatFits)
     }
 }

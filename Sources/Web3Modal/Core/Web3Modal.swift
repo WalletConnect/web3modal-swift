@@ -99,6 +99,32 @@ public class Web3Modal {
         coinbaseEnabled: Bool = true,
         onError: @escaping (Error) -> Void = { _ in }
     ) {
+        configure(
+            projectId: projectId,
+            metadata: metadata,
+            sessionParams: sessionParams,
+            includeWebWallets: includeWebWallets,
+            recommendedWalletIds: recommendedWalletIds,
+            excludedWalletIds: excludedWalletIds,
+            customWallets: customWallets,
+            coinbaseEnabled: coinbaseEnabled,
+            onError: onError,
+            store: .shared
+        )
+    }
+        
+    static func configure(
+        projectId: String,
+        metadata: AppMetadata,
+        sessionParams: SessionParams = .default,
+        includeWebWallets: Bool = true,
+        recommendedWalletIds: [String] = [],
+        excludedWalletIds: [String] = [],
+        customWallets: [Wallet] = [],
+        coinbaseEnabled: Bool = true,
+        onError: @escaping (Error) -> Void = { _ in },
+        store: Store = .shared
+    ) {
         Pair.configure(metadata: metadata)
         
         Web3Modal.config = Web3Modal.Config(
@@ -113,7 +139,6 @@ public class Web3Modal {
             onError: onError
         )
         
-        let store = Store.shared
         let router = Router()
         let w3mApiInteractor = W3MAPIInteractor(store: store)
         let signInteractor = SignInteractor(store: store)
@@ -127,7 +152,7 @@ public class Web3Modal {
             w3mApiInteractor: w3mApiInteractor
         )
         
-        Web3Modal.magicService = MagicService()
+        Web3Modal.magicService = MagicService(router: router, store: store)
         
         Web3Modal.viewModel = Web3ModalViewModel(
             router: router,
@@ -154,7 +179,10 @@ public class Web3Modal {
         metadata: AppMetadata,
         w3mApiInteractor: W3MAPIInteractor
     ) {
-        guard Web3Modal.config.coinbaseEnabled else { return }
+        guard 
+            Web3Modal.config.coinbaseEnabled,
+            CoinbaseWalletSDK.isConfigured == false
+        else { return }
         
         if let redirectLink = metadata.redirect?.universal ?? metadata.redirect?.native {
             CoinbaseWalletSDK.configure(callback: URL(string: redirectLink)!)

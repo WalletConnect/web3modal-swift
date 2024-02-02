@@ -90,6 +90,12 @@ struct ModalContainerView: View {
 @available(iOS 14.0, *)
 struct ModalContainerView_Previews: PreviewProvider {
     static var previews: some View {
-        ModalContainerView(router: Router())
+        ModalContainerView(router: .mock)
+            .withMockSetup()
+//            .onAppear {
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//                    Store.mock.wallets = []
+//                }
+//            }
     }
 }

@@ -67,22 +67,8 @@ class Store: ObservableObject {
     
     @Published var toast: Toast? = nil
     
-    
     // Magic specific
-    var magicSession: MagicSession?
-}
-
-struct MagicSession: Codable {
-    let pk: String
-    let jwt: String
-    let rt: String
-    let userData: MagicUserData
-    
-    struct MagicUserData: Codable {
-        let email: String
-        let address: String
-        let chainId: Int
-    }
+    var email: String?
 }
 
 struct W3MAccount: Codable {
