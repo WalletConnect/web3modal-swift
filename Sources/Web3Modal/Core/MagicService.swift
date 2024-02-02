@@ -19,7 +19,7 @@ class MagicService {
 
     private let url = "https://secure.walletconnect.com"
     private let projectId: String = Web3Modal.config.projectId
-//    private let metadata: PairingMetadata
+    private let metadata: AppMetadata = Web3Modal.config.metadata
 
     private let messageHandler: MessageHandler
     private let navigationDelegate: NavigationDelegate
@@ -80,29 +80,29 @@ class MagicService {
     }
 
     func connectEmail(email: String) async {
-        let message = ConnectEmail(email: email).toString
+        let message = MagicRequest.ConnectEmail(email: email).toString
         await runJavaScript("sendMessage(\(message))")
     }
 
     func connectDevice() async {
-        let message = ConnectDevice().toString
+        let message = MagicRequest.ConnectDevice().toString
         await runJavaScript("sendMessage(\(message))")
     }
 
     func connectOtp(otp: String) async {
         // Assuming waitConfirmation is a property you're using to track state
         // waitConfirmation.value = true
-        let message = ConnectOtp(otp: otp).toString
+        let message = MagicRequest.ConnectOtp(otp: otp).toString
         await runJavaScript("sendMessage(\(message))")
     }
 
     func isConnected() async {
-        let message = IsConnected().toString
+        let message = MagicRequest.IsConnected().toString
         await runJavaScript("sendMessage(\(message))")
     }
 
     func getChainId() async {
-        let message = GetChainId().toString
+        let message = MagicRequest.GetChainId().toString
         await runJavaScript("sendMessage(\(message))")
     }
 
@@ -113,22 +113,26 @@ class MagicService {
 
     func syncTheme(theme: Web3ModalTheme?) async {
         guard let mode = theme?.rawValue else { return }
-        let message = SyncTheme(mode: mode)
+        let message = MagicRequest.SyncTheme(mode: mode)
         await runJavaScript("sendMessage(\(message))")
     }
 
-    func syncDappData(metadata: PairingMetadata, sdkVersion: String, projectId: String) async {
-        let message = SyncAppData(metadata: metadata, sdkVersion: sdkVersion, projectId: projectId).toString
+    func syncDappData(
+        metadata: AppMetadata,
+        sdkVersion: String,
+        projectId: String
+    ) async {
+        let message = MagicRequest.SyncAppData(metadata: metadata, sdkVersion: sdkVersion, projectId: projectId).toString
         await runJavaScript("sendMessage(\(message))")
     }
 
     func getUser(chainId: String?) async {
-        let message = GetUser(chainId: chainId).toString
+        let message = MagicRequest.GetUser(chainId: chainId).toString
         await runJavaScript("sendMessage(\(message))")
     }
 
     func switchNetwork(chainId: String) async {
-        let message = SwitchNetwork(chainId: chainId).toString
+        let message = MagicRequest.SwitchNetwork(chainId: chainId).toString
         await runJavaScript("sendMessage(\(message))")
     }
 
@@ -169,12 +173,51 @@ class MessageHandler: NSObject, WKScriptMessageHandler {
               let data = bodyString.data(using: .utf8) else { return }
 
         do {
-            let jsonMessage = try JSONDecoder().decode(MagicMessage.self, from: data)
-            // Handle the decoded message
+            let response = try JSONDecoder().decode(MagicResponse.self, from: data)
+            handleMagicResponse(response)
         } catch {
             print("Error decoding message: \(error)")
         }
     }
+    
+    func handleMagicResponse(_ response: MagicResponse) {
+        
+        print(response)
+        
+        switch response.type {
+        case .syncThemeSuccess:
+            break
+        case .syncDataSuccess:
+            break
+        case .connectEmailSuccess:
+            break
+        case .connectEmailError:
+            break
+        case .isConnectSuccess:
+            break
+        case .isConnectError:
+            break
+        case .connectOtpSuccess:
+            break
+        case .connectOtpError:
+            break
+        case .getUserSuccess:
+            break
+        case .getUserError:
+            break
+        case .sessionUpdate:
+            break
+        case .switchNetworkSuccess:
+            break
+        case .switchNetworkError:
+            break
+        case .rpcRequestSuccess:
+            break
+        case .rpcRequestError:
+            break
+        }
+    }
+    
 }
 
 class NavigationDelegate: NSObject, WKNavigationDelegate {
