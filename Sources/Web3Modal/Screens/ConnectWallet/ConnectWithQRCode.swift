@@ -34,7 +34,6 @@ struct ConnectWithQRCode: View {
         }
         .padding([.top, .horizontal], Spacing.xl)
         .padding(.bottom, Spacing.l)
-        .padding(.bottom)
         .background(Color.Background125)
         .onAppear {
             connect()

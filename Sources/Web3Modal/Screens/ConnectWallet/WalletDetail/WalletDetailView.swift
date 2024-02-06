@@ -38,7 +38,6 @@ struct WalletDetailView: View {
             }
         }
         .padding(.horizontal, Spacing.s)
-        .padding(.bottom, Spacing.xl + 17)
     }
     
     private func picker() -> some View {

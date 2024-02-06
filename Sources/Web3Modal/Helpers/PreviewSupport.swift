@@ -49,7 +49,7 @@ extension Store {
 
 extension View {
     
-    func mockSetup() {
+    func mockSetup() -> Bool {
         
         let projectId = "" // your project_id goes here
         
@@ -74,12 +74,17 @@ extension View {
             metadata: metadata,
             store: .mock
         )
+        
+        return true
     }
     
+    @ViewBuilder
     func withMockSetup() -> some View {
-        mockSetup()
-    
-        return self
+        if mockSetup() {
+            self
+        } else {
+            EmptyView()
+        }
     }
     
     func mockStore(_ mutation: (Store) -> Void) -> some View {

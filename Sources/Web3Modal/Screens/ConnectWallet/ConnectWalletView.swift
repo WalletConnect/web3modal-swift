@@ -52,7 +52,6 @@ struct ConnectWalletView: View {
             ))
         }
         .padding(Spacing.s)
-        .padding(.bottom)
     }
     
     @ViewBuilder

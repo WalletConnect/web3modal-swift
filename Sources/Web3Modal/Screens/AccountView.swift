@@ -121,7 +121,6 @@ struct AccountView: View {
         }
         .padding(.horizontal, Spacing.s)
         .padding(.top, 40)
-        .padding(.bottom)
         .onAppear {
             Task {
                 do {

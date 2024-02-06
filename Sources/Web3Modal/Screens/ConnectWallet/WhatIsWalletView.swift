@@ -51,7 +51,7 @@ struct WhatIsWalletView: View {
             }
             .buttonStyle(W3MButtonStyle(size: .s))
         }
-        .padding(.vertical, 40)
+        .padding(.top, 40)
         .padding(.horizontal, 40)
     }
 

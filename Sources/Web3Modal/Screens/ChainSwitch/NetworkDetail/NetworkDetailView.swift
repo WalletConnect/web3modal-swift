@@ -24,7 +24,6 @@ struct NetworkDetailView: View {
                 .padding(.bottom, Spacing.l)
         }
         .padding(.horizontal)
-        .padding(.bottom, Spacing.xl * 2)
     }
     
     func chainImage() -> some View {

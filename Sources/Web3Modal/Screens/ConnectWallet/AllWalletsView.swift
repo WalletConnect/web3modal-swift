@@ -100,7 +100,7 @@ struct AllWalletsView: View {
                 }
             }
             .padding(.horizontal, 12)
-            .padding(.bottom, 60)
+            .padding(.bottom, 30)
         }
     }
     

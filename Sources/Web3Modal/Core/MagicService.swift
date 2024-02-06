@@ -7,7 +7,6 @@ enum Web3ModalTheme: String {
 }
 
 class MagicService {
-    
     private let injectScript = """
     window.addEventListener('message', ({ data }) => {
         window.webkit.messageHandlers.nativeProcess.postMessage(JSON.stringify(data))
@@ -80,31 +79,31 @@ class MagicService {
         attachedToViewHierarchy = true
     }
 
-    public func connectEmail(email: String) async {
+    public func connectEmail(email: String) {
         let message = MagicRequest.ConnectEmail(email: email).toString
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
     }
 
     func connectDevice() async {
         let message = MagicRequest.ConnectDevice().toString
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
     }
 
     func connectOtp(otp: String) async {
         // Assuming waitConfirmation is a property you're using to track state
         // waitConfirmation.value = true
         let message = MagicRequest.ConnectOtp(otp: otp).toString
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
     }
 
-    func isConnected() async {
+    func isConnected() {
         let message = MagicRequest.IsConnected().toString
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
     }
 
     func getChainId() async {
         let message = MagicRequest.GetChainId().toString
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
     }
 
     // Example of a commented-out function, updateEmail, for reference
@@ -112,10 +111,10 @@ class MagicService {
     //     await runJavaScript("provider.updateEmail('\(email)')")
     // }
 
-    func syncTheme(theme: Web3ModalTheme?) async {
+    func syncTheme(theme: Web3ModalTheme?) {
         guard let mode = theme?.rawValue else { return }
         let message = MagicRequest.SyncTheme(mode: mode)
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
     }
 
     func syncDappData(
@@ -124,55 +123,60 @@ class MagicService {
         projectId: String
     ) async {
         let message = MagicRequest.SyncAppData(metadata: metadata, sdkVersion: sdkVersion, projectId: projectId).toString
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
     }
 
-    func getUser(chainId: String?) async {
+    func getUser(chainId: String?) {
         let message = MagicRequest.GetUser(chainId: chainId).toString
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
     }
 
-    func switchNetwork(chainId: String) async {
+    func switchNetwork(chainId: String) {
         let message = MagicRequest.SwitchNetwork(chainId: chainId).toString
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
     }
 
-    func disconnect() async {
-        let message = "SignOut()"
-        await runJavaScript("sendMessage(\(message))")
+    func disconnect() {
+        let message = MagicRequest.SignOut()
+        runJavaScript("sendMessage(\(message))")
     }
 
     func request(parameters: [String: Any]) async {
         guard let method = parameters["method"] as? String,
               let params = parameters["params"] as? [Any] else { return }
         let message = "RpcRequest(method: \(method), params: \(params))"
-        await runJavaScript("sendMessage(\(message))")
+        runJavaScript("sendMessage(\(message))")
         // Handle onApproveTransaction if needed
     }
 
-    @MainActor
-    private func runJavaScript(_ script: String) async {
+    private func runJavaScript(_ script: String) {
         if !attachedToViewHierarchy {
             attachToViewHierarchy()
         }
 
-        do {
-            let result = try await webview.evaluateJavaScript("""
-                setTimeout(() => {
-                    \(script)
-                }, 100)
-            """)
-        } catch {
-            print("JavaScript execution error: \(error)")
+        Task { @MainActor in
+            do {
+                _ = try await webview.evaluateJavaScript("""
+                    setTimeout(() => {
+                        \(script)
+                    }, 100)
+                """)
+            } catch {
+                print("JavaScript execution error: \(error)")
+            }
         }
     }
 }
 
 class NavigationDelegate: NSObject, WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {}
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {  
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            Web3Modal.magicService.isConnected()
+        }
+    }
 }
 
-extension UIApplication {
+private extension UIApplication {
     static var keyWindow: UIWindow? {
         let allScenes = UIApplication.shared.connectedScenes
         for scene in allScenes {

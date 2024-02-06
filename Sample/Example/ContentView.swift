@@ -41,7 +41,7 @@ struct ContentView: View {
                 },
                 alignment: .top
             )
-            .onReceive(Web3Modal.instance.socketConnectionStatusPublisher, perform: { status in
+            .onReceive(Web3Modal.instance.socketConnectionStatusPublisher.receive(on: DispatchQueue.main), perform: { status in
                 socketConnected = status == .connected
                 print("🧦 \(status)")
             })

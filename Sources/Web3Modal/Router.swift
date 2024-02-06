@@ -56,7 +56,6 @@ class Router: ObservableObject {
         
         // Magic
         case otpInput
-        case otpResult(Bool)
         case verifyDevice
         case magicWebview
     }

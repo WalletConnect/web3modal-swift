@@ -238,6 +238,10 @@ public class Web3ModalClient {
                     self.coinbaseResponseSubject.send(response)
                 }
             }
+        case .magic:
+            
+            // TODO: Send request to Magic SDK
+            assertionFailure()
         case .none:
             break
         }
@@ -272,6 +276,8 @@ public class Web3ModalClient {
             }
         case .cb:
             CoinbaseWalletSDK.shared.resetSession()
+        case .magic:
+            await Web3Modal.magicService?.disconnect()
         case .none:
             break
         }

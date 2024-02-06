@@ -81,7 +81,7 @@ public class Web3Modal {
     
     private(set) static var viewModel: Web3ModalViewModel!
     
-    private(set) static var magicService: MagicService?
+    private(set) static var magicService: MagicService!
 
     private init() {}
 

@@ -150,6 +150,8 @@ final class NetworkDetailViewModel: ObservableObject {
             )
         case .cb:
             try await Web3Modal.instance.request(.wallet_switchEthereumChain(chainId: to.chainReference))
+        case .magic:
+            Web3Modal.magicService.switchNetwork(chainId: to.chainReference)
         case .none:
             break
         }
@@ -192,6 +194,10 @@ final class NetworkDetailViewModel: ObservableObject {
                     ),
                      rpcUrls: addChainParams.rpcUrls
                  ))
+        case .magic:
+            
+            // TODO: Switch chain with magic
+            assertionFailure()
         case .none:
             break
         }

@@ -19,9 +19,27 @@ struct EnterOTPView: View {
             
             Spacer().frame(height: Spacing.l)
             
-            otpInput()
+            if store.otpState == .loading {
+                DrawingProgressView(
+                    shape: .circle,
+                    color: .Blue100,
+                    lineWidth: 2,
+                    duration: 1,
+                    isAnimating: .constant(true)
+                )
+                .frame(width: 32, height: 32)
+            } else {
+                otpInput()
+            }
             
             Spacer().frame(height: Spacing.s)
+            
+            if store.otpState == .error {
+                
+                Text("Invalid code")
+                    .font(.small400)
+                    .foregroundColor(.Error100)
+            }
             
             HStack(spacing: Spacing.xxs) {
                 Text("Didn't receive it?")
@@ -98,7 +116,7 @@ public struct OtpView: View {
             TextField("", text: $otpText)
                 .keyboardType(.numberPad)
                 .textContentType(.oneTimeCode)
-                .frame(width: 1, height: 1)
+                .frame(width: 100, height: 20)
                 .opacity(0.001)
                 .blendMode(.screen)
                 .focused($isKeyboardShowing)
