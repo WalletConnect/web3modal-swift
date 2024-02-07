@@ -36,7 +36,7 @@ platform :ios do
       project: "Sample/Example.xcodeproj",
       scheme: ENV["SCHEME"],
       export_method: "app-store",
-      xcargs: "PROJECT_ID='#{options[:project_id]}"
+      xcargs: "PROJECT_ID='#{options[:project_id]}'"
     )
     upload_to_testflight(
       apple_id: ENV["APPLE_ID"],
