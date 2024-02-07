@@ -19,7 +19,7 @@ platform :ios do
       git_url: "https://github.com/WalletConnect/match-swift.git",
       git_basic_authorization: options[:token],
       api_key: api_key,
-      include_all_certificates: true,
+      include_all_certificates: false,
       force_for_new_devices: true,
       force_for_new_certificates: true
     )
