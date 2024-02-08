@@ -2,6 +2,8 @@ import SwiftUI
 
 struct ModalContainerView: View {
     @Environment(\.presentationMode) var presentationMode
+    
+    @Environment(\.analyticsService) var analyticsService
         
     @ObservedObject var store: Store
     @Backport.StateObject var router: Router
@@ -80,6 +82,9 @@ struct ModalContainerView: View {
     }
     
     private func dismiss() {
+        
+        analyticsService.track(.MODAL_CLOSE)
+        
         // Small delay so the sliding transition can happen before cross disolve starts
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.presentationMode.wrappedValue.dismiss()

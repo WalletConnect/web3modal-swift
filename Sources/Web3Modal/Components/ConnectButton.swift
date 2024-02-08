@@ -4,6 +4,8 @@ import SwiftUI
 public struct ConnectButton: View {
     @ObservedObject var store: Store
     
+    @Environment(\.analyticsService) var analyticsService
+    
     public init() {
         self.store = .shared
     }
@@ -15,6 +17,7 @@ public struct ConnectButton: View {
     public var body: some View {
         Button {
             Web3Modal.present()
+            analyticsService.track(.MODAL_OPEN)
         } label: {
             if store.connecting {
                 HStack {
