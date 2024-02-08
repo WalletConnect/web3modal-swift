@@ -237,7 +237,7 @@ final class W3MAPIInteractor: ObservableObject {
     }
 }
 
-private extension URLRequest {
+extension URLRequest {
     mutating func setW3MHeaders() {
         setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")
         setValue(Web3Modal.Config.sdkType, forHTTPHeaderField: "x-sdk-type")

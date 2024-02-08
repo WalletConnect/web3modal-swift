@@ -1,8 +1,8 @@
 class DefaultAnalyticsEventMapper: AnalyticsEventMapper {
     func eventName(for event: AnalyticsEvent) -> String {
         switch event {
-        case .MODAL_LOAD:
-            return "MODAL_LOAD"
+        case .MODAL_LOADED:
+            return "MODAL_LOADED"
         case .MODAL_OPEN:
             return "MODAL_OPEN"
         case .MODAL_CLOSE:
@@ -19,16 +19,18 @@ class DefaultAnalyticsEventMapper: AnalyticsEventMapper {
             return "SWITCH_NETWORK"
         case .CONNECT_SUCCESS:
             return "CONNECT_SUCCESS"
-        case .CONNECT_FAILURE:
-            return "CONNECT_FAILURE"
+        case .CONNECT_ERROR:
+            return "CONNECT_ERROR"
         case .DISCONNECT_SUCCESS:
             return "DISCONNECT_SUCCESS"
+        case .DISCONNECT_ERROR:
+            return "DISCONNECT_ERROR"
         }
     }
 
     func parameters(for event: AnalyticsEvent) -> [String: String] {
         switch event {
-        case .MODAL_LOAD:
+        case .MODAL_LOADED:
             return [:]
         case let .MODAL_OPEN(connected):
             return ["connected": connected.description]
@@ -48,7 +50,7 @@ class DefaultAnalyticsEventMapper: AnalyticsEventMapper {
             return ["network": networkName]
         case let .CONNECT_SUCCESS(method):
             return ["method": method.rawValue]
-        case let .CONNECT_FAILURE(errorType):
+        case let .CONNECT_ERROR(errorType):
             let error: String
             switch errorType {
             case .timeout:
@@ -61,6 +63,8 @@ class DefaultAnalyticsEventMapper: AnalyticsEventMapper {
             
             return ["message": error]
         case .DISCONNECT_SUCCESS:
+            return [:]
+        case .DISCONNECT_ERROR:
             return [:]
         }
     }
