@@ -22,8 +22,11 @@ jobs:
           ${{ runner.os }}-spm-
 
     - name: Release
-      shell: bash
+      shell: /bin/zsh -e {0}
       env:
+        LANGUAGE: en_US.UTF-8
+        LC_ALL: en_US.UTF-8
+        LANG: en_US.UTF-8
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
         GH_USER: ${{ secrets.GH_USER }}
@@ -31,4 +34,6 @@ jobs:
         APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
         APPLE_KEY_CONTENT: ${{ secrets.APPLE_KEY_CONTENT }}
       run: |
-        make release TOKEN=$(echo -n $GH_USER:$GH_TOKEN | base64) PROJECT_ID=${{ secrets.RELEASE_PROJECT_ID }} 
+        git config --global user.name "radeknovis"
+        git config --global user.email "radek@walletconnect.com"
+        make release TOKEN=$(echo -n $GH_USER:$GH_TOKEN | base64) PROJECT_ID=${{ secrets.PROJECT_ID }} 
