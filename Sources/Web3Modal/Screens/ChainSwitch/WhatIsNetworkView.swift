@@ -50,7 +50,7 @@ struct WhatIsNetworkView: View {
             .buttonStyle(W3MButtonStyle(size: .s))
         }
         .padding(.vertical, Spacing.xxl)
-        .padding(.horizontal, Spacing.xl)
+        .padding(.top, Spacing.xl)
     }
 
     func sections() -> [HelpSection] {

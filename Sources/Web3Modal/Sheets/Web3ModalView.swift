@@ -23,6 +23,8 @@ struct Web3ModalView: View {
             EmptyView()
         case .connectWallet:
             ConnectWalletView()
+        case .otpInput:
+            EnterOTPView()
         case .allWallets:
             if #available(iOS 14.0, *) {
                 AllWalletsView()
@@ -44,6 +46,10 @@ struct Web3ModalView: View {
             )
         case .getWallet:
             GetAWalletView()
+        case .some(.verifyDevice):
+            Text("Please verify your device first to continue, by going to the magic link sent to your email.")
+        case .some(.magicWebview):
+            Text("Magic webview here 🧚")
         }
     }
     
@@ -114,6 +120,8 @@ extension Router.ConnectingSubpage {
             return "Connect wallet"
         case .qr:
             return "WalletConnect"
+        case .otpInput:
+            return "Confirm Email"
         case .allWallets:
             return "All wallets"
         case .whatIsAWallet:
@@ -122,20 +130,32 @@ extension Router.ConnectingSubpage {
             return "\(wallet.name)"
         case .getWallet:
             return "Get wallet"
+        case .verifyDevice:
+            return "Verify Device"
+        case .magicWebview:
+            return "Magic webview TBD"
         }
     }
 }
 
 struct Web3ModalView_Previews: PreviewProvider {
     static var previews: some View {
-        Web3ModalView(
-            viewModel: .init(
-                router: Router(),
-                store: Store(),
-                w3mApiInteractor: W3MAPIInteractor(store: Store()),
-                signInteractor: SignInteractor(store: Store()),
-                blockchainApiInteractor: BlockchainAPIInteractor(store: Store())
+        Group {
+            Web3ModalView(viewModel: .init(
+                router: .mockWith(currentRoute: Router.ConnectingSubpage.otpInput),
+                store: .mock,
+                w3mApiInteractor: W3MAPIInteractor(store: .mock),
+                signInteractor: SignInteractor(store: .mock),
+                blockchainApiInteractor: BlockchainAPIInteractor(store: .mock)
             ))
+            
+            .environmentObject(Store.mock)
+            .environmentObject(Router.mock)
             .previewLayout(.sizeThatFits)
+        }
+        .onAppear {
+            
+        }
+        
     }
 }

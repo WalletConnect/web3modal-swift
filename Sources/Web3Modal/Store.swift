@@ -4,6 +4,7 @@ import SwiftUI
 enum ConnectionProviderType {
     case wc
     case cb
+    case magic
 }
 
 class Store: ObservableObject {
@@ -66,6 +67,17 @@ class Store: ObservableObject {
     @Published var chainImages: [String: UIImage] = [:]
     
     @Published var toast: Toast? = nil
+    
+    // Magic specific
+    @Published var email: String?
+    @Published var otpState: OTPState = .input
+    
+    enum OTPState {
+        case input
+        case success
+        case loading
+        case error
+    }
 }
 
 struct W3MAccount: Codable {

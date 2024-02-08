@@ -53,6 +53,11 @@ class Router: ObservableObject {
         case whatIsAWallet
         case walletDetail(Wallet)
         case getWallet
+        
+        // Magic
+        case otpInput
+        case verifyDevice
+        case magicWebview
     }
 
     enum NetworkSwitchSubpage: SubPage {

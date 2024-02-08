@@ -30,6 +30,7 @@ struct ModalContainerView: View {
                         }
                     #endif
                 }
+                .edgesIgnoringSafeArea(.top)
             
             VStack(spacing: 0) {
                 Spacer()
@@ -52,6 +53,14 @@ struct ModalContainerView: View {
                             EmptyView()
                         }
                     }
+                    .background(
+                        VStack {
+                            Color.clear
+                            
+                            Color.Background125
+                                .edgesIgnoringSafeArea([.bottom, .horizontal])
+                        }
+                    )
                     .toastView(toast: $store.toast)
                     .transition(.move(edge: .bottom))
                     .animation(.spring(), value: store.isModalShown)
@@ -63,7 +72,6 @@ struct ModalContainerView: View {
                 }
             }
         }
-        .edgesIgnoringSafeArea(.all)
         .backport.onChange(of: store.isModalShown, perform: { newValue in
             if newValue == false {
                 withAnimation {
@@ -90,6 +98,7 @@ struct ModalContainerView: View {
 @available(iOS 14.0, *)
 struct ModalContainerView_Previews: PreviewProvider {
     static var previews: some View {
-        ModalContainerView(router: Router())
+        ModalContainerView(router: .mock)
+            .withMockSetup()
     }
 }

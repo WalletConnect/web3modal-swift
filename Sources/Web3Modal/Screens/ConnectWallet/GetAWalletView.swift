@@ -58,7 +58,6 @@ struct GetAWalletView: View {
             }
         }
         .padding(Spacing.s)
-        .padding(.bottom)
     }
 }
 

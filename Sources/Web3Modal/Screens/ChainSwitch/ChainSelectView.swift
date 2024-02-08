@@ -81,7 +81,6 @@ struct ChainSelectView: View {
             }
             .padding(.horizontal)
             .padding(.top, Spacing.xs)
-            .padding(.bottom, Spacing.xl)
         }
     }
 
