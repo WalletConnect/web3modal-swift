@@ -30,23 +30,3 @@ extension View {
         return track { group }
     }
 }
-
-extension AnalyticsService {
-    static let shared = AnalyticsService(providers: [
-        LoggingAnalyticsProvider(),
-        ClickstreamAnalyticsProvider()
-    ])
-}
-
-struct AnalyticsServiceKey: EnvironmentKey {
-    
-    static var defaultValue: AnalyticsService = .shared
-}
-
-extension EnvironmentValues {
-    
-    var analyticsService: AnalyticsService {
-        get { self[AnalyticsServiceKey.self] }
-        set { self[AnalyticsServiceKey.self] = newValue }
-    }
-}

@@ -114,7 +114,9 @@ class WalletDetailViewModel: ObservableObject {
             
             let urlString = try formatNativeUrlString(link)
             if let url = urlString?.toURL() {
-                router.openURL(url)
+                router.openURL(url) { success in
+                    self.store.toast = .init(style: .error, message: DeeplinkErrors.failedToOpen.localizedDescription)
+                }
             } else {
                 throw DeeplinkErrors.noWalletLinkFound
             }

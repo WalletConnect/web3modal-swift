@@ -52,13 +52,10 @@ class Web3ModalViewModel: ObservableObject {
         signInteractor.sessionSettlePublisher
             .receive(on: DispatchQueue.main)
             .sink { session in
-                withAnimation {
-                    store.isModalShown = false
-                }
                 router.setRoute(Router.AccountSubpage.profile)
-                store.session = session
-                store.account = .init(from: session)
                 store.connectedWith = .wc
+                store.account = .init(from: session)
+                store.session = session
                 
                 if
                     let blockchain = session.accounts.first?.blockchain,
@@ -68,6 +65,10 @@ class Web3ModalViewModel: ObservableObject {
                 }
                 
                 self.fetchIdentity()
+                
+                withAnimation {
+                    store.isModalShown = false
+                }
             }
             .store(in: &disposeBag)
         

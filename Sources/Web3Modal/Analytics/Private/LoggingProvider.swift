@@ -3,6 +3,7 @@ class LoggingAnalyticsProvider: AnalyticsProvider {
 
     func track(_ event: AnalyticsEvent) {
         let name = eventMapper.eventName(for: event)
-        print("Event reported: \(name)")
+        let properties = eventMapper.parameters(for: event)
+        print("Event reported: \(name), properties: \(properties)")
     }
 }

@@ -67,7 +67,11 @@ struct ModalContainerView: View {
         }
         .edgesIgnoringSafeArea(.all)
         .backport.onChange(of: store.isModalShown, perform: { newValue in
-            if newValue == false {
+            if newValue {
+                let connected = store.account != nil
+                
+                analyticsService.track(.MODAL_OPEN(connected: connected))
+            } else {
                 withAnimation {
                     self.dismiss()
                     store.connecting = false
@@ -83,7 +87,8 @@ struct ModalContainerView: View {
     
     private func dismiss() {
         
-        analyticsService.track(.MODAL_CLOSE)
+        let connected = store.account != nil
+        analyticsService.track(.MODAL_CLOSE(connected: connected))
         
         // Small delay so the sliding transition can happen before cross disolve starts
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

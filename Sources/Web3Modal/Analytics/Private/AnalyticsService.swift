@@ -1,6 +1,11 @@
 import Foundation
 
 class AnalyticsService: AnalyticsProvider, ObservableObject {
+    private(set) static var shared = AnalyticsService(providers: [
+        LoggingAnalyticsProvider(),
+        ClickstreamAnalyticsProvider()
+    ])
+
     private let providers: [AnalyticsProvider]
 
     init(providers: [AnalyticsProvider]) {
@@ -11,5 +16,18 @@ class AnalyticsService: AnalyticsProvider, ObservableObject {
         providers.forEach {
             $0.track(event)
         }
+    }
+}
+
+import SwiftUI
+
+struct AnalyticsServiceKey: EnvironmentKey {
+    static var defaultValue: AnalyticsService = .shared
+}
+
+extension EnvironmentValues {
+    var analyticsService: AnalyticsService {
+        get { self[AnalyticsServiceKey.self] }
+        set { self[AnalyticsServiceKey.self] = newValue }
     }
 }

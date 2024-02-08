@@ -9,6 +9,8 @@ struct AllWalletsView: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var interactor: W3MAPIInteractor
     
+    @Environment(\.analyticsService) var analyticsService: AnalyticsService
+    
     @State var searchTerm: String = ""
     let searchTermPublisher = PassthroughSubject<String, Never>()
     
@@ -134,6 +136,7 @@ struct AllWalletsView: View {
     
     private func gridElement(for wallet: Wallet) -> some View {
         Button(action: {
+            analyticsService.track(.SELECT_WALLET(wallet: wallet))
             router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
         }, label: {
             Text(wallet.name)
