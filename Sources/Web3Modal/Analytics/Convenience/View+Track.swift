@@ -2,21 +2,19 @@ import SwiftUI
 
 extension View {
     
-    
     func track(@AnalyticsEventGroupBuilder _ groups: () -> [AnalyticsEventGroup]) -> some View {
-        let service = Environment(\.analyticsService).wrappedValue
         let groups = groups()
         let modifier = AnalyticsEventTrackingModifier(groups: groups)
         return self.modifier(modifier)
     }
 
     func track(_ event: AnalyticsEvent) {
-        let service = Environment(\.analyticsService).wrappedValue
+        let service: AnalyticsService = Environment(\.analyticsService).wrappedValue
         service.track(event)
     }
 
     func track(@AnalyticsEventBuilder _ events: () -> [AnalyticsEvent]) {
-        let service = Environment(\.analyticsService).wrappedValue
+        let service: AnalyticsService = Environment(\.analyticsService).wrappedValue
         let events = events()
         events.forEach { event in
             service.track(event)

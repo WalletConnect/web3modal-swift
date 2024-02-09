@@ -77,15 +77,18 @@ public class Web3ModalClient {
     private let signClient: SignClientProtocol
     private let pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer
     private let store: Store
+    private let analyticsService: AnalyticsService
     
     init(
         signClient: SignClientProtocol,
         pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer,
-        store: Store
+        store: Store,
+        analyticsService: AnalyticsService
     ) {
         self.signClient = signClient
         self.pairingClient = pairingClient
         self.store = store
+        self.analyticsService = analyticsService
     }
     
     /// For creating new pairing
@@ -266,12 +269,19 @@ public class Web3ModalClient {
         case .wc:
             do {
                 try await signClient.disconnect(topic: topic)
+                analyticsService.track(.DISCONNECT_SUCCESS)
             } catch {
                 Web3Modal.config.onError(error)
+                analyticsService.track(.DISCONNECT_ERROR)
                 throw error
             }
         case .cb:
-            CoinbaseWalletSDK.shared.resetSession()
+            if case let .failure(error) = CoinbaseWalletSDK.shared.resetSession() {
+                analyticsService.track(.DISCONNECT_ERROR)
+                throw error
+            } else {
+                analyticsService.track(.DISCONNECT_SUCCESS)
+            }
         case .none:
             break
         }
