@@ -23,7 +23,7 @@ enum AnalyticsEvent: Equatable {
     
     enum Method: String {
         case qr = "QR"
-        case mobileLinks = "mobile-links"
+        case mobile = "mobile"
         case external = "external"
         case email = "email"
     }

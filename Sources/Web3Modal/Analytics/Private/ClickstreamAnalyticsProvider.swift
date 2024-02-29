@@ -76,12 +76,6 @@ struct EventPayload: Codable {
     }
 }
 
-// Define the nested struct for the `props` part of the JSON
-struct EventProps: Codable {
-    let type: String
-    let event: String
-}
-
 private extension URLSession {
     
     struct RetryPolicy {
