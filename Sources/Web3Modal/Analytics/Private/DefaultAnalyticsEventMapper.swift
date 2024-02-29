@@ -25,6 +25,12 @@ class DefaultAnalyticsEventMapper: AnalyticsEventMapper {
             return "DISCONNECT_SUCCESS"
         case .DISCONNECT_ERROR:
             return "DISCONNECT_ERROR"
+        case .CLICK_WALLET_HELP:
+            return "CLICK_WALLET_HELP"
+        case .CLICK_NETWORK_HELP:
+            return "CLICK_NETWORK_HELP"
+        case .CLICK_GET_WALLET:
+            return "CLICK_GET_WALLET"
         }
     }
 
@@ -65,6 +71,12 @@ class DefaultAnalyticsEventMapper: AnalyticsEventMapper {
         case .DISCONNECT_SUCCESS:
             return [:]
         case .DISCONNECT_ERROR:
+            return [:]
+        case .CLICK_WALLET_HELP:
+            return [:]
+        case .CLICK_NETWORK_HELP:
+            return [:]
+        case .CLICK_GET_WALLET:
             return [:]
         }
     }
