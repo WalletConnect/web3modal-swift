@@ -11,9 +11,9 @@ enum AnalyticsEvent: Equatable {
     case CONNECT_ERROR(errorType: ErrorType) // ☑️
     case DISCONNECT_SUCCESS // ☑️
     case DISCONNECT_ERROR // ☑️
-    case CLICK_WALLET_HELP
-    case CLICK_NETWORK_HELP
-    case CLICK_GET_WALLET
+    case CLICK_WALLET_HELP // ☑️
+    case CLICK_NETWORK_HELP // ☑️
+    case CLICK_GET_WALLET // ☑️
 
     enum ErrorType: Equatable {
         case timeout

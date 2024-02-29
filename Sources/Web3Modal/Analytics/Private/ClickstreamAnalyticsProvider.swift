@@ -28,7 +28,7 @@ class ClickstreamAnalyticsProvider: AnalyticsProvider {
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
                 
                 let (_, _) = try await URLSession.shared.dataWithRetry(for: request, retryPolicy: .init(
-                    maxAttempts: 5,
+                    maxAttempts: 1,
                     initialDelay: 3,
                     multiplier: 3
                 ))
@@ -42,8 +42,8 @@ class ClickstreamAnalyticsProvider: AnalyticsProvider {
     
     private func analyticsApiUrl() -> String {
         #if DEBUG
-            return "http://localhost:8787"
-//            return "https://analytics-api-cf-workers-staging.walletconnect-v1-bridge.workers.dev"
+//            return "http://localhost:8787"
+            return "https://analytics-api-cf-workers-staging.walletconnect-v1-bridge.workers.dev"
         #else
             return "https://pulse.walletconnect.com"
         #endif
@@ -51,27 +51,28 @@ class ClickstreamAnalyticsProvider: AnalyticsProvider {
 }
 
 struct EventPayload: Codable {
+    struct Props: Codable {
+        let type: String
+        let event: String
+        let properties: [String: String]
+    }
     let eventId: String
     let url: String
     let domain: String
     let timestamp: UInt64
-    let props: [String: String]
-    
+    let props: Props
+
     init(for name: String, properties: [String: String]) {
         self.eventId = UUID().uuidString
         self.url = "https://lab.web3modal.com/"
         self.domain = "lab.web3modal.com"
         self.timestamp = UInt64(Date().timeIntervalSince1970)
         
-        let props = [
-            "type": "track",
-            "event": name,
-        ]
-        .merging(properties, uniquingKeysWith: { current, new in
-            current
-        })
-        
-        self.props = props
+        self.props = Props(
+            type: "track",
+            event: name,
+            properties: properties
+        )
     }
 }
 
