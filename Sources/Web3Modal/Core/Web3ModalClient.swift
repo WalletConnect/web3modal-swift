@@ -78,7 +78,8 @@ public class Web3ModalClient {
     private let pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer
     private let store: Store
     private let analyticsService: AnalyticsService
-    
+    private var disposeBag = Set<AnyCancellable>()
+
     init(
         signClient: SignClientProtocol,
         pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer,
@@ -89,6 +90,7 @@ public class Web3ModalClient {
         self.pairingClient = pairingClient
         self.store = store
         self.analyticsService = analyticsService
+        setUpConnectionEvents()
         analyticsService.track(.MODAL_LOADED)
     }
     
@@ -354,5 +356,18 @@ public class Web3ModalClient {
             store.toast = .init(style: .error, message: error.localizedDescription)
             return false
         }
+    }
+
+    private func setUpConnectionEvents() {
+        analyticsService.track(.MODAL_LOADED)
+
+        signClient.sessionSettlePublisher.sink { [unowned self] session in
+            self.analyticsService.track(.CONNECT_SUCCESS(method: analyticsService.method, name: session.peer.name))
+        }.store(in: &disposeBag)
+
+
+        signClient.sessionRejectionPublisher.sink { [unowned self] (_, reason) in
+            self.analyticsService.track(.CONNECT_ERROR(message: reason.message))
+        }.store(in: &disposeBag)
     }
 }

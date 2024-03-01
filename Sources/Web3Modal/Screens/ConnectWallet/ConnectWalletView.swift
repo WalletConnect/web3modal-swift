@@ -61,7 +61,7 @@ struct ConnectWalletView: View {
                 
                 Button(action: {
                     router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
-                    analyticsService.track(.SELECT_WALLET(wallet: wallet))
+                    analyticsService.track(.SELECT_WALLET(name: wallet.name, platform: .mobile))
                 }, label: {
                     Text(wallet.name)
                 })

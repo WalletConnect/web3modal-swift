@@ -136,7 +136,7 @@ struct AllWalletsView: View {
     
     private func gridElement(for wallet: Wallet) -> some View {
         Button(action: {
-            analyticsService.track(.SELECT_WALLET(wallet: wallet))
+            analyticsService.track(.SELECT_WALLET(name: wallet.name, platform: .mobile))
             router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
         }, label: {
             Text(wallet.name)
@@ -172,6 +172,7 @@ struct AllWalletsView: View {
     private func qrButton() -> some View {
         Button {
             router.setRoute(Router.ConnectingSubpage.qr)
+            analyticsService.track(.SELECT_WALLET(name: "Unknown", platform: .qrcode))
         } label: {
             Image.optionQrCode
         }

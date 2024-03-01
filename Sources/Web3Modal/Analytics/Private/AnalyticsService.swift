@@ -7,6 +7,7 @@ class AnalyticsService: AnalyticsProvider, ObservableObject {
     ])
 
     private let providers: [AnalyticsProvider]
+    var method: AnalyticsEvent.Method = .mobile
 
     init(providers: [AnalyticsProvider]) {
         self.providers = providers
@@ -16,6 +17,10 @@ class AnalyticsService: AnalyticsProvider, ObservableObject {
         providers.forEach {
             $0.track(event)
         }
+        if case .SELECT_WALLET(_, let platform) = event {
+            self.method = platform
+        }
+
     }
 }
 
