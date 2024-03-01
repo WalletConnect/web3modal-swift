@@ -4,6 +4,7 @@ struct WhatIsWalletView: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
 
     @EnvironmentObject var router: Router
+    @Environment(\.analyticsService) var analyticsService: AnalyticsService
 
     var body: some View {
         content()
@@ -42,6 +43,7 @@ struct WhatIsWalletView: View {
             HStack {
                 Button(action: {
                     router.setRoute(Router.ConnectingSubpage.getWallet)
+                    analyticsService.track(.CLICK_GET_WALLET)
                 }) {
                     HStack {
                         Image.Bold.wallet

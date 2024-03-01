@@ -6,6 +6,8 @@ struct ChainSelectView: View {
     
     @ObservedObject var viewModel: Web3ModalViewModel
 
+    @Environment(\.analyticsService) var analyticsService: AnalyticsService
+
     var body: some View {
         VStack(spacing: 0) {
             modalHeader()
@@ -64,6 +66,7 @@ struct ChainSelectView: View {
                 
                 Button {
                     router.setRoute(Router.NetworkSwitchSubpage.whatIsANetwork)
+                    analyticsService.track(.CLICK_NETWORK_HELP)
                 } label: {
                     HStack(spacing: Spacing.xxs) {
                         Image.Bold.questionMarkCircle

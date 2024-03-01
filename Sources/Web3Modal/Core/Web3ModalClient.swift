@@ -89,6 +89,7 @@ public class Web3ModalClient {
         self.pairingClient = pairingClient
         self.store = store
         self.analyticsService = analyticsService
+        analyticsService.track(.MODAL_LOADED)
     }
     
     /// For creating new pairing
