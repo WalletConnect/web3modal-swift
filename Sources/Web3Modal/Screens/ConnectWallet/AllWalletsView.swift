@@ -8,7 +8,8 @@ struct AllWalletsView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var store: Store
     @EnvironmentObject var interactor: W3MAPIInteractor
-    
+    @EnvironmentObject var signInteractor: SignInteractor
+
     @State var searchTerm: String = ""
     let searchTermPublisher = PassthroughSubject<String, Never>()
     
@@ -134,7 +135,10 @@ struct AllWalletsView: View {
     
     private func gridElement(for wallet: Wallet) -> some View {
         Button(action: {
-            router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+            Task {
+                try await signInteractor.createPairingAndConnect()
+                router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+            }
         }, label: {
             Text(wallet.name)
         })

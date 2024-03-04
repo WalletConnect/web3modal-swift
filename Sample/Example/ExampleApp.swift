@@ -82,6 +82,7 @@ class ExampleApp: App {
             self.socketConnectionManager.socketConnected = (status == .connected)
 
         }.store(in: &disposeBag)
+        Web3Modal.instance.logger.setLogging(level: .debug)
     }
 
     var body: some Scene {

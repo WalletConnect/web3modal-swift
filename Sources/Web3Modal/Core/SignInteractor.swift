@@ -16,7 +16,7 @@ class SignInteractor: ObservableObject {
         self.store = store
     }
     
-    func createPairingAndConnect() async throws {
+    func createPairingAndConnect() async throws  {
         let uri = try await Web3Modal.instance.connect(topic: nil)
         
         DispatchQueue.main.async {
@@ -41,6 +41,5 @@ class SignInteractor: ObservableObject {
             Web3Modal.config.onError(error)
         }
         try await Web3Modal.instance.cleanup()
-        try await createPairingAndConnect()
     }
 }

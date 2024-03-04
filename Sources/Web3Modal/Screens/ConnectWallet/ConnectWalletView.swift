@@ -3,7 +3,8 @@ import SwiftUI
 struct ConnectWalletView: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var router: Router
-    
+    @EnvironmentObject var signInteractor: SignInteractor
+
     let displayWCConnection = false
     
     var wallets: [Wallet] {
@@ -57,7 +58,10 @@ struct ConnectWalletView: View {
                 let tagTitle: String? = isRecent ? "RECENT" : nil
                 
                 Button(action: {
-                    router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+                    Task {
+                        try await signInteractor.createPairingAndConnect()
+                        router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+                    }
                 }, label: {
                     Text(wallet.name)
                 })
