@@ -51,7 +51,7 @@ class ExampleApp: App {
         Networking.configure(
             groupIdentifier: "group.com.walletconnect.web3modal",
             projectId: projectId,
-            socketFactory: WalletConnectSocketClientFactory()
+            socketFactory: DefaultSocketFactory()
         )
 
         Web3Modal.configure(

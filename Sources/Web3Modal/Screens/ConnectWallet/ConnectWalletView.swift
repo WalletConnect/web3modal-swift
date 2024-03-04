@@ -59,8 +59,12 @@ struct ConnectWalletView: View {
                 
                 Button(action: {
                     Task {
-                        try await signInteractor.createPairingAndConnect()
-                        router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+                        do {
+                            try await signInteractor.createPairingAndConnect()
+                            router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+                        } catch {
+                            store.toast = .init(style: .error, message: error.localizedDescription)
+                        }
                     }
                 }, label: {
                     Text(wallet.name)
