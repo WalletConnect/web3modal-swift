@@ -51,8 +51,7 @@ class DefaultAnalyticsEventMapper: AnalyticsEventMapper {
 //        case .OPEN_ACTIVITY_VIEW:
 //            return [:]
         case let .SWITCH_NETWORK(network):
-            let networkName = network.chainName
-            return ["network": networkName]
+            return ["network": network.id]
         case let .CONNECT_SUCCESS(method, name):
             return ["method": method.rawValue, "name": name]
         case let .CONNECT_ERROR(message):

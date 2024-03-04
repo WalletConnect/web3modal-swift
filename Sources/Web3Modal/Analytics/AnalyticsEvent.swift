@@ -5,7 +5,7 @@ enum AnalyticsEvent: Equatable {
     case CLICK_ALL_WALLETS // ✅
     case SELECT_WALLET(name: String, platform: Method) // ✅
     case CLICK_NETWORKS // ✅
-//    case OPEN_ACTIVITY_VIEW // ❌ not implemented
+//    case OPEN_ACTIVITY_VIEW //
     case SWITCH_NETWORK(network: Chain) // ☑️
     case CONNECT_SUCCESS(method: Method, name: String) // ✅
     case CONNECT_ERROR(message: String) // ✅

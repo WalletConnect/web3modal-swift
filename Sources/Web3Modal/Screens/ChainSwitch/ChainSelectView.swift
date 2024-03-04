@@ -96,6 +96,7 @@ struct ChainSelectView: View {
         let isChainApproved = store.account != nil ? currentChains.contains(chain) : true
         
         return Button(action: {
+            analyticsService.track(.SWITCH_NETWORK(network: chain))
             if store.account == nil {
                 store.selectedChain = chain
                 router.setRoute(Router.ConnectingSubpage.connectWallet)
