@@ -21,6 +21,7 @@ class SignInteractor: ObservableObject {
         
         DispatchQueue.main.async {
             self.store.uri = uri
+            self.store.retryShown = false
         }
     }
     
