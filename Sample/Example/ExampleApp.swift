@@ -9,13 +9,20 @@ import Web3Modal
 import Atlantis
 #endif
 
+
+class SocketConnectionManager: ObservableObject {
+    @Published var socketConnected: Bool = false
+}
+
 @main
-struct ExampleApp: App {
+class ExampleApp: App {
     private var disposeBag = Set<AnyCancellable>()
+    private var socketConnectionManager = SocketConnectionManager()
+
 
     @State var alertMessage: String = ""
 
-    init() {
+    required init() {
         #if DEBUG
         Atlantis.start()
         #endif
@@ -44,7 +51,7 @@ struct ExampleApp: App {
         Networking.configure(
             groupIdentifier: "group.com.walletconnect.web3modal",
             projectId: projectId,
-            socketFactory: WalletConnectSocketClientFactory()
+            socketFactory: DefaultSocketFactory()
         )
 
         Web3Modal.configure(
@@ -65,19 +72,31 @@ struct ExampleApp: App {
             
             print(error)
         }
+        setup()
+
+    }
+
+    func setup() {
+        Web3Modal.instance.socketConnectionStatusPublisher.receive(on: DispatchQueue.main).sink { [unowned self] status in
+            print("Socket connection status: \(status)")
+            self.socketConnectionManager.socketConnected = (status == .connected)
+
+        }.store(in: &disposeBag)
+        Web3Modal.instance.logger.setLogging(level: .debug)
     }
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup { [unowned self] in
             ContentView()
+                .environmentObject(socketConnectionManager)
                 .onOpenURL { url in
                     Web3Modal.instance.handleDeeplink(url)
                 }
                 .alert(
                     "Response",
                     isPresented: .init(
-                        get: { !alertMessage.isEmpty },
-                        set: { _ in alertMessage = "" }
+                        get: { !self.alertMessage.isEmpty },
+                        set: { _ in self.alertMessage = "" }
                     )
                 ) {
                     Button("Dismiss", role: .cancel) {}
@@ -87,9 +106,9 @@ struct ExampleApp: App {
                 .onReceive(Web3Modal.instance.sessionResponsePublisher, perform: { response in
                     switch response.result {
                     case let .response(value):
-                        alertMessage = "Session response: \(value.stringRepresentation)"
+                        self.alertMessage = "Session response: \(value.stringRepresentation)"
                     case let .error(error):
-                        alertMessage = "Session error: \(error)"
+                        self.alertMessage = "Session error: \(error)"
                     }
                 })
         }

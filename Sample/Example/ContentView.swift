@@ -3,8 +3,9 @@ import Web3Modal
 
 struct ContentView: View {
     @State var showUIComponents: Bool = false
-    @State var socketConnected: Bool = false
-    
+    @EnvironmentObject var socketConnectionManager: SocketConnectionManager
+
+
     var body: some View {
         NavigationView {
             VStack {
@@ -32,19 +33,15 @@ struct ContentView: View {
             .overlay(
                 HStack {
                     Circle()
-                        .fill(socketConnected ? Color.Success100 : Color.Error100)
+                        .fill(socketConnectionManager.socketConnected ? Color.Success100 : Color.Error100)
                         .frame(width: 10, height: 10)
-                    
-                    Text("Socket \(socketConnected ? "Connected" : "Disconnected")")
+
+                    Text("Socket \(socketConnectionManager.socketConnected ? "Connected" : "Disconnected")")
                         .font(.system(size: 12, weight: .semibold))
-                        .foregroundColor(socketConnected ? Color.Success100 : Color.Error100)
+                        .foregroundColor(socketConnectionManager.socketConnected ? Color.Success100 : Color.Error100)
                 },
                 alignment: .top
             )
-            .onReceive(Web3Modal.instance.socketConnectionStatusPublisher, perform: { status in
-                socketConnected = status == .connected
-                print("🧦 \(status)")
-            })
         }
     }
     

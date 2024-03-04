@@ -10,7 +10,8 @@ class Store: ObservableObject {
     static var shared: Store = .init()
     
     @Published var isModalShown: Bool = false
-    
+    @Published var retryShown = false
+
     @Published var identity: Identity?
     @Published var balance: Double?
     

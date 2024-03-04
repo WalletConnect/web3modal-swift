@@ -108,11 +108,11 @@ struct WalletDetailView: View {
                     .padding(2)
                     .background(Color.Background125)
                     .clipShape(Circle())
-                    .opacity(viewModel.retryShown ? 1 : 0)
+                    .opacity(store.retryShown ? 1 : 0)
                     .offset(x: 5, y: 5)
             }
             
-            if !viewModel.retryShown {
+            if !store.retryShown {
                 DrawingProgressView(
                     shape: .roundedRectangleRelative(relativeCornerRadius: Radius.m / 80),
                     color: .Blue100,
@@ -129,7 +129,7 @@ struct WalletDetailView: View {
             viewModel.handle(.didTapOpen)
         } label: {
             HStack {
-                Text(!viewModel.retryShown ? "Open" : "Try again")
+                Text(!store.retryShown ? "Open" : "Try again")
             }
             .font(.small600)
             .foregroundColor(.Blue100)
@@ -138,8 +138,8 @@ struct WalletDetailView: View {
             W3MButtonStyle(
                 size: .m,
                 variant: .accent,
-                leftIcon: viewModel.retryShown ? Image.Bold.refresh : nil,
-                rightIcon: viewModel.retryShown ? nil : Image.Bold.externalLink
+                leftIcon: store.retryShown ? Image.Bold.refresh : nil,
+                rightIcon: store.retryShown ? nil : Image.Bold.externalLink
             )
         )
     }
@@ -150,13 +150,13 @@ struct WalletDetailView: View {
                 .padding(.top, 40)
                 .padding(.bottom, Spacing.xl)
             
-            Text(viewModel.retryShown ? "Connection declined" : "Continue in \(viewModel.wallet.name)")
+            Text(store.retryShown ? "Connection declined" : "Continue in \(viewModel.wallet.name)")
                 .font(.paragraph600)
-                .foregroundColor(viewModel.retryShown ? .Error100 : .Foreground100)
+                .foregroundColor(store.retryShown ? .Error100 : .Foreground100)
                 .padding(.bottom, Spacing.xs)
             
             Text(
-                viewModel.retryShown
+                store.retryShown
                     ? "Connection can be declined if a previous request is still active"
                     : viewModel.preferredPlatform == .browser ? "Open and continue in a new browser tab" : "Accept connection request in the wallet"
             )
@@ -165,7 +165,7 @@ struct WalletDetailView: View {
             .multilineTextAlignment(.center)
             .padding(.bottom, Spacing.l)
             
-            if viewModel.retryShown || viewModel.preferredPlatform == .browser {
+            if store.retryShown || viewModel.preferredPlatform == .browser {
                 retryButton()
             }
         }
@@ -238,7 +238,7 @@ class MockWalletDetailViewModel: WalletDetailViewModel {
             store: store
         )
         
-        self.retryShown = retryShown
+//        self.retryShown = retryShown
     }
     
     override func startObserving() {
