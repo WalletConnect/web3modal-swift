@@ -1,11 +1,12 @@
-//
-
+#if os(iOS)
+import UIKit
+#endif
 import Foundation
 
 enum EnvironmentInfo {
     
     static var sdkVersion: String {
-        "swift-\(packageVersion)"
+        "swift-\(packageVersion)/\(operatingSystem)"
     }
     
     static var packageVersion: String {
@@ -19,5 +20,15 @@ enum EnvironmentInfo {
         }
         
         return version
+    }
+
+    public static var operatingSystem: String {
+#if os(iOS)
+        return "\(UIDevice.current.systemName)-\(UIDevice.current.systemVersion)"
+#elseif os(macOS)
+        return "macOS-\(ProcessInfo.processInfo.operatingSystemVersion)"
+#elseif os(tvOS)
+        return "tvOS-\(ProcessInfo.processInfo.operatingSystemVersion)"
+#endif
     }
 }

@@ -242,5 +242,6 @@ extension URLRequest {
         setValue(Web3Modal.config.projectId, forHTTPHeaderField: "x-project-id")
         setValue(Web3Modal.Config.sdkType, forHTTPHeaderField: "x-sdk-type")
         setValue(Web3Modal.Config.sdkVersion, forHTTPHeaderField: "x-sdk-version")
+        setValue(EnvironmentInfo.sdkVersion, forHTTPHeaderField: "x-user-agnet")
     }
 }
