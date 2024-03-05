@@ -71,7 +71,11 @@ public class Web3ModalClient {
     public var sessionEventPublisher: AnyPublisher<(event: Session.Event, sessionTopic: String, chainId: Blockchain?), Never> {
         signClient.sessionEventPublisher.eraseToAnyPublisher()
     }
-    
+
+    public var isAnalyticsEnabled: Bool {
+        return analyticsService.isAnalyticsEnabled
+    }
+
     // MARK: - Private Properties
 
     private let signClient: SignClientProtocol
@@ -376,5 +380,13 @@ public class Web3ModalClient {
         signClient.sessionRejectionPublisher.sink { [unowned self] (_, reason) in
             self.analyticsService.track(.CONNECT_ERROR(message: reason.message))
         }.store(in: &disposeBag)
+    }
+
+    public func enableAnalytics() {
+        analyticsService.enable()
+    }
+
+    public func disableAnalytics() {
+        analyticsService.disable()
     }
 }

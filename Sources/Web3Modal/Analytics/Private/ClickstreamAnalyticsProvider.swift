@@ -36,8 +36,7 @@ class ClickstreamAnalyticsProvider: AnalyticsProvider {
                 print("Failed posting event \(error)")
             }
         }
-        
-        // TODO: Batching?
+
     }
     
     private func analyticsApiUrl() -> String {
