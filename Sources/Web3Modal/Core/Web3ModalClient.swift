@@ -79,13 +79,16 @@ public class Web3ModalClient {
     private let store: Store
     private let analyticsService: AnalyticsService
     private var disposeBag = Set<AnyCancellable>()
+    public let logger: ConsoleLogging
 
     init(
+        logger: ConsoleLogging,
         signClient: SignClientProtocol,
         pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer,
         store: Store,
         analyticsService: AnalyticsService
     ) {
+        self.logger = logger
         self.signClient = signClient
         self.pairingClient = pairingClient
         self.store = store
@@ -96,6 +99,7 @@ public class Web3ModalClient {
     
     /// For creating new pairing
     public func createPairing() async throws -> WalletConnectURI {
+        logger.debug("Creating new pairing")
         do {
             return try await pairingClient.create()
         } catch {
@@ -112,6 +116,7 @@ public class Web3ModalClient {
     public func connect(
         topic: String?
     ) async throws -> WalletConnectURI? {
+        logger.debug("Connecting Application")
         do {
             if let topic = topic {
                 try pairingClient.validatePairingExistance(topic)
@@ -149,6 +154,7 @@ public class Web3ModalClient {
         sessionProperties: [String: String]? = nil,
         topic: String
     ) async throws {
+        logger.debug("Connecting Application on topic: \(topic)")
         do {
             try await signClient.connect(
                 requiredNamespaces: requiredNamespaces,
@@ -179,6 +185,7 @@ public class Web3ModalClient {
     }
     
     public func request(_ request: W3MJSONRPC) async throws {
+        logger.debug("Requesting: \(request.rawValues.method)")
         switch store.connectedWith {
         case .wc:
             guard

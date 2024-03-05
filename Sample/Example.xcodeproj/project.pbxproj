@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		23F6FD03919B41DE98CAFCD3 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = BD206AA550964C49AE94A3CA /* Sentry */; };
+		84D9CCC32B9708E4001EDEE3 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 84D9CCC22B9708E4001EDEE3 /* Starscream */; };
 		CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BCCE42AB0886400A2866C /* ContentView.swift */; };
 		CF25F3A22B40C7070030B3DC /* Web3Modal in Frameworks */ = {isa = PBXBuildFile; productRef = CF25F3A12B40C7070030B3DC /* Web3Modal */; };
 		CF25F3A42B40C7070030B3DC /* Web3ModalUI in Frameworks */ = {isa = PBXBuildFile; productRef = CF25F3A32B40C7070030B3DC /* Web3ModalUI */; };
@@ -43,6 +44,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84D9CCC32B9708E4001EDEE3 /* Starscream in Frameworks */,
 				CF3B9AD02ACDBA3A00984D53 /* Web3Modal in Frameworks */,
 				CFD6A70F2ADE8DE2002B402C /* Atlantis in Frameworks */,
 				CF25F3A42B40C7070030B3DC /* Web3ModalUI in Frameworks */,
@@ -130,6 +132,7 @@
 				BD206AA550964C49AE94A3CA /* Sentry */,
 				CF25F3A12B40C7070030B3DC /* Web3Modal */,
 				CF25F3A32B40C7070030B3DC /* Web3ModalUI */,
+				84D9CCC22B9708E4001EDEE3 /* Starscream */,
 			);
 			productName = Example;
 			productReference = CFD720742A9CC60600636CAF /* Example.app */;
@@ -163,6 +166,7 @@
 				CFD6A70D2ADE8DE2002B402C /* XCRemoteSwiftPackageReference "atlantis" */,
 				CF25F3A02B40C7070030B3DC /* XCLocalSwiftPackageReference ".." */,
 				F4A0329B6CFF49E682D3DFE7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+				84D9CCC12B9708E4001EDEE3 /* XCRemoteSwiftPackageReference "Starscream" */,
 			);
 			productRefGroup = CFD720752A9CC60600636CAF /* Products */;
 			projectDirPath = "";
@@ -396,14 +400,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Example/Example.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 16;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "\"Example/Preview Content\"";
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = W5R8AG9K22;
+				DEVELOPMENT_TEAM = W5R8AG9K22;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -430,7 +432,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROJECT_ID = "$(PROJECT_ID)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.walletconnect.web3modal.sample";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -471,6 +472,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		84D9CCC12B9708E4001EDEE3 /* XCRemoteSwiftPackageReference "Starscream" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/daltoniam/Starscream";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.2;
+			};
+		};
 		CFD6A70D2ADE8DE2002B402C /* XCRemoteSwiftPackageReference "atlantis" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ProxymanApp/atlantis";
@@ -490,6 +499,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		84D9CCC22B9708E4001EDEE3 /* Starscream */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84D9CCC12B9708E4001EDEE3 /* XCRemoteSwiftPackageReference "Starscream" */;
+			productName = Starscream;
+		};
 		BD206AA550964C49AE94A3CA /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F4A0329B6CFF49E682D3DFE7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;

@@ -51,7 +51,7 @@ class ExampleApp: App {
         Networking.configure(
             groupIdentifier: "group.com.walletconnect.web3modal",
             projectId: projectId,
-            socketFactory: WalletConnectSocketClientFactory()
+            socketFactory: DefaultSocketFactory()
         )
 
         Web3Modal.configure(
@@ -82,6 +82,7 @@ class ExampleApp: App {
             self.socketConnectionManager.socketConnected = (status == .connected)
 
         }.store(in: &disposeBag)
+        Web3Modal.instance.logger.setLogging(level: .debug)
     }
 
     var body: some Scene {

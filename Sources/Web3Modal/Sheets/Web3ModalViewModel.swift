@@ -78,6 +78,7 @@ class Web3ModalViewModel: ObservableObject {
                 
                 if store.session?.topic == topic {
                     store.session = nil
+                    store.account = nil
                 }
                 router.setRoute(Router.ConnectingSubpage.connectWallet)
             }
@@ -90,6 +91,7 @@ class Web3ModalViewModel: ObservableObject {
                 if sessions.isEmpty {
                     DispatchQueue.main.async {
                         store.session = nil
+                        store.account = nil
                         router.setRoute(Router.ConnectingSubpage.connectWallet)
                     }
                 }

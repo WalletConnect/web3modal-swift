@@ -25,6 +25,7 @@ public class Web3Modal {
             fatalError("Error - you must call Web3Modal.configure(_:) before accessing the shared instance.")
         }
         let client = Web3ModalClient(
+            logger: ConsoleLogger(prefix: "📜", loggingLevel: .off),
             signClient: Sign.instance,
             pairingClient: Pair.instance as! (PairingClientProtocol & PairingInteracting & PairingRegisterer),
             store: .shared,

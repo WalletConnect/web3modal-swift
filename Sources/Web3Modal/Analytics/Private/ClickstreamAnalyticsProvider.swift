@@ -41,11 +41,11 @@ class ClickstreamAnalyticsProvider: AnalyticsProvider {
     }
     
     private func analyticsApiUrl() -> String {
+        return "https://pulse.walletconnect.com"
         #if DEBUG
 //            return "http://localhost:8787"
             return "https://analytics-api-cf-workers-staging.walletconnect-v1-bridge.workers.dev"
         #else
-            return "https://pulse.walletconnect.com"
         #endif
     }
 }
