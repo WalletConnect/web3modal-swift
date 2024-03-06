@@ -12,8 +12,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: 
-      group: apple-silicon
+    runs-on: macos-latest-xlarge
     timeout-minutes: 15
     strategy:
       fail-fast: false
