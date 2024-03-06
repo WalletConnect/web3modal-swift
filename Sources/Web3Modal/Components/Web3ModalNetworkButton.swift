@@ -3,6 +3,8 @@ import SwiftUI
 
 public struct Web3ModalNetworkButton: View {
     @ObservedObject var store: Store
+        
+    @Environment(\.analyticsService) var analyticsService
     
     public init() {
         self.store = .shared
@@ -39,6 +41,7 @@ public struct Web3ModalNetworkButton: View {
             )
         } else {
             Button {
+                analyticsService.track(.CLICK_NETWORKS)
                 Web3Modal.selectChain()
             } label: {
                 Text("Select network").foregroundColor(.Foreground100)

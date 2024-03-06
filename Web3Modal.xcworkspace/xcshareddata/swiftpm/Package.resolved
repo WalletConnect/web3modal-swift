@@ -75,10 +75,10 @@
     {
       "identity" : "wallet-mobile-sdk",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/coinbase/wallet-mobile-sdk.git",
+      "location" : "https://github.com/WalletConnect/wallet-mobile-sdk",
       "state" : {
-        "revision" : "4aa89e682f8d7ab1515d85d0797f0d25306bb56a",
-        "version" : "1.0.5"
+        "revision" : "b6dfb7d6b8447c7c5b238a10443a1ac28223f38f",
+        "version" : "1.0.0"
       }
     },
     {

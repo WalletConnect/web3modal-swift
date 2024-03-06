@@ -8,6 +8,9 @@ struct AllWalletsView: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var store: Store
     @EnvironmentObject var interactor: W3MAPIInteractor
+
+    @Environment(\.analyticsService) var analyticsService: AnalyticsService
+    
     @EnvironmentObject var signInteractor: SignInteractor
 
     @State var searchTerm: String = ""
@@ -138,6 +141,7 @@ struct AllWalletsView: View {
             Task {
                 do {
                     try await signInteractor.createPairingAndConnect()
+                    analyticsService.track(.SELECT_WALLET(name: wallet.name, platform: .mobile))
                     router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
                 } catch {
                     store.toast = .init(style: .error, message: error.localizedDescription)
@@ -177,6 +181,7 @@ struct AllWalletsView: View {
     private func qrButton() -> some View {
         Button {
             router.setRoute(Router.ConnectingSubpage.qr)
+            analyticsService.track(.SELECT_WALLET(name: "Unknown", platform: .qrcode))
         } label: {
             Image.optionQrCode
         }

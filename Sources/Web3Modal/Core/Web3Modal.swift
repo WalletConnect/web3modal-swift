@@ -28,7 +28,8 @@ public class Web3Modal {
             logger: ConsoleLogger(prefix: "📜", loggingLevel: .off),
             signClient: Sign.instance,
             pairingClient: Pair.instance as! (PairingClientProtocol & PairingInteracting & PairingRegisterer),
-            store: .shared
+            store: .shared,
+            analyticsService: .shared
         )
         
         let store = Store.shared

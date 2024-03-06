@@ -7,6 +7,8 @@ struct Web3ModalView: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var router: Router
 
+    @Environment(\.analyticsService) var analyticsService: AnalyticsService
+
     var body: some View {
         VStack(spacing: 0) {
             modalHeader()
@@ -83,6 +85,7 @@ struct Web3ModalView: View {
     private func helpButton() -> some View {
         Button(action: {
             router.setRoute(Router.ConnectingSubpage.whatIsAWallet)
+            analyticsService.track(.CLICK_WALLET_HELP)
         }, label: {
             Image.Medium.questionMarkCircle
         })
