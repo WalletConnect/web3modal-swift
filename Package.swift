@@ -31,7 +31,7 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
             from: "1.10.0"
         ),
-        .package(name: "CoinbaseWalletSDK", url: "https://github.com/coinbase/wallet-mobile-sdk.git", from: "1.0.5"),
+        .package(name: "CoinbaseWalletSDK", url: "https://github.com/WalletConnect/wallet-mobile-sdk", from: "1.0.0"),
     ],
     targets: [
         .target(
