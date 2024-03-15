@@ -318,7 +318,7 @@ public struct SessionParams {
         let optionalNamespaces: [String: ProposalNamespace] = [
             "solana": ProposalNamespace(
                 chains: [
-                    Blockchain("solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ")!
+                    Blockchain("solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp")!
                 ],
                 methods: [
                     "solana_signMessage",
