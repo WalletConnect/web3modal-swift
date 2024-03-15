@@ -21,15 +21,15 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/WalletConnect/WalletConnectSwiftV2",
-            from: "1.13.0"
+            .upToNextMinor(from: "1.13.0")
         ),
         .package(
             url: "https://github.com/WalletConnect/QRCode",
-            from: "14.3.1"
+            .upToNextMinor(from: "14.3.1")
         ),
         .package(
             url: "https://github.com/pointfreeco/swift-snapshot-testing",
-            from: "1.10.0"
+            .upToNextMinor(from: "1.10.0")
         ),
         .package(name: "CoinbaseWalletSDK", url: "https://github.com/WalletConnect/wallet-mobile-sdk", from: "1.0.0"),
     ],
