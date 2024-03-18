@@ -305,8 +305,8 @@ public struct SessionParams {
     public static let `default`: Self = {
         let methods: Set<String> = Set(EthUtils.ethMethods)
         let events: Set<String> = ["chainChanged", "accountsChanged"]
-        let blockchains: Set<Blockchain> = Set(ChainPresets.ethChains.map(\.id).compactMap(Blockchain.init))
-        
+        let blockchains = ChainPresets.ethChains.map(\.id).compactMap(Blockchain.init)
+
         let namespaces: [String: ProposalNamespace] = [
             "eip155": ProposalNamespace(
                 chains: blockchains,
