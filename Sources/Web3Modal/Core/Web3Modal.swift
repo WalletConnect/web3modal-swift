@@ -115,7 +115,9 @@ public class Web3Modal {
             coinbaseEnabled: coinbaseEnabled,
             onError: onError
         )
-        
+
+        Sign.configure(crypto: crypto)
+
         let store = Store.shared
         let router = Router()
         let w3mApiInteractor = W3MAPIInteractor(store: store)
