@@ -68,8 +68,9 @@ public class Web3Modal {
         
         let projectId: String
         var metadata: AppMetadata
+        let crypto: CryptoProvider
         var sessionParams: SessionParams
-        
+
         let includeWebWallets: Bool
         let recommendedWalletIds: [String]
         let excludedWalletIds: [String]
@@ -91,6 +92,7 @@ public class Web3Modal {
     public static func configure(
         projectId: String,
         metadata: AppMetadata,
+        crypto: CryptoProvider,
         sessionParams: SessionParams = .default,
         includeWebWallets: Bool = true,
         recommendedWalletIds: [String] = [],
@@ -104,6 +106,7 @@ public class Web3Modal {
         Web3Modal.config = Web3Modal.Config(
             projectId: projectId,
             metadata: metadata,
+            crypto: crypto,
             sessionParams: sessionParams,
             includeWebWallets: includeWebWallets,
             recommendedWalletIds: recommendedWalletIds,

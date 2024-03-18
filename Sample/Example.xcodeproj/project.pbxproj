@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		23F6FD03919B41DE98CAFCD3 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = BD206AA550964C49AE94A3CA /* Sentry */; };
 		84D9CCC32B9708E4001EDEE3 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = 84D9CCC22B9708E4001EDEE3 /* Starscream */; };
+		84F3EFBB2BA86FA6005FCFAE /* DefaultCryptoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84F3EFBA2BA86FA6005FCFAE /* DefaultCryptoProvider.swift */; };
+		84F3EFBE2BA87760005FCFAE /* Web3 in Frameworks */ = {isa = PBXBuildFile; productRef = 84F3EFBD2BA87760005FCFAE /* Web3 */; };
+		84F3EFC02BA87760005FCFAE /* Web3ContractABI in Frameworks */ = {isa = PBXBuildFile; productRef = 84F3EFBF2BA87760005FCFAE /* Web3ContractABI */; };
+		84F3EFC22BA87760005FCFAE /* Web3PromiseKit in Frameworks */ = {isa = PBXBuildFile; productRef = 84F3EFC12BA87760005FCFAE /* Web3PromiseKit */; };
 		CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF0BCCE42AB0886400A2866C /* ContentView.swift */; };
 		CF25F3A22B40C7070030B3DC /* Web3Modal in Frameworks */ = {isa = PBXBuildFile; productRef = CF25F3A12B40C7070030B3DC /* Web3Modal */; };
 		CF25F3A42B40C7070030B3DC /* Web3ModalUI in Frameworks */ = {isa = PBXBuildFile; productRef = CF25F3A32B40C7070030B3DC /* Web3ModalUI */; };
@@ -24,6 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		84F3EFBA2BA86FA6005FCFAE /* DefaultCryptoProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultCryptoProvider.swift; sourceTree = "<group>"; };
 		CF0BCCE42AB0886400A2866C /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		CF533D032ADD411A00B3441C /* web3modal-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "web3modal-swift"; path = ..; sourceTree = "<group>"; };
 		CF74C5C62B323048007B0926 /* swift-web3modal-Package.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = "swift-web3modal-Package.xctestplan"; sourceTree = "<group>"; };
@@ -47,9 +52,12 @@
 				84D9CCC32B9708E4001EDEE3 /* Starscream in Frameworks */,
 				CF3B9AD02ACDBA3A00984D53 /* Web3Modal in Frameworks */,
 				CFD6A70F2ADE8DE2002B402C /* Atlantis in Frameworks */,
+				84F3EFC02BA87760005FCFAE /* Web3ContractABI in Frameworks */,
 				CF25F3A42B40C7070030B3DC /* Web3ModalUI in Frameworks */,
 				CF3B9AD22ACDBA3A00984D53 /* Web3ModalUI in Frameworks */,
+				84F3EFBE2BA87760005FCFAE /* Web3 in Frameworks */,
 				CF25F3A22B40C7070030B3DC /* Web3Modal in Frameworks */,
+				84F3EFC22BA87760005FCFAE /* Web3PromiseKit in Frameworks */,
 				23F6FD03919B41DE98CAFCD3 /* Sentry in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -82,6 +90,7 @@
 				CFD6A7102ADE8E26002B402C /* Info.plist */,
 				CFA99B912AD0549F00EB5331 /* WCSocketFactory.swift */,
 				CFD720772A9CC60600636CAF /* ExampleApp.swift */,
+				84F3EFBA2BA86FA6005FCFAE /* DefaultCryptoProvider.swift */,
 				CFD720792A9CC60600636CAF /* ComponentLibraryView.swift */,
 				CFEAAF082B6C0A58001565F5 /* Configuration.xcconfig */,
 				CF0BCCE42AB0886400A2866C /* ContentView.swift */,
@@ -133,6 +142,9 @@
 				CF25F3A12B40C7070030B3DC /* Web3Modal */,
 				CF25F3A32B40C7070030B3DC /* Web3ModalUI */,
 				84D9CCC22B9708E4001EDEE3 /* Starscream */,
+				84F3EFBD2BA87760005FCFAE /* Web3 */,
+				84F3EFBF2BA87760005FCFAE /* Web3ContractABI */,
+				84F3EFC12BA87760005FCFAE /* Web3PromiseKit */,
 			);
 			productName = Example;
 			productReference = CFD720742A9CC60600636CAF /* Example.app */;
@@ -167,6 +179,7 @@
 				CF25F3A02B40C7070030B3DC /* XCLocalSwiftPackageReference ".." */,
 				F4A0329B6CFF49E682D3DFE7 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
 				84D9CCC12B9708E4001EDEE3 /* XCRemoteSwiftPackageReference "Starscream" */,
+				84F3EFBC2BA87760005FCFAE /* XCRemoteSwiftPackageReference "Web3" */,
 			);
 			productRefGroup = CFD720752A9CC60600636CAF /* Products */;
 			projectDirPath = "";
@@ -217,6 +230,7 @@
 				CFD720782A9CC60600636CAF /* ExampleApp.swift in Sources */,
 				CF0BCCE52AB0886400A2866C /* ContentView.swift in Sources */,
 				CFA99B922AD0549F00EB5331 /* WCSocketFactory.swift in Sources */,
+				84F3EFBB2BA86FA6005FCFAE /* DefaultCryptoProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,6 +494,14 @@
 				minimumVersion = 3.1.2;
 			};
 		};
+		84F3EFBC2BA87760005FCFAE /* XCRemoteSwiftPackageReference "Web3" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/WalletConnect/Web3.swift";
+			requirement = {
+				kind = exactVersion;
+				version = 1.0.2;
+			};
+		};
 		CFD6A70D2ADE8DE2002B402C /* XCRemoteSwiftPackageReference "atlantis" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ProxymanApp/atlantis";
@@ -503,6 +525,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 84D9CCC12B9708E4001EDEE3 /* XCRemoteSwiftPackageReference "Starscream" */;
 			productName = Starscream;
+		};
+		84F3EFBD2BA87760005FCFAE /* Web3 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84F3EFBC2BA87760005FCFAE /* XCRemoteSwiftPackageReference "Web3" */;
+			productName = Web3;
+		};
+		84F3EFBF2BA87760005FCFAE /* Web3ContractABI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84F3EFBC2BA87760005FCFAE /* XCRemoteSwiftPackageReference "Web3" */;
+			productName = Web3ContractABI;
+		};
+		84F3EFC12BA87760005FCFAE /* Web3PromiseKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 84F3EFBC2BA87760005FCFAE /* XCRemoteSwiftPackageReference "Web3" */;
+			productName = Web3PromiseKit;
 		};
 		BD206AA550964C49AE94A3CA /* Sentry */ = {
 			isa = XCSwiftPackageProductDependency;

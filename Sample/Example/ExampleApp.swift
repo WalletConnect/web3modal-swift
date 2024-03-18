@@ -57,6 +57,7 @@ class ExampleApp: App {
         Web3Modal.configure(
             projectId: projectId,
             metadata: metadata,
+            crypto: DefaultCryptoProvider(),
             customWallets: [
                 .init(
                      id: "swift-sample",
