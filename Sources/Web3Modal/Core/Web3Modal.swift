@@ -208,6 +208,9 @@ public class Web3Modal {
                             })
                         
                             store.selectedChain = matchingChain
+                        
+                            instance.coinbaseConnectedSubject.send()
+                        
                         case .failure(let error):
                             store.toast = .init(style: .error, message: error.localizedDescription)
                     }
