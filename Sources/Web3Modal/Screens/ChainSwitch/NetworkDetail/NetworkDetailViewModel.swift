@@ -117,7 +117,11 @@ final class NetworkDetailViewModel: ObservableObject {
         guard let session = store.session else { return }
         
         if
-            let urlString = session.peer.redirect?.native ?? session.peer.redirect?.universal,
+            let urlString = if store.preferUniversalLinks {
+                session.peer.redirect?.universal ?? session.peer.redirect?.native
+            } else {
+                session.peer.redirect?.native ?? session.peer.redirect?.universal
+            },
             let url = URL(string: urlString)
         {
             DispatchQueue.main.async {

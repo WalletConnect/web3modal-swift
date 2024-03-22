@@ -59,6 +59,7 @@ public class Web3ModalClient {
     }
     
     public var coinbaseResponseSubject = PassthroughSubject<W3MResponse, Never>()
+    public var coinbaseConnectedSubject = PassthroughSubject<Void, Never>()
     
     /// Publisher that sends web socket connection status
     public var socketConnectionStatusPublisher: AnyPublisher<SocketConnectionStatus, Never> {
@@ -318,6 +319,10 @@ public class Web3ModalClient {
     /// - Note: Will unsubscribe from all topics
     public func cleanup() async throws {
         do {
+            store.session = nil
+            store.account = nil
+            store.balance = nil
+            store.identity = nil
             try await signClient.cleanup()
         } catch {
             Web3Modal.config.onError(error)
@@ -350,12 +355,24 @@ public class Web3ModalClient {
     public func launchCurrentWallet() {
         guard
             let session = store.session,
-            let urlString = session.peer.redirect?.native ?? session.peer.redirect?.universal,
+            let urlString = if store.preferUniversalLinks {
+                session.peer.redirect?.universal ?? session.peer.redirect?.native
+            } else {
+                session.peer.redirect?.native ?? session.peer.redirect?.universal
+            },
             let url = URL(string: urlString)
-        else { return }
+        else {
+            self.store.toast = .init(style: .error, message: "Invalid redirect URL")
+            return
+        }
         
+        let isHttp: Bool = url.scheme?.lowercased().hasPrefix("http") == true
         DispatchQueue.main.async {
-            UIApplication.shared.open(url, completionHandler: nil)
+            UIApplication.shared.open(url, options: [.universalLinksOnly: isHttp]) { result in
+                if !result {
+                    self.store.toast = .init(style: .error, message: "Failed to open wallet")
+                }
+            }
         }
     }
     
