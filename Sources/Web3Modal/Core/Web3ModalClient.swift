@@ -71,25 +71,39 @@ public class Web3ModalClient {
     public var sessionEventPublisher: AnyPublisher<(event: Session.Event, sessionTopic: String, chainId: Blockchain?), Never> {
         signClient.sessionEventPublisher.eraseToAnyPublisher()
     }
-    
+
+    public var isAnalyticsEnabled: Bool {
+        return analyticsService.isAnalyticsEnabled
+    }
+
     // MARK: - Private Properties
 
     private let signClient: SignClientProtocol
     private let pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer
     private let store: Store
-    
+    private let analyticsService: AnalyticsService
+    private var disposeBag = Set<AnyCancellable>()
+    public let logger: ConsoleLogging
+
     init(
+        logger: ConsoleLogging,
         signClient: SignClientProtocol,
         pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer,
-        store: Store
+        store: Store,
+        analyticsService: AnalyticsService
     ) {
+        self.logger = logger
         self.signClient = signClient
         self.pairingClient = pairingClient
         self.store = store
+        self.analyticsService = analyticsService
+        setUpConnectionEvents()
+        analyticsService.track(.MODAL_LOADED)
     }
     
     /// For creating new pairing
     public func createPairing() async throws -> WalletConnectURI {
+        logger.debug("Creating new pairing")
         do {
             return try await pairingClient.create()
         } catch {
@@ -106,6 +120,7 @@ public class Web3ModalClient {
     public func connect(
         topic: String?
     ) async throws -> WalletConnectURI? {
+        logger.debug("Connecting Application")
         do {
             if let topic = topic {
                 try pairingClient.validatePairingExistance(topic)
@@ -143,6 +158,7 @@ public class Web3ModalClient {
         sessionProperties: [String: String]? = nil,
         topic: String
     ) async throws {
+        logger.debug("Connecting Application on topic: \(topic)")
         do {
             try await signClient.connect(
                 requiredNamespaces: requiredNamespaces,
@@ -173,6 +189,7 @@ public class Web3ModalClient {
     }
     
     public func request(_ request: W3MJSONRPC) async throws {
+        logger.debug("Requesting: \(request.rawValues.method)")
         switch store.connectedWith {
         case .wc:
             guard
@@ -266,12 +283,19 @@ public class Web3ModalClient {
         case .wc:
             do {
                 try await signClient.disconnect(topic: topic)
+                analyticsService.track(.DISCONNECT_SUCCESS)
             } catch {
                 Web3Modal.config.onError(error)
+                analyticsService.track(.DISCONNECT_ERROR)
                 throw error
             }
         case .cb:
-            CoinbaseWalletSDK.shared.resetSession()
+            if case let .failure(error) = CoinbaseWalletSDK.shared.resetSession() {
+                analyticsService.track(.DISCONNECT_ERROR)
+                throw error
+            } else {
+                analyticsService.track(.DISCONNECT_SUCCESS)
+            }
         case .none:
             break
         }
@@ -343,5 +367,26 @@ public class Web3ModalClient {
             store.toast = .init(style: .error, message: error.localizedDescription)
             return false
         }
+    }
+
+    private func setUpConnectionEvents() {
+        analyticsService.track(.MODAL_LOADED)
+
+        signClient.sessionSettlePublisher.sink { [unowned self] session in
+            self.analyticsService.track(.CONNECT_SUCCESS(method: analyticsService.method, name: session.peer.name))
+        }.store(in: &disposeBag)
+
+
+        signClient.sessionRejectionPublisher.sink { [unowned self] (_, reason) in
+            self.analyticsService.track(.CONNECT_ERROR(message: reason.message))
+        }.store(in: &disposeBag)
+    }
+
+    public func enableAnalytics() {
+        analyticsService.enable()
+    }
+
+    public func disableAnalytics() {
+        analyticsService.disable()
     }
 }

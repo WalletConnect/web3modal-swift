@@ -6,6 +6,8 @@ struct ChainSelectView: View {
     
     @ObservedObject var viewModel: Web3ModalViewModel
 
+    @Environment(\.analyticsService) var analyticsService: AnalyticsService
+
     var body: some View {
         VStack(spacing: 0) {
             modalHeader()
@@ -64,6 +66,7 @@ struct ChainSelectView: View {
                 
                 Button {
                     router.setRoute(Router.NetworkSwitchSubpage.whatIsANetwork)
+                    analyticsService.track(.CLICK_NETWORK_HELP)
                 } label: {
                     HStack(spacing: Spacing.xxs) {
                         Image.Bold.questionMarkCircle
@@ -93,6 +96,7 @@ struct ChainSelectView: View {
         let isChainApproved = store.account != nil ? currentChains.contains(chain) : true
         
         return Button(action: {
+            analyticsService.track(.SWITCH_NETWORK(network: chain))
             if store.account == nil {
                 store.selectedChain = chain
                 router.setRoute(Router.ConnectingSubpage.connectWallet)

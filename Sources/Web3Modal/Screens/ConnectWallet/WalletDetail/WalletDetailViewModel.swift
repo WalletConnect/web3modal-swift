@@ -22,7 +22,6 @@ class WalletDetailViewModel: ObservableObject {
     let signInteractor: SignInteractor
     
     @Published var preferredPlatform: Platform = .mobile
-    @Published var retryShown = false
     
     private var disposeBag = Set<AnyCancellable>()
     
@@ -51,12 +50,8 @@ class WalletDetailViewModel: ObservableObject {
     func startObserving() {
         Web3Modal.instance.sessionRejectionPublisher
             .receive(on: DispatchQueue.main)
-            .sink { _, _ in
-                self.retryShown = true
-                
-                Task {
-                    try await self.signInteractor.createPairingAndConnect()
-                }
+            .sink { [weak self] _, _ in
+                self?.store.retryShown = true
             }
             .store(in: &disposeBag)
     }
@@ -83,7 +78,7 @@ class WalletDetailViewModel: ObservableObject {
             
             store.recentWallets.append(wallet)
         case .didTapOpen:
-            retryShown = false
+                store.retryShown = false
             
             if wallet.alternativeConnectionMethod == nil {
                 navigateToDeepLink(
@@ -114,7 +109,9 @@ class WalletDetailViewModel: ObservableObject {
             
             let urlString = try formatNativeUrlString(link)
             if let url = urlString?.toURL() {
-                router.openURL(url)
+                router.openURL(url) { success in
+                    self.store.toast = .init(style: .error, message: DeeplinkErrors.failedToOpen.localizedDescription)
+                }
             } else {
                 throw DeeplinkErrors.noWalletLinkFound
             }

@@ -25,9 +25,11 @@ public class Web3Modal {
             fatalError("Error - you must call Web3Modal.configure(_:) before accessing the shared instance.")
         }
         let client = Web3ModalClient(
+            logger: ConsoleLogger(prefix: "📜", loggingLevel: .off),
             signClient: Sign.instance,
             pairingClient: Pair.instance as! (PairingClientProtocol & PairingInteracting & PairingRegisterer),
-            store: .shared
+            store: .shared,
+            analyticsService: .shared
         )
         
         let store = Store.shared
@@ -316,7 +318,7 @@ public struct SessionParams {
         let optionalNamespaces: [String: ProposalNamespace] = [
             "solana": ProposalNamespace(
                 chains: [
-                    Blockchain("solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ")!
+                    Blockchain("solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp")!
                 ],
                 methods: [
                     "solana_signMessage",

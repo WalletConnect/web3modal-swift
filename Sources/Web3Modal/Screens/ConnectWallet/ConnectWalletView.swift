@@ -3,7 +3,11 @@ import SwiftUI
 struct ConnectWalletView: View {
     @EnvironmentObject var store: Store
     @EnvironmentObject var router: Router
+
+    @Environment(\.analyticsService) var analyticsService: AnalyticsService
     
+    @EnvironmentObject var signInteractor: SignInteractor
+
     let displayWCConnection = false
     
     var wallets: [Wallet] {
@@ -35,6 +39,7 @@ struct ConnectWalletView: View {
                 
             Button(action: {
                 router.setRoute(Router.ConnectingSubpage.allWallets)
+                analyticsService.track(.CLICK_ALL_WALLETS)
             }, label: {
                 Text("All wallets")
             })
@@ -57,7 +62,15 @@ struct ConnectWalletView: View {
                 let tagTitle: String? = isRecent ? "RECENT" : nil
                 
                 Button(action: {
-                    router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+                    Task {
+                        do {
+                            try await signInteractor.createPairingAndConnect()
+                            router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
+                            analyticsService.track(.SELECT_WALLET(name: wallet.name, platform: .mobile))
+                        } catch {
+                            store.toast = .init(style: .error, message: error.localizedDescription)
+                        }
+                    }
                 }, label: {
                     Text(wallet.name)
                 })
