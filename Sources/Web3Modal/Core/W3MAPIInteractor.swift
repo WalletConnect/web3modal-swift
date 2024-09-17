@@ -37,8 +37,8 @@ final class W3MAPIInteractor: ObservableObject {
             search: search,
             projectId: Web3Modal.config.projectId,
             metadata: Web3Modal.config.metadata,
-            recommendedIds: Web3Modal.config.recommendedWalletIds,
-            excludedIds: Web3Modal.config.excludedWalletIds
+            includeIds: Web3Modal.config.recommendedWalletIds,
+            excludeIds: Web3Modal.config.excludedWalletIds
         )
         
         let httpClient = HTTPNetworkClient(host: "api.web3modal.com")
@@ -113,8 +113,8 @@ final class W3MAPIInteractor: ObservableObject {
                     search: "",
                     projectId: Web3Modal.config.projectId,
                     metadata: Web3Modal.config.metadata,
-                    recommendedIds: Web3Modal.config.recommendedWalletIds,
-                    excludedIds: Web3Modal.config.excludedWalletIds
+                    includeIds: Web3Modal.config.recommendedWalletIds,
+                    excludeIds: Web3Modal.config.excludedWalletIds
                 )
             )
         )
