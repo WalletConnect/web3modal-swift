@@ -137,7 +137,7 @@ struct Web3ModalView_Previews: PreviewProvider {
                 store: Store(),
                 w3mApiInteractor: W3MAPIInteractor(store: Store()),
                 signInteractor: SignInteractor(store: Store()),
-                blockchainApiInteractor: BlockchainAPIInteractor(store: Store())
+                blockchainApiInteractor: BlockchainAPIInteractor(store: Store()), supportsAuthenticatedSession: false
             ))
             .previewLayout(.sizeThatFits)
     }

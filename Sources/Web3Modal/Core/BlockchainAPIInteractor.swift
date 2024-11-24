@@ -1,4 +1,5 @@
 import Foundation
+import WalletConnectNetworking
 
 class BlockchainAPIInteractor: ObservableObject {
     let store: Store
@@ -15,7 +16,9 @@ class BlockchainAPIInteractor: ObservableObject {
         
         let address = account.address
         let chainId = account.chain.absoluteString
-                
+        let clientId = try? Relay.instance.getClientId()
+
+
         let httpClient = HTTPNetworkClient(host: "rpc.walletconnect.com")
         let response = try await httpClient.request(
             Identity.self,
@@ -23,7 +26,8 @@ class BlockchainAPIInteractor: ObservableObject {
                 params: .init(
                     address: address,
                     chainId: chainId,
-                    projectId: Web3Modal.config.projectId
+                    projectId: Web3Modal.config.projectId,
+                    clientId: clientId
                 )
             )
         )

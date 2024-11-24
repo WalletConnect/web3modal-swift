@@ -140,7 +140,7 @@ struct AllWalletsView: View {
         Button(action: {
             Task {
                 do {
-                    try await signInteractor.createPairingAndConnect()
+                    try await signInteractor.connect(walletUniversalLink: wallet.linkMode)
                     analyticsService.track(.SELECT_WALLET(name: wallet.name, platform: .mobile))
                     router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
                 } catch {

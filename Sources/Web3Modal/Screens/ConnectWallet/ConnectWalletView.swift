@@ -64,7 +64,7 @@ struct ConnectWalletView: View {
                 Button(action: {
                     Task {
                         do {
-                            try await signInteractor.createPairingAndConnect()
+                            try await signInteractor.connect(walletUniversalLink: wallet.linkMode)
                             router.setRoute(Router.ConnectingSubpage.walletDetail(wallet))
                             analyticsService.track(.SELECT_WALLET(name: wallet.name, platform: .mobile))
                         } catch {

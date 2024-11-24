@@ -72,13 +72,23 @@ public class Web3ModalClient {
         signClient.sessionEventPublisher.eraseToAnyPublisher()
     }
 
+    public var authResponsePublisher: AnyPublisher<(id: RPCID, result: Result<(Session?, [Cacao]), AuthError>), Never> {
+        signClient.authResponsePublisher
+    }
+
     public var isAnalyticsEnabled: Bool {
         return analyticsService.isAnalyticsEnabled
     }
 
+    public var SIWEAuthenticationPublisher: AnyPublisher<Result<(message: String, signature: String), SIWEAuthenticationError>, Never> {
+        return SIWEAuthenticationPublisherSubject.eraseToAnyPublisher()
+    }
+
+    internal let SIWEAuthenticationPublisherSubject = PassthroughSubject<Result<(message: String, signature: String), SIWEAuthenticationError>, Never>()
+
     // MARK: - Private Properties
 
-    private let signClient: SignClientProtocol
+    private let signClient: SignClient
     private let pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer
     private let store: Store
     private let analyticsService: AnalyticsService
@@ -87,7 +97,7 @@ public class Web3ModalClient {
 
     init(
         logger: ConsoleLogging,
-        signClient: SignClientProtocol,
+        signClient: SignClient,
         pairingClient: PairingClientProtocol & PairingInteracting & PairingRegisterer,
         store: Store,
         analyticsService: AnalyticsService
@@ -117,20 +127,11 @@ public class Web3ModalClient {
     /// Namespaces from Web3Modal.config will be used
     /// - Parameters:
     ///   - topic: pairing topic
-    public func connect(
-        topic: String?
-    ) async throws -> WalletConnectURI? {
+    public func connect(walletUniversalLink: String?) async throws -> WalletConnectURI? {
         logger.debug("Connecting Application")
         do {
-            if let topic = topic {
-                try pairingClient.validatePairingExistance(topic)
-                try await signClient.connect(
-                    requiredNamespaces: Web3Modal.config.sessionParams.requiredNamespaces,
-                    optionalNamespaces: Web3Modal.config.sessionParams.optionalNamespaces,
-                    sessionProperties: Web3Modal.config.sessionParams.sessionProperties,
-                    topic: topic
-                )
-                return nil
+            if let authParams = Web3Modal.config.authRequestParams {
+                return try await signClient.authenticate(authParams, walletUniversalLink: walletUniversalLink)
             } else {
                 let pairingURI = try await pairingClient.create()
                 try await signClient.connect(
@@ -146,32 +147,7 @@ public class Web3ModalClient {
             throw error
         }
     }
-    
-    /// For proposing a session to a wallet.
-    /// Function will propose a session on existing pairing.
-    /// - Parameters:
-    ///   - requiredNamespaces: required namespaces for a session
-    ///   - topic: pairing topic
-    public func connect(
-        requiredNamespaces: [String: ProposalNamespace],
-        optionalNamespaces: [String: ProposalNamespace]? = nil,
-        sessionProperties: [String: String]? = nil,
-        topic: String
-    ) async throws {
-        logger.debug("Connecting Application on topic: \(topic)")
-        do {
-            try await signClient.connect(
-                requiredNamespaces: requiredNamespaces,
-                optionalNamespaces: optionalNamespaces,
-                sessionProperties: sessionProperties,
-                topic: topic
-            )
-        } catch {
-            Web3Modal.config.onError(error)
-            throw error
-        }
-    }
-    
+
     /// Ping method allows to check if peer client is online and is subscribing for given topic
     ///
     ///  Should Error:
@@ -361,6 +337,17 @@ public class Web3ModalClient {
     
     @discardableResult
     public func handleDeeplink(_ url: URL) -> Bool {
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let queryItems = components.queryItems,
+           queryItems.contains(where: { $0.name == "wc_ev" }) {
+            do {
+                try signClient.dispatchEnvelope(url.absoluteString)
+                return true
+            } catch {
+                store.toast = .init(style: .error, message: error.localizedDescription)
+                return false
+            }
+        }
         do {
             return try CoinbaseWalletSDK.shared.handleResponse(url)
         } catch {

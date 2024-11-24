@@ -5,6 +5,7 @@ enum BlockchainAPI: HTTPService {
         let address: String
         let chainId: String
         let projectId: String
+        let clientId: String?
     }
     
     case getIdentity(params: GetIdentityParams)
@@ -28,10 +29,14 @@ enum BlockchainAPI: HTTPService {
     var queryParameters: [String: String]? {
         switch self {
         case let .getIdentity(params):
-            return [
+            var parameters: [String: String] = [
                 "projectId": params.projectId,
-                "chainId": params.chainId,
+                "chainId": params.chainId
             ]
+            if let clientId = params.clientId {
+                parameters["clientId"] = clientId
+            }
+            return parameters
         }
     }
 

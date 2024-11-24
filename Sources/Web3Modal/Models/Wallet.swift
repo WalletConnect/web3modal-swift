@@ -8,6 +8,7 @@ public struct Wallet: Codable, Identifiable {
     let imageUrl: String?
     let order: Int
     let mobileLink: String?
+    let linkMode: String?
     let desktopLink: String?
     let webappLink: String?
     let appStore: String?
@@ -24,6 +25,7 @@ public struct Wallet: Codable, Identifiable {
         case imageUrl = "image_url"
         case order
         case mobileLink = "mobile_link"
+        case linkMode = "link_mode"
         case desktopLink = "desktop_link"
         case webappLink = "webapp_link"
         case appStore = "app_store"
@@ -41,7 +43,8 @@ public struct Wallet: Codable, Identifiable {
         imageUrl: String? = nil,
         order: Int,
         mobileLink: String?, 
-        desktopLink: String? = nil, 
+        linkMode: String?,
+        desktopLink: String? = nil,
         webappLink: String? = nil, 
         appStore: String? = nil, 
         lastTimeUsed: Date? = nil, 
@@ -55,6 +58,7 @@ public struct Wallet: Codable, Identifiable {
         self.imageUrl = imageUrl
         self.order = order
         self.mobileLink = mobileLink
+        self.linkMode = linkMode
         self.desktopLink = desktopLink
         self.webappLink = webappLink
         self.appStore = appStore
@@ -71,6 +75,7 @@ public struct Wallet: Codable, Identifiable {
         self.imageUrl = try container.decodeIfPresent(String.self, forKey: .imageUrl)
         self.imageId = try container.decodeIfPresent(String.self, forKey: .imageId)
         self.order = try container.decode(Int.self, forKey: .order)
+        self.linkMode = try container.decodeIfPresent(String.self, forKey: .linkMode)
         self.mobileLink = try container.decodeIfPresent(String.self, forKey: .mobileLink)
         self.desktopLink = try container.decodeIfPresent(String.self, forKey: .desktopLink)
         self.webappLink = try container.decodeIfPresent(String.self, forKey: .webappLink)
@@ -103,7 +108,7 @@ extension Wallet {
             imageId: "0528ee7e-16d1-4089-21e3-bbfb41933100",
             order: 1,
             mobileLink: "https://sample.com/foo/universal",
-            desktopLink: "sampleapp://deeplink",
+            linkMode: "https://lab.web3modal.com/wallet", desktopLink: "sampleapp://deeplink",
             webappLink: "https://sample.com/foo/webapp",
             appStore: ""
         ),
@@ -114,7 +119,7 @@ extension Wallet {
             imageId: "5195e9db-94d8-4579-6f11-ef553be95100",
             order: 2,
             mobileLink: "awsomeapp://",
-            desktopLink: "awsomeapp://deeplink",
+            linkMode: "https://lab.web3modal.com/wallet", desktopLink: "awsomeapp://deeplink",
             webappLink: "https://awesome.com/foo/webapp",
             appStore: ""
         ),
@@ -125,6 +130,7 @@ extension Wallet {
             imageId: "3913df81-63c2-4413-d60b-8ff83cbed500",
             order: 3,
             mobileLink: "https://cool.com/foo/universal",
+            linkMode: "https://lab.web3modal.com/wallet",
             desktopLink: "coolapp://deeplink",
             webappLink: "https://cool.com/foo/webapp",
             appStore: ""

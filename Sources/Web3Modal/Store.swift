@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import WalletConnectUtils
 
 enum ConnectionProviderType {
     case wc
@@ -11,6 +12,14 @@ class Store: ObservableObject {
     
     @Published var isModalShown: Bool = false
     @Published var retryShown = false
+
+    @Published var SIWEFallbackState: Bool = false {
+        didSet {
+            if SIWEFallbackState == true {
+                retryShown = false
+            }
+        }
+    }
 
     @Published var identity: Identity?
     @Published var balance: Double?
@@ -53,7 +62,9 @@ class Store: ObservableObject {
     var totalPages: Int = .max
     var walletImages: [String: UIImage] = [:]
     var installedWalletIds: [String] = []
-    
+    var siweRequestId: RPCID? = nil
+    var siweMessage: String? = nil
+
     var recentWallets: [Wallet] {
         get {
             RecentWalletsStorage.loadRecentWallets()
@@ -88,4 +99,8 @@ extension W3MAccount {
         address: "0x5c8877144d858e41d8c33f5baa7e67a5e0027e37",
         chain: Blockchain(namespace: "eip155", reference: "56")!
     )
+
+    func account() -> Account? {
+        return Account(blockchain: chain, address: address)
+    }
 }

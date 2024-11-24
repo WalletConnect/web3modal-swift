@@ -18,6 +18,7 @@ import UIKit
 /// Web3Modal.configure(projectId: PROJECT_ID, metadata: metadata)
 /// Web3Modal.instance.getSessions()
 /// ```
+@available(*, deprecated, message: "WalletConnect Inc is now Reown. As part of this transition, we are deprecating a number of repositories/packages across our supported platforms, and transitioning to their equivalents published under the Reown organization. This repository is now considered deprecated and will reach End-of-Life on February 17th 2025. For more details, including migration guides please see: https://docs.reown.com/advanced/walletconnect-deprecations")
 public class Web3Modal {
     /// Web3Modalt client instance
     public static var instance: Web3ModalClient = {
@@ -68,8 +69,10 @@ public class Web3Modal {
         
         let projectId: String
         var metadata: AppMetadata
+        let crypto: CryptoProvider
         var sessionParams: SessionParams
-        
+        var authRequestParams: AuthRequestParams?
+
         let includeWebWallets: Bool
         let recommendedWalletIds: [String]
         let excludedWalletIds: [String]
@@ -77,6 +80,7 @@ public class Web3Modal {
         let coinbaseEnabled: Bool
 
         let onError: (Error) -> Void
+
     }
     
     private(set) static var config: Config!
@@ -88,10 +92,13 @@ public class Web3Modal {
     /// Wallet instance wallet config method.
     /// - Parameters:
     ///   - metadata: App metadata
+    @available(*, deprecated, message: "Web3Modal.configure has been deprecated. Please migrate to AppKit.configure.")
     public static func configure(
         projectId: String,
         metadata: AppMetadata,
+        crypto: CryptoProvider,
         sessionParams: SessionParams = .default,
+        authRequestParams: AuthRequestParams?,
         includeWebWallets: Bool = true,
         recommendedWalletIds: [String] = [],
         excludedWalletIds: [String] = [],
@@ -104,7 +111,9 @@ public class Web3Modal {
         Web3Modal.config = Web3Modal.Config(
             projectId: projectId,
             metadata: metadata,
+            crypto: crypto,
             sessionParams: sessionParams,
+            authRequestParams: authRequestParams,
             includeWebWallets: includeWebWallets,
             recommendedWalletIds: recommendedWalletIds,
             excludedWalletIds: excludedWalletIds,
@@ -112,7 +121,9 @@ public class Web3Modal {
             coinbaseEnabled: coinbaseEnabled,
             onError: onError
         )
-        
+
+        Sign.configure(crypto: crypto)
+
         let store = Store.shared
         let router = Router()
         let w3mApiInteractor = W3MAPIInteractor(store: store)
@@ -132,7 +143,8 @@ public class Web3Modal {
             store: store,
             w3mApiInteractor: w3mApiInteractor,
             signInteractor: signInteractor,
-            blockchainApiInteractor: blockchainApiInteractor
+            blockchainApiInteractor: blockchainApiInteractor,
+            supportsAuthenticatedSession: (config.authRequestParams != nil)
         )
         
         Task {
@@ -169,6 +181,7 @@ public class Web3Modal {
             imageId: "a5ebc364-8f91-4200-fcc6-be81310a0000",
             order: 4,
             mobileLink: nil,
+            linkMode: nil,
             desktopLink: nil,
             webappLink: nil,
             appStore: "https://apps.apple.com/us/app/coinbase-wallet-nfts-crypto/id1278383455",
@@ -215,6 +228,7 @@ public class Web3Modal {
             try? await w3mApiInteractor.fetchWalletImages(for: [wallet])
         }
     }
+
 }
 
 #if canImport(UIKit)
@@ -305,8 +319,8 @@ public struct SessionParams {
     public static let `default`: Self = {
         let methods: Set<String> = Set(EthUtils.ethMethods)
         let events: Set<String> = ["chainChanged", "accountsChanged"]
-        let blockchains: Set<Blockchain> = Set(ChainPresets.ethChains.map(\.id).compactMap(Blockchain.init))
-        
+        let blockchains = ChainPresets.ethChains.map(\.id).compactMap(Blockchain.init)
+
         let namespaces: [String: ProposalNamespace] = [
             "eip155": ProposalNamespace(
                 chains: blockchains,

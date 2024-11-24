@@ -1,8 +1,5 @@
+# Deprecated - Web3Modal
 
-#### 📚 [Documentation](https://docs.walletconnect.com/web3modal/ios/about)
+WalletConnect Inc is now Reown. As part of this transition, we are deprecating a number of repositories/packages across our supported platforms, and transitioning to their equivalents published under the Reown organization.
 
-#### 🔗 [Website](https://web3modal.com)
-
-# Web3Modal
-
-Your on-ramp to web3 multichain. Web3Modal is a versatile library that makes it super easy to connect users with your Dapp and start interacting with the blockchain.
+This repository is now considered deprecated and will reach End-of-Life on February 17th 2025. For more details, including migration guides please see: https://docs.reown.com/advanced/walletconnect-deprecations

@@ -16,13 +16,19 @@ struct ContentView: View {
                 Web3ModalNetworkButton()
                 
                 Spacer()
-                
+
                 Button("Personal sign") {
-                    requestPersonalSign()
-                    Web3Modal.instance.launchCurrentWallet()
+                    Task {
+                        do {
+                            try await requestPersonalSign()
+                            Web3Modal.instance.launchCurrentWallet()
+                        } catch {
+                            print("Error occurred: \(error)")
+                        }
+                    }
                 }
                 .buttonStyle(W3MButtonStyle())
-                
+
                 NavigationLink(destination: ComponentLibraryView(), isActive: $showUIComponents) {
                     Button("UI components") {
                         showUIComponents = true
@@ -45,14 +51,10 @@ struct ContentView: View {
         }
     }
     
-    func requestPersonalSign() {
-        Task {
-            do {
-                guard let address = Web3Modal.instance.getAddress() else { return }
-                try await Web3Modal.instance.request(.personal_sign(address: address, message: "Hello there!"))
-            } catch {
-                print(error)
-            }
-        }
+    func requestPersonalSign() async throws {
+
+        guard let address = Web3Modal.instance.getAddress() else { return }
+        try await Web3Modal.instance.request(.personal_sign(address: address, message: "Hello there!"))
+
     }
 }

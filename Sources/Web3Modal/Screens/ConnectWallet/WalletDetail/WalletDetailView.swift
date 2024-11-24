@@ -25,10 +25,10 @@ struct WalletDetailView: View {
             
             walletInfo()
             
-            if viewModel.wallet.isInstalled == true {
+            if viewModel.wallet.isInstalled == true && !store.SIWEFallbackState {
                 copyLink()
             }
-            
+
             if 
                 viewModel.preferredPlatform == .mobile,
                 viewModel.wallet.isInstalled != true,
@@ -36,11 +36,47 @@ struct WalletDetailView: View {
             {
                 appStoreRow()
             }
+
+            if store.SIWEFallbackState {
+                siweFallbackButtons()
+            }
         }
         .padding(.horizontal, Spacing.s)
         .padding(.bottom, Spacing.xl + 17)
     }
-    
+
+    private func siweFallbackButtons() -> some View {
+        HStack {
+            Button(action: {
+                Task {
+                    try await viewModel.cancel()
+                }
+            }) {
+                Text("Cancel")
+                    .foregroundColor(.black)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
+            }
+
+            Button(action: {
+                Task {
+                    try await viewModel.signSIWE()
+                }
+            }) {
+                Text("Sign")
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.blue)
+                    .cornerRadius(8)
+            }
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 20)
+    }
+
     private func picker() -> some View {
         W3MPicker(
             WalletDetailViewModel.Platform.allCases,
@@ -149,28 +185,30 @@ struct WalletDetailView: View {
             walletImage()
                 .padding(.top, 40)
                 .padding(.bottom, Spacing.xl)
-            
-            Text(store.retryShown ? "Connection declined" : "Continue in \(viewModel.wallet.name)")
+
+            Text(store.SIWEFallbackState ? "Web3Modal needs to connect to your wallet." : (store.retryShown ? "Connection declined" : "Continue in \(viewModel.wallet.name)"))
                 .font(.paragraph600)
                 .foregroundColor(store.retryShown ? .Error100 : .Foreground100)
                 .padding(.bottom, Spacing.xs)
-            
+
             Text(
-                store.retryShown
-                    ? "Connection can be declined if a previous request is still active"
-                    : viewModel.preferredPlatform == .browser ? "Open and continue in a new browser tab" : "Accept connection request in the wallet"
+                store.SIWEFallbackState
+                    ? "Sign this message to prove you own this wallet and proceed. Cancelling will disconnect you."
+                    : (store.retryShown
+                        ? "Connection can be declined if a previous request is still active"
+                        : viewModel.preferredPlatform == .browser ? "Open and continue in a new browser tab" : "Accept connection request in the wallet")
             )
             .font(.small500)
             .foregroundColor(.Foreground200)
             .multilineTextAlignment(.center)
             .padding(.bottom, Spacing.l)
-            
+
             if store.retryShown || viewModel.preferredPlatform == .browser {
                 retryButton()
             }
         }
     }
-    
+
     func appStoreRow() -> some View {
         HStack(spacing: 0) {
             Text("Don't have \(viewModel.wallet.name)?")
@@ -217,7 +255,7 @@ struct WalletDetailView: View {
 #if DEBUG
 
 class MockSignInteractor: SignInteractor {
-    override func createPairingAndConnect() async throws {
+    override func connect(walletUniversalLink: String?) async throws {
         // no-op
     }
     

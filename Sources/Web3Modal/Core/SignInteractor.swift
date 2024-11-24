@@ -11,14 +11,16 @@ class SignInteractor: ObservableObject {
     lazy var sessionRejectionPublisher: AnyPublisher<(Session.Proposal, Reason), Never> = Web3Modal.instance.sessionRejectionPublisher
     lazy var sessionDeletePublisher: AnyPublisher<(String, Reason), Never> = Web3Modal.instance.sessionDeletePublisher
     lazy var sessionEventPublisher: AnyPublisher<(event: Session.Event, sessionTopic: String, chainId: Blockchain?), Never> = Web3Modal.instance.sessionEventPublisher
-    
+    lazy var authResponsePublisher: AnyPublisher<(id: RPCID, result: Result<(Session?, [Cacao]), AuthError>), Never> = Web3Modal.instance.authResponsePublisher
+
+
     init(store: Store = .shared) {
         self.store = store
     }
     
-    func createPairingAndConnect() async throws  {
-        let uri = try await Web3Modal.instance.connect(topic: nil)
-        
+    func connect(walletUniversalLink: String?) async throws  {
+        let uri = try await Web3Modal.instance.connect(walletUniversalLink: walletUniversalLink)
+
         DispatchQueue.main.async {
             self.store.uri = uri
             self.store.retryShown = false

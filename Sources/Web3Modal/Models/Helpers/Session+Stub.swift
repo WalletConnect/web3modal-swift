@@ -10,7 +10,8 @@ extension Session {
         "icons": [],
         "redirect": {
           "native": "metamask://",
-          "universal": "https://metamask.app.link/"
+          "universal": "https://metamask.app.link/",
+          "linkMode: false
         },
         "description": "MetaMask Wallet Integration"
       },

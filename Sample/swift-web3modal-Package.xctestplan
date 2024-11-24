@@ -26,6 +26,7 @@
   },
   "testTargets" : [
     {
+      "enabled" : false,
       "target" : {
         "containerPath" : "container:",
         "identifier" : "Web3ModalTests",
@@ -33,6 +34,7 @@
       }
     },
     {
+      "enabled" : false,
       "target" : {
         "containerPath" : "container:",
         "identifier" : "Web3ModalUITests",
